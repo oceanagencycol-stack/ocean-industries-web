@@ -469,8 +469,12 @@
       <button id="chatSend" class="w-10 h-10 flex-shrink-0 btn-green rounded-xl flex items-center justify-center" aria-label="Enviar"><i data-lucide="send" class="w-4 h-4"></i></button>
     </div>
   </div>
-  <button id="chatToggle" class="fixed bottom-6 right-24 z-50 w-14 h-14 bg-ocean-blue rounded-full flex items-center justify-center shadow-lg shadow-black/30 hover:scale-110 transition-transform" aria-label="Chat con OceanBot">
-    <i data-lucide="message-square" class="w-6 h-6 text-white" id="chatToggleIcon"></i>
+  <button id="chatToggle" class="group fixed bottom-6 right-24 z-50 flex items-center gap-2.5 pl-2 pr-4 py-2 rounded-full shadow-lg shadow-ocean-blue/30 hover:shadow-ocean-green/40 transition-all duration-300 hover:scale-105" style="background:linear-gradient(135deg,#0000FF 0%,#0B1F8C 100%);" aria-label="Chat con OceanBot">
+    <span class="relative flex items-center justify-center w-9 h-9 rounded-full bg-ocean-green flex-shrink-0">
+      <i data-lucide="bot" class="w-5 h-5 text-ocean-black" id="chatToggleIcon"></i>
+      <span class="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-ocean-green border-2 border-ocean-blue animate-pulse"></span>
+    </span>
+    <span class="text-sm font-bold text-white whitespace-nowrap" data-es="OceanBot" data-en="OceanBot" data-pt="OceanBot">OceanBot</span>
   </button>
 
   <!-- Floating WhatsApp -->
@@ -692,14 +696,15 @@
       chatOpen=!chatOpen;
       if(chatOpen){
         chatPanel.classList.remove('pointer-events-none','opacity-0','scale-95');
-        chatToggleIcon.setAttribute('data-lucide','x');
+        chatToggle.style.opacity='0';
+        chatToggle.style.pointerEvents='none';
         if(!chatGreeted){chatGreeted=true;setTimeout(()=>addMsg(greetings[lang]||greetings.es,'bot'),200);}
         setTimeout(()=>chatInput.focus(),300);
       }else{
         chatPanel.classList.add('pointer-events-none','opacity-0','scale-95');
-        chatToggleIcon.setAttribute('data-lucide','message-square');
+        chatToggle.style.opacity='1';
+        chatToggle.style.pointerEvents='auto';
       }
-      lucide.createIcons();
     }
     chatToggle.addEventListener('click',toggleChat);
     document.getElementById('chatClose').addEventListener('click',toggleChat);
