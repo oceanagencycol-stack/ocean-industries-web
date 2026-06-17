@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ocean Industries — We turn brands into waves</title>
+  <meta name="description" content="Orquestamos Inteligencia Artificial, desarrollo agéntico y estrategias de conversión para escalar tu negocio. Agencia de IA y automatización." />
+  <meta property="og:title" content="Ocean Industries — We turn brands into waves" />
+  <meta property="og:description" content="IA autónoma, desarrollo agéntico y automatización para escalar tu negocio." />
+  <meta property="og:image" content="https://res.cloudinary.com/dpo9ohngt/image/upload/v1781713983/LOGO-Ocean-INDS-10_2_enpxm1.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: {
+      fontFamily: { display:['"Archivo"','"Inter"','sans-serif'], body:['"Inter"','sans-serif'] },
+      colors: {
+        ocean: {
+          blue:'#0000FF', bluedeep:'#0B1F8C', green:'#00FF7F', greensoft:'#5BE69A',
+          black:'#101820', ink:'#0a0f16', white:'#F4F5F0'
+        }
+      }
+    }}}
+  </script>
+  <link rel="icon" type="image/png" href="https://res.cloudinary.com/dpo9ohngt/image/upload/v1781713984/LOGO-Ocean-INDS-09_1_iqydyh.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Archivo = alternativa libre y casi idéntica a Heading Now (condensada, alto impacto) -->
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{font-family:'Inter',sans-serif;background:#101820;}
+    body{background:#101820;color:#F4F5F0;overflow-x:hidden;}
+    .font-display{font-family:'Archivo',sans-serif;font-stretch:condensed;}
+    ::selection{background:#00FF7F;color:#101820;}
+    ::-webkit-scrollbar{width:7px;}
+    ::-webkit-scrollbar-track{background:#101820;}
+    ::-webkit-scrollbar-thumb{background:#0000FF;border-radius:4px;}
+    ::-webkit-scrollbar-thumb:hover{background:#00FF7F;}
+
+    /* ===== Animaciones base ===== */
+    .reveal{opacity:0;transform:translateY(44px);transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1);}
+    .reveal.active{opacity:1;transform:translateY(0);}
+    .reveal-l{opacity:0;transform:translateX(-64px);transition:all 1s cubic-bezier(.16,1,.3,1);}
+    .reveal-l.active{opacity:1;transform:translateX(0);}
+    .reveal-r{opacity:0;transform:translateX(64px);transition:all 1s cubic-bezier(.16,1,.3,1);}
+    .reveal-r.active{opacity:1;transform:translateX(0);}
+    .reveal-blur{opacity:0;filter:blur(14px);transform:translateY(30px) scale(.98);transition:opacity 1.1s ease,filter 1.1s ease,transform 1.1s cubic-bezier(.16,1,.3,1);}
+    .reveal-blur.active{opacity:1;filter:blur(0);transform:translateY(0) scale(1);}
+    .stagger>*{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s cubic-bezier(.16,1,.3,1);}
+    .stagger.active>*:nth-child(1){transition-delay:.06s;opacity:1;transform:translateY(0);}
+    .stagger.active>*:nth-child(2){transition-delay:.16s;opacity:1;transform:translateY(0);}
+    .stagger.active>*:nth-child(3){transition-delay:.26s;opacity:1;transform:translateY(0);}
+    .stagger.active>*:nth-child(4){transition-delay:.36s;opacity:1;transform:translateY(0);}
+    .stagger.active>*:nth-child(5){transition-delay:.46s;opacity:1;transform:translateY(0);}
+    .stagger.active>*:nth-child(6){transition-delay:.56s;opacity:1;transform:translateY(0);}
+
+    /* Hero line rise */
+    .h-line{display:block;overflow:hidden;}
+    .h-line>span{display:block;transform:translateY(115%);transition:transform 1.1s cubic-bezier(.16,1,.3,1);}
+    .hero-on .h-line>span{transform:translateY(0);}
+    .h-line:nth-child(2)>span{transition-delay:.1s;}
+    .h-line:nth-child(3)>span{transition-delay:.2s;}
+    .hero-fade{opacity:0;transform:translateY(22px);transition:opacity 1s ease .55s,transform 1s ease .55s;}
+    .hero-on .hero-fade{opacity:1;transform:translateY(0);}
+
+    /* Aurora animated background */
+    @keyframes aurora{0%{transform:translate(0,0) scale(1);}33%{transform:translate(6%,-4%) scale(1.1);}66%{transform:translate(-5%,5%) scale(.95);}100%{transform:translate(0,0) scale(1);}}
+    .aurora{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;will-change:transform;animation:aurora 18s ease-in-out infinite;}
+
+    /* Marquee */
+    @keyframes marquee{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+    .marquee{animation:marquee 30s linear infinite;}
+    .marquee:hover{animation-play-state:paused;}
+
+    /* Phone mockup float */
+    @keyframes float1{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-22px) rotate(-4deg);}}
+    @keyframes float2{0%,100%{transform:translateY(0) rotate(3deg);}50%{transform:translateY(-30px) rotate(3deg);}}
+    @keyframes float3{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-18px) rotate(-2deg);}}
+    .float1{animation:float1 7s ease-in-out infinite;}
+    .float2{animation:float2 8.5s ease-in-out infinite;}
+    .float3{animation:float3 6.5s ease-in-out infinite;}
+    .phone{position:relative;border-radius:34px;background:#0a0f16;padding:9px;box-shadow:0 30px 70px -20px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.06);}
+    .phone::before{content:'';position:absolute;top:14px;left:50%;transform:translateX(-50%);width:60px;height:5px;border-radius:99px;background:rgba(255,255,255,.18);z-index:3;}
+    .phone video{border-radius:26px;display:block;width:100%;height:100%;object-fit:cover;}
+
+    /* Glow buttons */
+    .btn-green{background:#00FF7F;color:#101820;transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s ease;}
+    .btn-green:hover{transform:translateY(-2px);box-shadow:0 12px 30px -8px rgba(0,255,127,.6);}
+    .btn-blue{background:#0000FF;color:#fff;transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s ease;}
+    .btn-blue:hover{transform:translateY(-2px);box-shadow:0 12px 30px -8px rgba(0,0,255,.6);}
+    .btn-shine{position:relative;overflow:hidden;}
+    .btn-shine::after{content:'';position:absolute;top:0;left:-120%;width:55%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.4),transparent);transform:skewX(-20deg);transition:left .65s ease;}
+    .btn-shine:hover::after{left:160%;}
+
+    .ul-hover{position:relative;}
+    .ul-hover::after{content:'';position:absolute;left:0;bottom:-3px;height:1.5px;width:0;background:#00FF7F;transition:width .4s cubic-bezier(.16,1,.3,1);}
+    .ul-hover:hover::after{width:100%;}
+
+    .glass{background:rgba(16,24,32,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.08);}
+    .card-svc{transition:transform .5s cubic-bezier(.16,1,.3,1),border-color .5s,background .5s;}
+    .card-svc:hover{transform:translateY(-6px);border-color:rgba(0,255,127,.4);background:rgba(255,255,255,.02);}
+
+    .field{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);color:#fff;transition:border-color .3s,background .3s;}
+    .field:focus{outline:none;border-color:#00FF7F;background:rgba(255,255,255,.06);}
+
+    .nav-blur{backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+    @keyframes pulse-ring{0%{transform:scale(1);opacity:1;}100%{transform:scale(1.5);opacity:0;}}
+    .wa-pulse::before{content:'';position:absolute;inset:-4px;border-radius:50%;background:#25D366;animation:pulse-ring 2s ease-out infinite;z-index:-1;}
+
+    /* halftone dots texture */
+    .dots{background-image:radial-gradient(rgba(255,255,255,.12) 1.4px,transparent 1.4px);background-size:18px 18px;}
+
+    @media(min-width:1024px){
+      .cursor-none{cursor:none;}
+      .cdot{width:8px;height:8px;background:#00FF7F;border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transition:transform .15s;mix-blend-mode:difference;}
+      .cring{width:42px;height:42px;border:1.5px solid rgba(0,255,127,.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:transform .3s,width .3s,height .3s;mix-blend-mode:difference;}
+    }
+    .lang-btn{font-size:11px;letter-spacing:.08em;font-weight:700;color:rgba(244,245,240,.4);transition:color .3s;padding:2px 4px;}
+    .lang-btn.active{color:#00FF7F;}
+
+    @media(prefers-reduced-motion:reduce){
+      .reveal,.reveal-l,.reveal-r,.reveal-blur,.stagger>*,.h-line>span,.hero-fade{opacity:1!important;transform:none!important;filter:none!important;transition:none!important;}
+      .marquee,.aurora,.float1,.float2,.float3{animation:none!important;}
+    }
+  </style>
+</head>
+<body class="cursor-none">
+
+  <div class="cdot hidden lg:block" id="cdot"></div>
+  <div class="cring hidden lg:block" id="cring"></div>
+
+  <!-- ===== NAV ===== -->
+  <nav id="nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+    <div class="max-w-[1440px] mx-auto px-5 md:px-10">
+      <div class="flex items-center justify-between h-20">
+        <a href="#hero" class="relative z-50 flex items-center">
+          <img src="https://res.cloudinary.com/dpo9ohngt/image/upload/v1781713983/LOGO-Ocean-INDS-10_2_enpxm1.png" alt="Ocean Industries" class="h-9 md:h-10" />
+        </a>
+        <div class="hidden md:flex items-center gap-8">
+          <a href="#about" class="text-sm font-medium tracking-wide uppercase ul-hover" data-es="Nosotros" data-en="About" data-pt="Sobre">Nosotros</a>
+          <a href="#services" class="text-sm font-medium tracking-wide uppercase ul-hover" data-es="Servicios" data-en="Services" data-pt="Serviços">Servicios</a>
+          <a href="#work" class="text-sm font-medium tracking-wide uppercase ul-hover" data-es="Trabajo" data-en="Work" data-pt="Trabalho">Trabajo</a>
+          <a href="#pay" class="text-sm font-medium tracking-wide uppercase ul-hover" data-es="Pagos" data-en="Payments" data-pt="Pagamentos">Pagos</a>
+          <a href="#book" class="text-sm font-medium tracking-wide uppercase ul-hover" data-es="Agenda" data-en="Book" data-pt="Agende">Agenda</a>
+          <div class="flex items-center gap-0.5 ml-1">
+            <button class="lang-btn active" data-lang="es">ES</button><span class="text-white/20">·</span>
+            <button class="lang-btn" data-lang="en">EN</button><span class="text-white/20">·</span>
+            <button class="lang-btn" data-lang="pt">PT</button>
+          </div>
+          <a href="#book" class="btn-green btn-shine inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold tracking-wide rounded-full">
+            <i data-lucide="calendar-check" class="w-4 h-4"></i><span data-es="Asesoría gratis" data-en="Free consult" data-pt="Consultoria grátis">Asesoría gratis</span>
+          </a>
+        </div>
+        <div class="md:hidden flex items-center gap-3 relative z-50">
+          <div class="flex items-center gap-0.5"><button class="lang-btn active" data-lang="es">ES</button><button class="lang-btn" data-lang="en">EN</button><button class="lang-btn" data-lang="pt">PT</button></div>
+          <button id="menuBtn" class="w-10 h-10 flex items-center justify-center" aria-label="Menu"><i data-lucide="menu" class="w-6 h-6" id="menuIcon"></i></button>
+        </div>
+      </div>
+    </div>
+    <div id="mobileMenu" class="fixed inset-0 bg-ocean-black/96 nav-blur z-40 flex flex-col items-center justify-center gap-7 transform translate-x-full transition-transform duration-500 md:hidden">
+      <a href="#about" class="text-2xl font-display font-700 uppercase mlink" data-es="Nosotros" data-en="About" data-pt="Sobre">Nosotros</a>
+      <a href="#services" class="text-2xl font-display font-700 uppercase mlink" data-es="Servicios" data-en="Services" data-pt="Serviços">Servicios</a>
+      <a href="#work" class="text-2xl font-display font-700 uppercase mlink" data-es="Trabajo" data-en="Work" data-pt="Trabalho">Trabajo</a>
+      <a href="#pay" class="text-2xl font-display font-700 uppercase mlink" data-es="Pagos" data-en="Payments" data-pt="Pagamentos">Pagos</a>
+      <a href="#book" class="text-2xl font-display font-700 uppercase mlink" data-es="Agenda" data-en="Book" data-pt="Agende">Agenda</a>
+      <a href="#book" class="mlink btn-green mt-3 px-8 py-3 text-sm font-bold tracking-wide uppercase rounded-full" data-es="Asesoría gratis" data-en="Free consult" data-pt="Consultoria grátis">Asesoría gratis</a>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section id="hero" class="relative min-h-screen w-full overflow-hidden flex items-center pt-24 pb-16">
+    <!-- aurora bg -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="aurora" style="width:540px;height:540px;background:#0000FF;top:-120px;left:-100px;"></div>
+      <div class="aurora" style="width:460px;height:460px;background:#00FF7F;bottom:-140px;right:-80px;animation-delay:-6s;opacity:.35;"></div>
+      <div class="aurora" style="width:380px;height:380px;background:#0B1F8C;top:40%;left:55%;animation-delay:-11s;"></div>
+      <div class="absolute inset-0 dots opacity-40"></div>
+      <div class="absolute inset-0" style="background:radial-gradient(ellipse at center,transparent 30%,#101820 95%);"></div>
+    </div>
+
+    <div class="relative z-10 max-w-[1440px] mx-auto px-5 md:px-10 grid lg:grid-cols-2 gap-12 items-center w-full">
+      <!-- left copy -->
+      <div id="heroContent">
+        <div class="hero-fade inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass mb-6">
+          <span class="w-2 h-2 rounded-full bg-ocean-green animate-pulse"></span>
+          <span class="text-xs font-medium tracking-wide text-white/80" data-es="Agencia de IA · Empresa Autónoma 2027" data-en="AI Agency · Autonomous Company 2027" data-pt="Agência de IA · Empresa Autônoma 2027">Agencia de IA · Empresa Autónoma 2027</span>
+        </div>
+        <h1 class="font-display font-900 leading-[0.88] tracking-tight text-5xl md:text-7xl xl:text-8xl uppercase">
+          <span class="h-line"><span data-es="Convertimos" data-en="We turn" data-pt="Transformamos">Convertimos</span></span>
+          <span class="h-line"><span class="text-ocean-green" data-es="marcas en" data-en="brands into" data-pt="marcas em">marcas en</span></span>
+          <span class="h-line"><span data-es="olas." data-en="waves." data-pt="ondas.">olas.</span></span>
+        </h1>
+        <p class="hero-fade mt-7 text-base md:text-lg font-light text-white/70 max-w-lg leading-relaxed" data-es="Orquestamos inteligencia artificial, desarrollo agéntico y estrategias de conversión para escalar tu negocio a la velocidad del mañana." data-en="We orchestrate artificial intelligence, agentic development and conversion strategies to scale your business at tomorrow's speed." data-pt="Orquestramos inteligência artificial, desenvolvimento agêntico e estratégias de conversão para escalar seu negócio na velocidade do amanhã.">Orquestamos inteligencia artificial, desarrollo agéntico y estrategias de conversión para escalar tu negocio a la velocidad del mañana.</p>
+        <div class="hero-fade mt-9 flex flex-col sm:flex-row gap-4">
+          <a href="#book" class="btn-green btn-shine inline-flex items-center justify-center gap-3 px-7 py-4 text-sm font-bold tracking-wide uppercase rounded-full">
+            <span data-es="Agenda tu asesoría gratis" data-en="Book your free consult" data-pt="Agende sua consultoria grátis">Agenda tu asesoría gratis</span><i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+          <a href="#services" class="inline-flex items-center justify-center gap-2 border border-white/25 hover:border-white/60 hover:bg-white/5 px-7 py-4 text-sm font-medium tracking-wide uppercase rounded-full transition-all" data-es="Ver servicios" data-en="See services" data-pt="Ver serviços">Ver servicios</a>
+        </div>
+        <div class="hero-fade mt-9 flex items-center gap-6 text-xs text-white/50">
+          <span class="inline-flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4 text-ocean-green"></i><span data-es="Prototipo en 48h" data-en="Prototype in 48h" data-pt="Protótipo em 48h">Prototipo en 48h</span></span>
+          <span class="inline-flex items-center gap-2"><i data-lucide="bot" class="w-4 h-4 text-ocean-green"></i><span data-es="Agentes 24/7" data-en="24/7 agents" data-pt="Agentes 24/7">Agentes 24/7</span></span>
+          <span class="inline-flex items-center gap-2"><i data-lucide="globe" class="w-4 h-4 text-ocean-green"></i>LATAM · US</span>
+        </div>
+      </div>
+
+      <!-- right: floating phone mockups with videos -->
+      <div class="relative h-[420px] md:h-[560px] hidden sm:block">
+        <div class="phone float1 absolute" style="width:188px;height:340px;top:10px;left:4%;z-index:2;">
+          <video autoplay muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1781713985/02_-_Asi%CC%81_nace_una_estrategia_yilqmg.jpg"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/v1781713985/02_-_Asi%CC%81_nace_una_estrategia_yilqmg.mp4" type="video/mp4"></video>
+        </div>
+        <div class="phone float2 absolute" style="width:210px;height:380px;top:60px;right:2%;z-index:3;">
+          <video autoplay muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1781713984/SaveClip.App_AQN7gUygth0so2QCS0bRsasfFmlcf4OdG9HYq2orPgy8HwMGFJpgISbqf-3qdqC-Vcb51RvmDbK1PgFiylyKIhSyOqNxqW1YFYH21Ao_ahfqb2.jpg"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/v1781713984/SaveClip.App_AQN7gUygth0so2QCS0bRsasfFmlcf4OdG9HYq2orPgy8HwMGFJpgISbqf-3qdqC-Vcb51RvmDbK1PgFiylyKIhSyOqNxqW1YFYH21Ao_ahfqb2.mp4" type="video/mp4"></video>
+        </div>
+        <div class="phone float3 absolute" style="width:170px;height:310px;bottom:0;left:30%;z-index:1;opacity:.96;">
+          <video autoplay muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1781713984/SaveClip.App_AQNP9j0LNPCBJVZ-5MuFG7kTHLuMfhYji-x3bGQuBsFmgym_8cCJkslzqYgsh4GUfAteaM6aLzVKYhhPTsrXmfIq0JE8rjJzyraUFQs_nczmnq.jpg"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/v1781713984/SaveClip.App_AQNP9j0LNPCBJVZ-5MuFG7kTHLuMfhYji-x3bGQuBsFmgym_8cCJkslzqYgsh4GUfAteaM6aLzVKYhhPTsrXmfIq0JE8rjJzyraUFQs_nczmnq.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+      <!-- mobile: single video -->
+      <div class="sm:hidden flex justify-center">
+        <div class="phone" style="width:200px;height:360px;">
+          <video autoplay muted loop playsinline preload="metadata"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/v1781713985/02_-_Asi%CC%81_nace_una_estrategia_yilqmg.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MARQUEE ===== -->
+  <div class="bg-ocean-green text-ocean-black py-3.5 overflow-hidden border-y-2 border-ocean-black">
+    <div class="marquee flex items-center whitespace-nowrap font-display font-700 uppercase tracking-wide" style="width:max-content;">
+      <span class="mx-6 text-sm md:text-base">Inteligencia Artificial</span><span>★</span>
+      <span class="mx-6 text-sm md:text-base">Desarrollo Agéntico</span><span>★</span>
+      <span class="mx-6 text-sm md:text-base">Automatización</span><span>★</span>
+      <span class="mx-6 text-sm md:text-base">Performance Marketing</span><span>★</span>
+      <span class="mx-6 text-sm md:text-base">Agentes WhatsApp</span><span>★</span>
+      <span class="mx-6 text-sm md:text-base">UGC Content</span><span>★</span>
+      <span class="mx-6 text-sm md:text-base">Inteligencia Artificial</span><span>★</span>
+      <span class="mx-6 text-sm md:text-base">Desarrollo Agéntico</span><span>★</span>
+      <span class="mx-6 text-sm md:text-base">Automatización</span><span>★</span>
+      <span class="mx-6 text-sm md:text-base">Performance Marketing</span><span>★</span>
+      <span class="mx-6 text-sm md:text-base">Agentes WhatsApp</span><span>★</span>
+      <span class="mx-6 text-sm md:text-base">UGC Content</span><span>★</span>
+    </div>
+  </div>
+
+  <!-- ===== ABOUT ===== -->
+  <section id="about" class="py-24 md:py-36 px-5 md:px-10 relative">
+    <div class="max-w-[1440px] mx-auto grid md:grid-cols-12 gap-12 items-center">
+      <div class="md:col-span-6 reveal-l">
+        <p class="text-xs font-bold tracking-[0.3em] uppercase text-ocean-green mb-5" data-es="Sobre nosotros" data-en="About us" data-pt="Sobre nós">Sobre nosotros</p>
+        <h2 class="font-display font-900 uppercase leading-[0.9] tracking-tight text-4xl md:text-6xl">
+          <span data-es="No vendemos" data-en="We don't sell" data-pt="Não vendemos">No vendemos</span><br/>
+          <span data-es="servicios." data-en="services." data-pt="serviços.">servicios.</span><br/>
+          <span class="text-ocean-blue" style="-webkit-text-stroke:1px #00FF7F;color:transparent;" data-es="Construimos" data-en="We build" data-pt="Construímos">Construimos</span><br/>
+          <span data-es="tu futuro." data-en="your future." data-pt="seu futuro.">tu futuro.</span>
+        </h2>
+      </div>
+      <div class="md:col-span-6 reveal-r">
+        <p class="text-base md:text-lg font-light text-white/70 leading-relaxed mb-6" data-es="El modelo tradicional de agencia digital caducó. En 2027 el éxito no se mide por cuántos empleados copian y pegan datos, sino por tu capacidad de automatizar operaciones y escalar sin fricción." data-en="The traditional digital agency model is obsolete. In 2027, success isn't measured by how many employees copy and paste data, but by your ability to automate operations and scale without friction." data-pt="O modelo tradicional de agência digital expirou. Em 2027 o sucesso não se mede por quantos funcionários copiam e colam dados, mas pela sua capacidade de automatizar operações e escalar sem atrito.">El modelo tradicional de agencia digital caducó. En 2027 el éxito no se mide por cuántos empleados copian y pegan datos, sino por tu capacidad de automatizar operaciones y escalar sin fricción.</p>
+        <p class="text-base md:text-lg font-light text-white/70 leading-relaxed" data-es="Democratizamos la tecnología corporativa de élite para las pymes. Integramos sistemas que piensan, analizan y venden por ti 24/7." data-en="We democratize elite corporate technology for SMBs. We integrate systems that think, analyze and sell for you 24/7." data-pt="Democratizamos a tecnologia corporativa de elite para PMEs. Integramos sistemas que pensam, analisam e vendem por você 24/7.">Democratizamos la tecnología corporativa de élite para las pymes. Integramos sistemas que piensan, analizan y venden por ti 24/7.</p>
+        <div class="grid grid-cols-3 gap-6 mt-10 stagger" id="stats">
+          <div><p class="font-display font-900 text-4xl md:text-5xl text-ocean-green"><span class="count" data-target="48">0</span>h</p><p class="text-xs text-white/50 mt-1" data-es="Prototipo funcional" data-en="Working prototype" data-pt="Protótipo funcional">Prototipo funcional</p></div>
+          <div><p class="font-display font-900 text-4xl md:text-5xl text-ocean-green"><span class="count" data-target="24">0</span>/7</p><p class="text-xs text-white/50 mt-1" data-es="Agentes vendiendo" data-en="Agents selling" data-pt="Agentes vendendo">Agentes vendiendo</p></div>
+          <div><p class="font-display font-900 text-4xl md:text-5xl text-ocean-green"><span class="count" data-target="3">0</span></p><p class="text-xs text-white/50 mt-1" data-es="Idiomas / mercados" data-en="Languages / markets" data-pt="Idiomas / mercados">Idiomas / mercados</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SERVICES ===== -->
+  <section id="services" class="py-24 md:py-36 px-5 md:px-10 bg-ocean-ink relative overflow-hidden">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] aurora" style="background:#0000FF;opacity:.15;"></div>
+    <div class="max-w-[1440px] mx-auto relative z-10">
+      <div class="text-center mb-16 reveal">
+        <p class="text-xs font-bold tracking-[0.3em] uppercase text-ocean-green mb-4" data-es="Servicios core" data-en="Core services" data-pt="Serviços core">Servicios core</p>
+        <h2 class="font-display font-900 uppercase leading-[0.9] tracking-tight text-4xl md:text-6xl" data-es="Lo que construimos" data-en="What we build" data-pt="O que construímos">Lo que construimos</h2>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5 stagger">
+        <div class="card-svc glass p-8 rounded-2xl">
+          <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-ocean-blue/20 border border-ocean-blue/40 mb-6"><i data-lucide="bot" class="w-6 h-6 text-ocean-green"></i></div>
+          <h3 class="font-display font-700 text-xl uppercase mb-3" data-es="Software agéntico" data-en="Agentic software" data-pt="Software agêntico">Software agéntico</h3>
+          <p class="text-sm text-white/60 font-light leading-relaxed" data-es="Paneles y software a la medida con IA. Conectamos agentes a tu base de datos, CRM y hojas de cálculo vía MCP. El fin del Excel interminable." data-en="Custom dashboards and software with AI. We connect agents to your database, CRM and spreadsheets via MCP. The end of endless Excel." data-pt="Painéis e software sob medida com IA. Conectamos agentes ao seu banco de dados, CRM e planilhas via MCP. O fim do Excel interminável.">Paneles y software a la medida con IA. Conectamos agentes a tu base de datos, CRM y hojas de cálculo vía MCP. El fin del Excel interminable.</p>
+        </div>
+        <div class="card-svc glass p-8 rounded-2xl">
+          <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-ocean-blue/20 border border-ocean-blue/40 mb-6"><i data-lucide="globe" class="w-6 h-6 text-ocean-green"></i></div>
+          <h3 class="font-display font-700 text-xl uppercase mb-3" data-es="Web & e-commerce" data-en="Web & e-commerce" data-pt="Web & e-commerce">Web & e-commerce</h3>
+          <p class="text-sm text-white/60 font-light leading-relaxed" data-es="Plataformas web y tiendas online ultrarrápidas, optimizadas para móvil y SEO. Prototipo navegable en 48 horas. Si te impresiona, lo lanzamos." data-en="Ultra-fast web platforms and online stores, mobile and SEO optimized. Navigable prototype in 48 hours. If it impresses you, we launch it." data-pt="Plataformas web e lojas online ultrarrápidas, otimizadas para mobile e SEO. Protótipo navegável em 48 horas. Se te impressionar, lançamos.">Plataformas web y tiendas online ultrarrápidas, optimizadas para móvil y SEO. Prototipo navegable en 48 horas. Si te impresiona, lo lanzamos.</p>
+        </div>
+        <div class="card-svc glass p-8 rounded-2xl">
+          <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-ocean-blue/20 border border-ocean-blue/40 mb-6"><i data-lucide="message-circle" class="w-6 h-6 text-ocean-green"></i></div>
+          <h3 class="font-display font-700 text-xl uppercase mb-3" data-es="Asistentes omnicanal" data-en="Omnichannel assistants" data-pt="Assistentes omnicanal">Asistentes omnicanal</h3>
+          <p class="text-sm text-white/60 font-light leading-relaxed" data-es="Agentes de IA conversacionales en WhatsApp y tu web. Entienden contexto, agendan citas y cierran ventas de madrugada. Tu mejor vendedor no duerme." data-en="Conversational AI agents on WhatsApp and your site. They understand context, book appointments and close sales overnight. Your best salesperson never sleeps." data-pt="Agentes de IA conversacionais no WhatsApp e seu site. Entendem contexto, agendam e fecham vendas de madrugada. Seu melhor vendedor não dorme.">Agentes de IA conversacionales en WhatsApp y tu web. Entienden contexto, agendan citas y cierran ventas de madrugada. Tu mejor vendedor no duerme.</p>
+        </div>
+        <div class="card-svc glass p-8 rounded-2xl">
+          <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-ocean-blue/20 border border-ocean-blue/40 mb-6"><i data-lucide="target" class="w-6 h-6 text-ocean-green"></i></div>
+          <h3 class="font-display font-700 text-xl uppercase mb-3" data-es="Performance B2B" data-en="Performance B2B" data-pt="Performance B2B">Performance B2B</h3>
+          <p class="text-sm text-white/60 font-light leading-relaxed" data-es="Estrategias quirúrgicas en Meta Ads. Cada peso invertido se traduce en leads calificados listos para cerrar en tu WhatsApp. Deja de quemar presupuesto a ciegas." data-en="Surgical Meta Ads strategies. Every dollar becomes qualified leads ready to close on your WhatsApp. Stop burning budget blindly." data-pt="Estratégias cirúrgicas em Meta Ads. Cada peso vira leads qualificados prontos para fechar no seu WhatsApp. Pare de queimar orçamento às cegas.">Estrategias quirúrgicas en Meta Ads. Cada peso invertido se traduce en leads calificados listos para cerrar en tu WhatsApp. Deja de quemar presupuesto a ciegas.</p>
+        </div>
+        <div class="card-svc glass p-8 rounded-2xl">
+          <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-ocean-blue/20 border border-ocean-blue/40 mb-6"><i data-lucide="clapperboard" class="w-6 h-6 text-ocean-green"></i></div>
+          <h3 class="font-display font-700 text-xl uppercase mb-3" data-es="UGC & social" data-en="UGC & social" data-pt="UGC & social">UGC & social</h3>
+          <p class="text-sm text-white/60 font-light leading-relaxed" data-es="Contenido vertical disruptivo para TikTok, Reels y Facebook. Ritmo frenético y retención visual que capta la atención en 3 segundos. Likes no pagan nóminas; las ventas sí." data-en="Disruptive vertical content for TikTok, Reels and Facebook. Frantic pace and visual retention that grabs attention in 3 seconds. Likes don't pay payroll; sales do." data-pt="Conteúdo vertical disruptivo para TikTok, Reels e Facebook. Ritmo frenético e retenção visual que captura a atenção em 3 segundos. Likes não pagam salários; vendas sim.">Contenido vertical disruptivo para TikTok, Reels y Facebook. Ritmo frenético y retención visual que capta la atención en 3 segundos. Likes no pagan nóminas; las ventas sí.</p>
+        </div>
+        <div class="card-svc glass p-8 rounded-2xl border-ocean-green/30">
+          <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-ocean-green/20 border border-ocean-green/40 mb-6"><i data-lucide="sparkles" class="w-6 h-6 text-ocean-green"></i></div>
+          <h3 class="font-display font-700 text-xl uppercase mb-3" data-es="Automatización total" data-en="Full automation" data-pt="Automação total">Automatización total</h3>
+          <p class="text-sm text-white/60 font-light leading-relaxed mb-4" data-es="Conectamos todo tu negocio: CRM, pagos, WhatsApp, calendario e IA en un solo ecosistema que trabaja solo." data-en="We connect your whole business: CRM, payments, WhatsApp, calendar and AI into one ecosystem that runs itself." data-pt="Conectamos todo o seu negócio: CRM, pagamentos, WhatsApp, calendário e IA em um único ecossistema autônomo.">Conectamos todo tu negocio: CRM, pagos, WhatsApp, calendario e IA en un solo ecosistema que trabaja solo.</p>
+          <a href="#book" class="inline-flex items-center gap-1.5 text-sm font-bold text-ocean-green ul-hover" data-es="Hablemos →" data-en="Let's talk →" data-pt="Vamos conversar →">Hablemos →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WORK / VIDEOS ===== -->
+  <section id="work" class="py-24 md:py-36 px-5 md:px-10">
+    <div class="max-w-[1440px] mx-auto">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14 reveal">
+        <div>
+          <p class="text-xs font-bold tracking-[0.3em] uppercase text-ocean-green mb-4" data-es="En movimiento" data-en="In motion" data-pt="Em movimento">En movimiento</p>
+          <h2 class="font-display font-900 uppercase leading-[0.9] tracking-tight text-4xl md:text-6xl" data-es="Así nace una estrategia" data-en="How a strategy is born" data-pt="Como nasce uma estratégia">Así nace una estrategia</h2>
+        </div>
+        <p class="text-sm text-white/55 font-light max-w-sm" data-es="Contenido real, resultados reales. Una muestra de lo que producimos para marcas que quieren dominar su mercado." data-en="Real content, real results. A glimpse of what we produce for brands that want to dominate their market." data-pt="Conteúdo real, resultados reais. Uma amostra do que produzimos para marcas que querem dominar seu mercado.">Contenido real, resultados reales. Una muestra de lo que producimos para marcas que quieren dominar su mercado.</p>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 stagger">
+        <div class="reveal-blur rounded-2xl overflow-hidden bg-ocean-ink aspect-[9/16] phone" style="padding:0;border-radius:18px;">
+          <video class="w-full h-full object-cover" controls muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1781713985/02_-_Asi%CC%81_nace_una_estrategia_yilqmg.jpg" style="border-radius:18px;"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/v1781713985/02_-_Asi%CC%81_nace_una_estrategia_yilqmg.mp4" type="video/mp4"></video>
+        </div>
+        <div class="reveal-blur rounded-2xl overflow-hidden bg-ocean-ink aspect-[9/16] phone" style="padding:0;border-radius:18px;">
+          <video class="w-full h-full object-cover" controls muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1781713984/SaveClip.App_AQN7gUygth0so2QCS0bRsasfFmlcf4OdG9HYq2orPgy8HwMGFJpgISbqf-3qdqC-Vcb51RvmDbK1PgFiylyKIhSyOqNxqW1YFYH21Ao_ahfqb2.jpg" style="border-radius:18px;"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/v1781713984/SaveClip.App_AQN7gUygth0so2QCS0bRsasfFmlcf4OdG9HYq2orPgy8HwMGFJpgISbqf-3qdqC-Vcb51RvmDbK1PgFiylyKIhSyOqNxqW1YFYH21Ao_ahfqb2.mp4" type="video/mp4"></video>
+        </div>
+        <div class="reveal-blur rounded-2xl overflow-hidden bg-ocean-ink aspect-[9/16] phone sm:col-span-2 lg:col-span-1" style="padding:0;border-radius:18px;">
+          <video class="w-full h-full object-cover" controls muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1781713984/SaveClip.App_AQNP9j0LNPCBJVZ-5MuFG7kTHLuMfhYji-x3bGQuBsFmgym_8cCJkslzqYgsh4GUfAteaM6aLzVKYhhPTsrXmfIq0JE8rjJzyraUFQs_nczmnq.jpg" style="border-radius:18px;"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/v1781713984/SaveClip.App_AQNP9j0LNPCBJVZ-5MuFG7kTHLuMfhYji-x3bGQuBsFmgym_8cCJkslzqYgsh4GUfAteaM6aLzVKYhhPTsrXmfIq0JE8rjJzyraUFQs_nczmnq.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PAYMENTS (WOMPI) ===== -->
+  <section id="pay" class="py-24 md:py-36 px-5 md:px-10 bg-ocean-ink relative overflow-hidden">
+    <div class="absolute bottom-0 right-0 w-[500px] h-[500px] aurora" style="background:#00FF7F;opacity:.12;"></div>
+    <div class="max-w-[900px] mx-auto relative z-10">
+      <div class="text-center mb-12 reveal">
+        <p class="text-xs font-bold tracking-[0.3em] uppercase text-ocean-green mb-4" data-es="Pagos rápidos" data-en="Quick payments" data-pt="Pagamentos rápidos">Pagos rápidos</p>
+        <h2 class="font-display font-900 uppercase leading-[0.9] tracking-tight text-4xl md:text-5xl mb-4" data-es="Paga o abona tu servicio" data-en="Pay or deposit for your service" data-pt="Pague ou deposite seu serviço">Paga o abona tu servicio</h2>
+        <p class="text-sm text-white/60 font-light max-w-xl mx-auto" data-es="Pago seguro con tarjeta, PSE, Nequi o Bancolombia vía Wompi. Ingresa el monto y te mostramos el total con la comisión incluida." data-en="Secure payment by card, PSE, Nequi or Bancolombia via Wompi. Enter the amount and we'll show the total with the fee included." data-pt="Pagamento seguro por cartão, PSE, Nequi ou Bancolombia via Wompi. Insira o valor e mostramos o total com a taxa incluída.">Pago seguro con tarjeta, PSE, Nequi o Bancolombia vía Wompi. Ingresa el monto y te mostramos el total con la comisión incluida.</p>
+      </div>
+      <div class="glass rounded-3xl p-7 md:p-10 reveal-blur">
+        <div class="grid md:grid-cols-2 gap-8">
+          <div class="space-y-4">
+            <div>
+              <label class="text-xs font-bold tracking-wide uppercase text-white/60 block mb-2" data-es="Tu nombre" data-en="Your name" data-pt="Seu nome">Tu nombre</label>
+              <input id="payName" type="text" class="field w-full px-4 py-3.5 text-sm rounded-xl" data-ph-es="Nombre completo" data-ph-en="Full name" data-ph-pt="Nome completo" placeholder="Nombre completo" />
+            </div>
+            <div>
+              <label class="text-xs font-bold tracking-wide uppercase text-white/60 block mb-2" data-es="Correo" data-en="Email" data-pt="Email">Correo</label>
+              <input id="payEmail" type="email" class="field w-full px-4 py-3.5 text-sm rounded-xl" data-ph-es="correo@ejemplo.com" data-ph-en="email@example.com" data-ph-pt="email@exemplo.com" placeholder="correo@ejemplo.com" />
+            </div>
+            <div>
+              <label class="text-xs font-bold tracking-wide uppercase text-white/60 block mb-2" data-es="Concepto" data-en="Concept" data-pt="Conceito">Concepto</label>
+              <input id="payConcept" type="text" class="field w-full px-4 py-3.5 text-sm rounded-xl" data-ph-es="Ej: Abono desarrollo web" data-ph-en="E.g. Web dev deposit" data-ph-pt="Ex: Depósito web" placeholder="Ej: Abono desarrollo web" />
+            </div>
+            <div>
+              <label class="text-xs font-bold tracking-wide uppercase text-white/60 block mb-2" data-es="Monto a pagar (COP)" data-en="Amount (COP)" data-pt="Valor (COP)">Monto a pagar (COP)</label>
+              <input id="payAmount" type="number" min="1500" step="1000" class="field w-full px-4 py-3.5 text-base rounded-xl font-semibold" placeholder="$ 0" oninput="updatePay()" />
+            </div>
+          </div>
+          <div class="flex flex-col">
+            <div class="bg-ocean-black/50 rounded-2xl p-6 flex-1 border border-white/8">
+              <p class="text-xs font-bold tracking-wide uppercase text-white/50 mb-4" data-es="Resumen" data-en="Summary" data-pt="Resumo">Resumen</p>
+              <div class="space-y-3 text-sm">
+                <div class="flex justify-between"><span class="text-white/60" data-es="Monto base" data-en="Base amount" data-pt="Valor base">Monto base</span><span id="sumBase" class="font-medium">$0</span></div>
+                <div class="flex justify-between"><span class="text-white/60" data-es="Comisión (2.95% + $700)" data-en="Fee (2.95% + $700)" data-pt="Taxa (2.95% + $700)">Comisión (2.95% + $700)</span><span id="sumFee" class="font-medium">$0</span></div>
+                <div class="flex justify-between"><span class="text-white/60" data-es="IVA (19% sobre comisión)" data-en="VAT (19% on fee)" data-pt="IVA (19% sobre taxa)">IVA (19% sobre comisión)</span><span id="sumIva" class="font-medium">$0</span></div>
+                <div class="h-px bg-white/10 my-2"></div>
+                <div class="flex justify-between items-center"><span class="font-bold" data-es="Total a pagar" data-en="Total" data-pt="Total">Total a pagar</span><span id="sumTotal" class="font-display font-900 text-2xl text-ocean-green">$0</span></div>
+              </div>
+            </div>
+            <button id="payBtn" onclick="startPayment()" disabled class="btn-green btn-shine mt-4 w-full inline-flex items-center justify-center gap-3 px-7 py-4 text-sm font-bold tracking-wide uppercase rounded-xl disabled:opacity-40 disabled:cursor-not-allowed">
+              <i data-lucide="lock" class="w-4 h-4"></i><span data-es="Pagar con Wompi" data-en="Pay with Wompi" data-pt="Pagar com Wompi">Pagar con Wompi</span>
+            </button>
+            <p class="text-[11px] text-white/40 text-center mt-3 flex items-center justify-center gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i><span data-es="Pago 100% seguro y encriptado" data-en="100% secure encrypted payment" data-pt="Pagamento 100% seguro">Pago 100% seguro y encriptado</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BOOK (MATON) ===== -->
+  <section id="book" class="py-24 md:py-36 px-5 md:px-10">
+    <div class="max-w-[1100px] mx-auto">
+      <div class="text-center mb-12 reveal">
+        <p class="text-xs font-bold tracking-[0.3em] uppercase text-ocean-green mb-4" data-es="Asesoría gratis" data-en="Free consultation" data-pt="Consultoria grátis">Asesoría gratis</p>
+        <h2 class="font-display font-900 uppercase leading-[0.9] tracking-tight text-4xl md:text-6xl mb-4" data-es="Agenda tu demo" data-en="Book your demo" data-pt="Agende sua demo">Agenda tu demo</h2>
+        <p class="text-sm md:text-base text-white/60 font-light max-w-xl mx-auto" data-es="30 minutos. Te mostramos cómo automatizar, escalar y transformar tu negocio. Sin compromiso." data-en="30 minutes. We'll show you how to automate, scale and transform your business. No commitment." data-pt="30 minutos. Mostramos como automatizar, escalar e transformar seu negócio. Sem compromisso.">30 minutos. Te mostramos cómo automatizar, escalar y transformar tu negocio. Sin compromiso.</p>
+      </div>
+      <div class="glass rounded-3xl p-3 md:p-4 reveal-blur">
+        <!-- Maton booking embed -->
+        <div id="matonBooking" class="w-full rounded-2xl overflow-hidden bg-ocean-black/40" style="min-height:640px;">
+          <div class="flex items-center justify-center h-[640px] flex-col gap-4 text-center px-6">
+            <i data-lucide="calendar-clock" class="w-12 h-12 text-ocean-green"></i>
+            <p class="text-white/60 text-sm max-w-md" data-es="El calendario de agendamiento se carga aquí. Si no aparece, escríbenos por WhatsApp y coordinamos tu asesoría al instante." data-en="The booking calendar loads here. If it doesn't appear, message us on WhatsApp and we'll set up your consultation instantly." data-pt="O calendário de agendamento carrega aqui. Se não aparecer, fale conosco no WhatsApp.">El calendario de agendamiento se carga aquí. Si no aparece, escríbenos por WhatsApp y coordinamos tu asesoría al instante.</p>
+            <a href="https://wa.me/message/YQTLLAZYI6QVO1" target="_blank" rel="noopener" class="btn-green inline-flex items-center gap-2 px-6 py-3 text-sm font-bold rounded-full"><i data-lucide="message-circle" class="w-4 h-4"></i>WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT / FOOTER ===== -->
+  <footer class="bg-ocean-ink border-t border-white/10 pt-20 pb-10 px-5 md:px-10 relative overflow-hidden">
+    <div class="absolute top-0 left-1/4 w-[400px] h-[400px] aurora" style="background:#0000FF;opacity:.1;"></div>
+    <div class="max-w-[1440px] mx-auto relative z-10">
+      <div class="grid md:grid-cols-12 gap-12 mb-16">
+        <div class="md:col-span-5">
+          <img src="https://res.cloudinary.com/dpo9ohngt/image/upload/v1781713984/LOGO-Ocean-INDS-09_1_iqydyh.png" alt="Ocean Industries" class="h-12 mb-6" />
+          <p class="text-base font-light text-white/60 leading-relaxed max-w-sm mb-6" data-es="El futuro ya está operando. No dejes que tu competencia te deje atrás." data-en="The future is already operating. Don't let your competition leave you behind." data-pt="O futuro já está operando. Não deixe sua concorrência te deixar para trás.">El futuro ya está operando. No dejes que tu competencia te deje atrás.</p>
+          <div class="flex items-center gap-3">
+            <a href="https://www.instagram.com/oceanind.co?igsh=cDIwNml4ZmRyaTk3&utm_source=qr" target="_blank" rel="noopener" class="w-11 h-11 flex items-center justify-center rounded-full border border-white/15 hover:border-ocean-green hover:bg-ocean-green hover:text-ocean-black transition-all" aria-label="Instagram"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+            <a href="https://wa.me/message/YQTLLAZYI6QVO1" target="_blank" rel="noopener" class="w-11 h-11 flex items-center justify-center rounded-full border border-white/15 hover:border-ocean-green hover:bg-ocean-green hover:text-ocean-black transition-all" aria-label="WhatsApp"><i data-lucide="message-circle" class="w-5 h-5"></i></a>
+            <a href="https://share.google/Vqaeb84X8b2NTu0QD" target="_blank" rel="noopener" class="w-11 h-11 flex items-center justify-center rounded-full border border-white/15 hover:border-ocean-green hover:bg-ocean-green hover:text-ocean-black transition-all" aria-label="Google Business"><i data-lucide="map-pin" class="w-5 h-5"></i></a>
+          </div>
+        </div>
+        <div class="md:col-span-3">
+          <p class="text-xs font-bold tracking-[0.2em] uppercase text-ocean-green mb-5" data-es="Navega" data-en="Navigate" data-pt="Navegue">Navega</p>
+          <div class="flex flex-col gap-3 text-sm text-white/60">
+            <a href="#about" class="hover:text-white transition-colors ul-hover w-fit" data-es="Nosotros" data-en="About" data-pt="Sobre">Nosotros</a>
+            <a href="#services" class="hover:text-white transition-colors ul-hover w-fit" data-es="Servicios" data-en="Services" data-pt="Serviços">Servicios</a>
+            <a href="#work" class="hover:text-white transition-colors ul-hover w-fit" data-es="Trabajo" data-en="Work" data-pt="Trabalho">Trabajo</a>
+            <a href="#pay" class="hover:text-white transition-colors ul-hover w-fit" data-es="Pagos" data-en="Payments" data-pt="Pagamentos">Pagos</a>
+            <a href="#book" class="hover:text-white transition-colors ul-hover w-fit" data-es="Agenda" data-en="Book" data-pt="Agende">Agenda</a>
+          </div>
+        </div>
+        <div class="md:col-span-4">
+          <p class="text-xs font-bold tracking-[0.2em] uppercase text-ocean-green mb-5" data-es="Contacto" data-en="Contact" data-pt="Contato">Contacto</p>
+          <a href="https://wa.me/message/YQTLLAZYI6QVO1" target="_blank" rel="noopener" class="block text-lg font-light hover:text-ocean-green transition-colors mb-2">WhatsApp →</a>
+          <a href="https://www.instagram.com/oceanind.co?igsh=cDIwNml4ZmRyaTk3&utm_source=qr" target="_blank" rel="noopener" class="block text-lg font-light hover:text-ocean-green transition-colors mb-2">@oceanind.co</a>
+          <a href="https://oceanindustries.com.co/" target="_blank" rel="noopener" class="block text-sm font-light text-white/50 hover:text-white transition-colors">oceanindustries.com.co</a>
+        </div>
+      </div>
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-white/10">
+        <p class="text-xs text-white/40" data-es="© 2027 Ocean Industries. We turn brands into waves." data-en="© 2027 Ocean Industries. We turn brands into waves." data-pt="© 2027 Ocean Industries. We turn brands into waves.">© 2027 Ocean Industries. We turn brands into waves.</p>
+        <p class="text-xs text-white/40">Cali · Bogotá · Miami</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating WhatsApp -->
+  <a href="https://wa.me/message/YQTLLAZYI6QVO1" target="_blank" rel="noopener" class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-lg shadow-black/30 hover:scale-110 transition-transform wa-pulse" aria-label="WhatsApp">
+    <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+
+    /* ===== CONFIG: edita estos valores tras deployar ===== */
+    const WOMPI_PUBLIC_KEY = "pub_prod_TMaELJ4lqpsANIDgLEKO75nBdapSuZf0"; // pública: OK en frontend
+    const PAY_REDIRECT_URL = window.location.origin + "/?pago=ok"; // a dónde vuelve el cliente tras pagar
+    // El endpoint /api/pago-wompi genera la firma de integridad de forma segura (NO exponemos la llave privada)
+    const SIGN_ENDPOINT = "/api/pago-wompi";
+
+    /* ===== IDIOMA (ES principal, EN, PT) ===== */
+    const langButtons=document.querySelectorAll('.lang-btn');let lang='es';
+    function setLang(l){lang=l;
+      document.querySelectorAll('[data-es]').forEach(el=>{const v=el.getAttribute('data-'+l);if(v!==null)el.textContent=v;});
+      document.querySelectorAll('[data-ph-es]').forEach(el=>{const v=el.getAttribute('data-ph-'+l);if(v!==null)el.placeholder=v;});
+      document.documentElement.lang=l;
+      langButtons.forEach(b=>b.classList.toggle('active',b.getAttribute('data-lang')===l));
+      try{localStorage.setItem('ocean_lang',l);}catch(e){}
+    }
+    langButtons.forEach(b=>b.addEventListener('click',()=>setLang(b.getAttribute('data-lang'))));
+    (function(){let s=null;try{s=localStorage.getItem('ocean_lang');}catch(e){}
+      const nav=(navigator.language||'es').toLowerCase();
+      let def='es'; if(nav.startsWith('en'))def='en'; else if(nav.startsWith('pt'))def='pt';
+      setLang(s||def);
+    })();
+
+    /* ===== Hero intro ===== */
+    function heroOn(){document.getElementById('heroContent').classList.add('hero-on');}
+    window.addEventListener('load',heroOn); setTimeout(heroOn,500);
+
+    /* ===== Cursor ===== */
+    const cd=document.getElementById('cdot'),cr=document.getElementById('cring');
+    if(window.innerWidth>=1024){let mx=0,my=0,rx=0,ry=0;
+      document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx-4+'px';cd.style.top=my-4+'px';});
+      (function a(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;cr.style.left=rx-21+'px';cr.style.top=ry-21+'px';requestAnimationFrame(a);})();
+      document.querySelectorAll('a,button,input,video,.card-svc').forEach(el=>{
+        el.addEventListener('mouseenter',()=>{cr.style.width='64px';cr.style.height='64px';cd.style.transform='scale(0)';});
+        el.addEventListener('mouseleave',()=>{cr.style.width='42px';cr.style.height='42px';cd.style.transform='scale(1)';});
+      });
+    }
+
+    /* ===== Reveal ===== */
+    const ro=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('active');});},{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+    document.querySelectorAll('.reveal,.reveal-l,.reveal-r,.reveal-blur,.stagger').forEach(el=>ro.observe(el));
+
+    /* ===== Counters ===== */
+    const co=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('.count').forEach(c=>{const tg=+c.dataset.target;let n=0;const step=tg/50;const tk=()=>{n+=step;if(n<tg){c.textContent=Math.floor(n);requestAnimationFrame(tk);}else c.textContent=tg;};tk();});co.unobserve(e.target);}});},{threshold:.4});
+    const st=document.getElementById('stats');if(st)co.observe(st);
+
+    /* ===== Nav scroll ===== */
+    const nav=document.getElementById('nav');let ls=0;
+    window.addEventListener('scroll',()=>{const cs=window.scrollY;
+      if(cs>60){nav.classList.add('nav-blur','bg-ocean-black/80');nav.style.borderBottom='1px solid rgba(255,255,255,.06)';}else{nav.classList.remove('nav-blur','bg-ocean-black/80');nav.style.borderBottom='none';}
+      if(cs>ls&&cs>400)nav.style.transform='translateY(-100%)';else nav.style.transform='translateY(0)';ls=cs;});
+
+    /* ===== Mobile menu ===== */
+    const mb=document.getElementById('menuBtn'),mm=document.getElementById('mobileMenu'),mi=document.getElementById('menuIcon');let mo=false;
+    mb.addEventListener('click',()=>{mo=!mo;if(mo){mm.style.transform='translateX(0)';document.body.style.overflow='hidden';mi.setAttribute('data-lucide','x');}else{mm.style.transform='translateX(100%)';document.body.style.overflow='';mi.setAttribute('data-lucide','menu');}lucide.createIcons();});
+    document.querySelectorAll('.mlink').forEach(l=>l.addEventListener('click',()=>{mo=false;mm.style.transform='translateX(100%)';document.body.style.overflow='';mi.setAttribute('data-lucide','menu');lucide.createIcons();}));
+
+    /* ===== Smooth scroll ===== */
+    document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',function(e){e.preventDefault();const t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'});}));
+
+    /* ===== WOMPI: calculadora de comisión ===== */
+    const fmt=n=>'$'+Math.round(n).toLocaleString('es-CO');
+    let payState={base:0,fee:0,iva:0,total:0};
+    function updatePay(){
+      const base=parseFloat(document.getElementById('payAmount').value)||0;
+      const fee=base>0 ? base*0.0295+700 : 0;
+      const iva=fee*0.19;
+      const total=base+fee+iva;
+      payState={base,fee,iva,total};
+      document.getElementById('sumBase').textContent=fmt(base);
+      document.getElementById('sumFee').textContent=fmt(fee);
+      document.getElementById('sumIva').textContent=fmt(iva);
+      document.getElementById('sumTotal').textContent=fmt(total);
+      document.getElementById('payBtn').disabled = !(base>=1500);
+    }
+    window.updatePay=updatePay;
+
+    /* ===== WOMPI: iniciar pago (Widget Checkout) ===== */
+    async function startPayment(){
+      const name=document.getElementById('payName').value.trim();
+      const email=document.getElementById('payEmail').value.trim();
+      const concept=document.getElementById('payConcept').value.trim()|| 'Pago de servicio Ocean';
+      if(payState.base<1500){alert(lang==='en'?'Minimum amount is $1,500 COP':lang==='pt'?'Valor mínimo é $1.500 COP':'El monto mínimo es $1.500 COP');return;}
+      if(!email){alert(lang==='en'?'Please enter your email':lang==='pt'?'Insira seu email':'Ingresa tu correo');return;}
+
+      const amountInCents=Math.round(payState.total*100);
+      const reference="OCEAN-"+Date.now();
+      const btn=document.getElementById('payBtn');
+      btn.disabled=true;btn.innerHTML='<span>'+(lang==='en'?'Preparing…':lang==='pt'?'Preparando…':'Preparando…')+'</span>';
+
+      try{
+        // Pedimos la firma de integridad al backend seguro (NO exponemos la llave privada)
+        const res=await fetch(SIGN_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({reference,amountInCents,currency:'COP'})});
+        const data=await res.json();
+        if(!data.signature) throw new Error('No signature');
+
+        const checkout=new WidgetCheckout({
+          currency:'COP',
+          amountInCents:amountInCents,
+          reference:reference,
+          publicKey:WOMPI_PUBLIC_KEY,
+          signature:{integrity:data.signature},
+          redirectUrl:PAY_REDIRECT_URL,
+          customerData:{ email:email, fullName:name }
+        });
+        checkout.open(function(result){
+          const tx=result.transaction;
+          if(tx&&tx.status==='APPROVED'){
+            alert((lang==='en'?'Payment approved! Thank you, ':lang==='pt'?'Pagamento aprovado! Obrigado, ':'¡Pago aprobado! Gracias, ')+name);
+          }
+        });
+      }catch(err){
+        // Fallback: si el backend de firma no está listo, mandamos a WhatsApp con el detalle
+        const msg=(lang==='en'?'Hi Ocean, I want to pay ':lang==='pt'?'Oi Ocean, quero pagar ':'Hola Ocean, quiero pagar ')+fmt(payState.total)+' ('+concept+')';
+        window.open('https://wa.me/message/YQTLLAZYI6QVO1?text='+encodeURIComponent(msg),'_blank');
+      }finally{
+        btn.disabled=false;lucide.createIcons();
+        btn.innerHTML='<i data-lucide="lock" class="w-4 h-4"></i><span>'+(lang==='en'?'Pay with Wompi':lang==='pt'?'Pagar com Wompi':'Pagar con Wompi')+'</span>';
+        lucide.createIcons();
+      }
+    }
+    window.startPayment=startPayment;
+
+    /* ===== MATON: cargar calendario de agendamiento =====
+       Reemplaza MATON_EMBED_URL por tu enlace público de booking de Maton.
+       (Panel de Maton → tu agente/calendario → Share / Embed) */
+    const MATON_EMBED_URL=""; // <-- pega aquí tu URL de booking de Maton
+    (function(){
+      if(MATON_EMBED_URL){
+        const c=document.getElementById('matonBooking');
+        c.innerHTML='<iframe src="'+MATON_EMBED_URL+'" style="width:100%;height:640px;border:0;border-radius:16px;" loading="lazy"></iframe>';
+      }
+    })();
+  </script>
+
+  <!-- Wompi Widget Checkout -->
+  <script src="https://checkout.wompi.co/widget.js"></script>
+</body>
+</html>

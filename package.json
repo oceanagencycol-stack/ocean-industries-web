@@ -1,0 +1,7 @@
+{
+  "name": "ocean-industries-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ocean Industries — web épica trilingüe con pagos Wompi y agente IA",
+  "type": "module"
+}
