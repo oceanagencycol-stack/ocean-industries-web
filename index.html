@@ -669,16 +669,26 @@
     const chatInput=document.getElementById('chatInput');
     const chatSend=document.getElementById('chatSend');
 
-    const greetings={es:"¡Hola! 👋 Soy OceanBot. ¿En qué puedo ayudarte hoy? Cuéntame sobre tu negocio y te muestro cómo podemos automatizarlo.",en:"Hi! 👋 I'm OceanBot. How can I help you today? Tell me about your business and I'll show you how we can automate it.",pt:"Oi! 👋 Sou o OceanBot. Como posso te ajudar hoje? Conte sobre seu negócio e mostro como podemos automatizá-lo."};
+    const greetings={es:"Hola, soy OceanBot 👋 ¿En qué te puedo ayudar? Cuéntame un poco sobre tu negocio y vemos cómo podemos automatizarlo.",en:"Hi, I'm OceanBot 👋 How can I help? Tell me a bit about your business and let's see how we can automate it.",pt:"Oi, sou o OceanBot 👋 Como posso ajudar? Conte um pouco sobre seu negócio e vemos como automatizá-lo."};
 
     function addMsg(text,who){
       const wrap=document.createElement('div');
       wrap.className=who==='user'?'flex justify-end':'flex justify-start';
       const bubble=document.createElement('div');
       bubble.className=who==='user'
-        ? 'bg-ocean-green text-ocean-black px-3.5 py-2.5 rounded-2xl rounded-br-sm text-sm max-w-[80%] font-medium'
-        : 'bg-white/8 text-white px-3.5 py-2.5 rounded-2xl rounded-bl-sm text-sm max-w-[80%] font-light';
-      bubble.textContent=text;
+        ? 'bg-ocean-green text-ocean-black px-3.5 py-2.5 rounded-2xl rounded-br-sm text-sm max-w-[80%] font-medium break-words'
+        : 'bg-white/8 text-white px-3.5 py-2.5 rounded-2xl rounded-bl-sm text-sm max-w-[80%] font-light break-words';
+      if(who==='user'){
+        bubble.textContent=text;
+      }else{
+        // Limpia markdown de negrita (**) y convierte URLs en enlaces clickeables, de forma segura
+        const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        let clean=text.replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1'); // quita ** y *
+        clean=esc(clean);
+        clean=clean.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" rel="noopener" class="text-ocean-green underline break-all">$1</a>');
+        clean=clean.replace(/\n/g,'<br>');
+        bubble.innerHTML=clean;
+      }
       wrap.appendChild(bubble);
       chatMessages.appendChild(wrap);
       chatMessages.scrollTop=chatMessages.scrollHeight;
