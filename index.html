@@ -116,6 +116,8 @@
     }
     .lang-btn{font-size:11px;letter-spacing:.08em;font-weight:700;color:rgba(244,245,240,.4);transition:color .3s;padding:2px 4px;}
     .lang-btn.active{color:#00FF7F;}
+    .cur-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(244,245,240,.6);}
+    .cur-btn.active{background:#00FF7F;border-color:#00FF7F;color:#101820;}
 
     @media(prefers-reduced-motion:reduce){
       .reveal,.reveal-l,.reveal-r,.reveal-blur,.stagger>*,.h-line>span,.hero-fade{opacity:1!important;transform:none!important;filter:none!important;transition:none!important;}
@@ -344,6 +346,12 @@
         <p class="text-sm text-white/60 font-light max-w-xl mx-auto" data-es="Pago seguro con tarjeta, PSE, Nequi o Bancolombia vía Wompi. Ingresa el monto y te mostramos el total con la comisión incluida." data-en="Secure payment by card, PSE, Nequi or Bancolombia via Wompi. Enter the amount and we'll show the total with the fee included." data-pt="Pagamento seguro por cartão, PSE, Nequi ou Bancolombia via Wompi. Insira o valor e mostramos o total com a taxa incluída.">Pago seguro con tarjeta, PSE, Nequi o Bancolombia vía Wompi. Ingresa el monto y te mostramos el total con la comisión incluida.</p>
       </div>
       <div class="glass rounded-3xl p-7 md:p-10 reveal-blur">
+        <!-- Selector de moneda -->
+        <div class="flex items-center justify-center gap-2 mb-7">
+          <span class="text-xs text-white/50 mr-1" data-es="Moneda:" data-en="Currency:" data-pt="Moeda:">Moneda:</span>
+          <button id="curCOP" onclick="setCurrency('COP')" class="cur-btn px-4 py-2 rounded-full text-sm font-bold transition-all">🇨🇴 COP</button>
+          <button id="curUSD" onclick="setCurrency('USD')" class="cur-btn px-4 py-2 rounded-full text-sm font-bold transition-all">🇺🇸 USD</button>
+        </div>
         <div class="grid md:grid-cols-2 gap-8">
           <div class="space-y-4">
             <div>
@@ -359,8 +367,9 @@
               <input id="payConcept" type="text" class="field w-full px-4 py-3.5 text-sm rounded-xl" data-ph-es="Ej: Abono desarrollo web" data-ph-en="E.g. Web dev deposit" data-ph-pt="Ex: Depósito web" placeholder="Ej: Abono desarrollo web" />
             </div>
             <div>
-              <label class="text-xs font-bold tracking-wide uppercase text-white/60 block mb-2" data-es="Monto a pagar (COP)" data-en="Amount (COP)" data-pt="Valor (COP)">Monto a pagar (COP)</label>
-              <input id="payAmount" type="number" min="1500" step="1000" class="field w-full px-4 py-3.5 text-base rounded-xl font-semibold" placeholder="$ 0" oninput="updatePay()" />
+              <label class="text-xs font-bold tracking-wide uppercase text-white/60 block mb-2"><span id="amountLabel" data-es="Monto a pagar (COP)" data-en="Amount (COP)" data-pt="Valor (COP)">Monto a pagar (COP)</span></label>
+              <input id="payAmount" type="number" min="1" step="1" class="field w-full px-4 py-3.5 text-base rounded-xl font-semibold" placeholder="$ 0" oninput="updatePay()" />
+              <p id="usdNote" class="text-[11px] text-white/40 mt-1.5 hidden" data-es="Se cobra en COP a la tasa del día." data-en="Charged in COP at today's rate." data-pt="Cobrado em COP à taxa do dia.">Se cobra en COP a la tasa del día.</p>
             </div>
           </div>
           <div class="flex flex-col">
@@ -372,6 +381,7 @@
                 <div class="flex justify-between"><span class="text-white/60" data-es="IVA (19% sobre comisión)" data-en="VAT (19% on fee)" data-pt="IVA (19% sobre taxa)">IVA (19% sobre comisión)</span><span id="sumIva" class="font-medium">$0</span></div>
                 <div class="h-px bg-white/10 my-2"></div>
                 <div class="flex justify-between items-center"><span class="font-bold" data-es="Total a pagar" data-en="Total" data-pt="Total">Total a pagar</span><span id="sumTotal" class="font-display font-900 text-2xl text-ocean-green">$0</span></div>
+                <p id="sumCop" class="text-[11px] text-white/40 text-right hidden"></p>
               </div>
             </div>
             <button id="payBtn" onclick="startPayment()" disabled class="btn-green btn-shine mt-4 w-full inline-flex items-center justify-center gap-3 px-7 py-4 text-sm font-bold tracking-wide uppercase rounded-xl disabled:opacity-40 disabled:cursor-not-allowed">
@@ -443,6 +453,26 @@
     </div>
   </footer>
 
+  <!-- ===== CHAT AGENTE OCEANBOT ===== -->
+  <div id="chatPanel" class="fixed bottom-24 right-6 z-50 w-[340px] max-w-[calc(100vw-3rem)] glass rounded-2xl overflow-hidden shadow-2xl shadow-black/50 origin-bottom-right transition-all duration-300 pointer-events-none opacity-0 scale-95" style="height:480px;">
+    <div class="flex items-center gap-3 px-4 py-3 bg-ocean-blue/90 border-b border-white/10">
+      <div class="w-9 h-9 rounded-full bg-ocean-green flex items-center justify-center"><i data-lucide="bot" class="w-5 h-5 text-ocean-black"></i></div>
+      <div class="flex-1">
+        <p class="text-sm font-bold leading-tight">OceanBot</p>
+        <p class="text-[11px] text-white/70 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-ocean-green"></span><span data-es="En línea" data-en="Online" data-pt="Online">En línea</span></p>
+      </div>
+      <button id="chatClose" class="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors" aria-label="Cerrar"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div id="chatMessages" class="px-4 py-4 space-y-3 overflow-y-auto" style="height:360px;"></div>
+    <div class="px-3 py-3 border-t border-white/10 flex items-center gap-2 bg-ocean-black/40">
+      <input id="chatInput" type="text" class="field flex-1 px-3 py-2.5 text-sm rounded-xl" data-ph-es="Escribe tu mensaje…" data-ph-en="Type your message…" data-ph-pt="Escreva sua mensagem…" placeholder="Escribe tu mensaje…" />
+      <button id="chatSend" class="w-10 h-10 flex-shrink-0 btn-green rounded-xl flex items-center justify-center" aria-label="Enviar"><i data-lucide="send" class="w-4 h-4"></i></button>
+    </div>
+  </div>
+  <button id="chatToggle" class="fixed bottom-6 right-24 z-50 w-14 h-14 bg-ocean-blue rounded-full flex items-center justify-center shadow-lg shadow-black/30 hover:scale-110 transition-transform" aria-label="Chat con OceanBot">
+    <i data-lucide="message-square" class="w-6 h-6 text-white" id="chatToggleIcon"></i>
+  </button>
+
   <!-- Floating WhatsApp -->
   <a href="https://wa.me/message/YQTLLAZYI6QVO1" target="_blank" rel="noopener" class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-lg shadow-black/30 hover:scale-110 transition-transform wa-pulse" aria-label="WhatsApp">
     <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -511,40 +541,87 @@
     /* ===== Smooth scroll ===== */
     document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',function(e){e.preventDefault();const t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'});}));
 
-    /* ===== WOMPI: calculadora de comisión ===== */
-    const fmt=n=>'$'+Math.round(n).toLocaleString('es-CO');
-    let payState={base:0,fee:0,iva:0,total:0};
+    /* ===== WOMPI: moneda + TRM en vivo + calculadora ===== */
+    let currency='COP';
+    let trm=3450; // fallback; se actualiza en vivo
+    // Traer TRM real (USD->COP) gratis, sin API key
+    (async function loadTRM(){
+      try{
+        const r=await fetch('https://open.er-api.com/v6/latest/USD');
+        const d=await r.json();
+        if(d&&d.rates&&d.rates.COP) trm=d.rates.COP;
+      }catch(e){}
+    })();
+
+    function setCurrency(c){
+      currency=c;
+      document.getElementById('curCOP').classList.toggle('active',c==='COP');
+      document.getElementById('curUSD').classList.toggle('active',c==='USD');
+      const lbl=document.getElementById('amountLabel');
+      const note=document.getElementById('usdNote');
+      const amt=document.getElementById('payAmount');
+      if(c==='USD'){
+        lbl.textContent=lang==='en'?'Amount (USD)':lang==='pt'?'Valor (USD)':'Monto a pagar (USD)';
+        note.classList.remove('hidden');
+        amt.min='1';amt.step='1';
+      }else{
+        lbl.textContent=lang==='en'?'Amount (COP)':lang==='pt'?'Valor (COP)':'Monto a pagar (COP)';
+        note.classList.add('hidden');
+        amt.min='1500';amt.step='1000';
+      }
+      updatePay();
+    }
+    window.setCurrency=setCurrency;
+
+    const fmtCOP=n=>'$'+Math.round(n).toLocaleString('es-CO')+' COP';
+    const fmtUSD=n=>'$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' USD';
+    let payState={baseCOP:0,fee:0,iva:0,totalCOP:0};
+
     function updatePay(){
-      const base=parseFloat(document.getElementById('payAmount').value)||0;
-      const fee=base>0 ? base*0.0295+700 : 0;
-      const iva=fee*0.19;
-      const total=base+fee+iva;
-      payState={base,fee,iva,total};
-      document.getElementById('sumBase').textContent=fmt(base);
-      document.getElementById('sumFee').textContent=fmt(fee);
-      document.getElementById('sumIva').textContent=fmt(iva);
-      document.getElementById('sumTotal').textContent=fmt(total);
-      document.getElementById('payBtn').disabled = !(base>=1500);
+      const input=parseFloat(document.getElementById('payAmount').value)||0;
+      // base SIEMPRE en COP para el cobro real
+      const baseCOP = currency==='USD' ? input*trm : input;
+      const fee = baseCOP>0 ? baseCOP*0.0295+700 : 0;
+      const iva = fee*0.19;
+      const totalCOP = baseCOP+fee+iva;
+      payState={baseCOP,fee,iva,totalCOP};
+
+      const f = currency==='USD' ? fmtUSD : fmtCOP;
+      // En USD mostramos el resumen en USD (dividiendo por TRM); el cobro real va en COP
+      const div = currency==='USD' ? trm : 1;
+      document.getElementById('sumBase').textContent=f(baseCOP/div);
+      document.getElementById('sumFee').textContent=f(fee/div);
+      document.getElementById('sumIva').textContent=f(iva/div);
+      document.getElementById('sumTotal').textContent=f(totalCOP/div);
+
+      const cop=document.getElementById('sumCop');
+      if(currency==='USD' && totalCOP>0){
+        cop.classList.remove('hidden');
+        cop.textContent=(lang==='en'?'Charged: ':lang==='pt'?'Cobrado: ':'Se cobra: ')+fmtCOP(totalCOP)+' (TRM '+Math.round(trm).toLocaleString('es-CO')+')';
+      }else cop.classList.add('hidden');
+
+      const minOk = currency==='USD' ? input>=1 : input>=1500;
+      document.getElementById('payBtn').disabled=!minOk;
     }
     window.updatePay=updatePay;
 
-    /* ===== WOMPI: iniciar pago (Widget Checkout) ===== */
+    /* ===== WOMPI: iniciar pago ===== */
     async function startPayment(){
       const name=document.getElementById('payName').value.trim();
       const email=document.getElementById('payEmail').value.trim();
-      const concept=document.getElementById('payConcept').value.trim()|| 'Pago de servicio Ocean';
-      if(payState.base<1500){alert(lang==='en'?'Minimum amount is $1,500 COP':lang==='pt'?'Valor mínimo é $1.500 COP':'El monto mínimo es $1.500 COP');return;}
+      const concept=document.getElementById('payConcept').value.trim()||'Pago de servicio Ocean';
+      if(payState.totalCOP<1500){alert(lang==='en'?'Amount too low':lang==='pt'?'Valor muito baixo':'Monto muy bajo');return;}
       if(!email){alert(lang==='en'?'Please enter your email':lang==='pt'?'Insira seu email':'Ingresa tu correo');return;}
 
-      const amountInCents=Math.round(payState.total*100);
+      const amountInCents=Math.round(payState.totalCOP*100); // SIEMPRE en COP
       const reference="OCEAN-"+Date.now();
       const btn=document.getElementById('payBtn');
-      btn.disabled=true;btn.innerHTML='<span>'+(lang==='en'?'Preparing…':lang==='pt'?'Preparando…':'Preparando…')+'</span>';
+      btn.disabled=true;btn.innerHTML='<span>'+(lang==='en'?'Preparing…':'Preparando…')+'</span>';
 
       try{
-        // Pedimos la firma de integridad al backend seguro (NO exponemos la llave privada)
         const res=await fetch(SIGN_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},
           body:JSON.stringify({reference,amountInCents,currency:'COP'})});
+        if(!res.ok) throw new Error('sign endpoint '+res.status);
         const data=await res.json();
         if(!data.signature) throw new Error('No signature');
 
@@ -564,25 +641,97 @@
           }
         });
       }catch(err){
-        // Fallback: si el backend de firma no está listo, mandamos a WhatsApp con el detalle
-        const msg=(lang==='en'?'Hi Ocean, I want to pay ':lang==='pt'?'Oi Ocean, quero pagar ':'Hola Ocean, quiero pagar ')+fmt(payState.total)+' ('+concept+')';
+        console.error('Wompi error:',err);
+        alert(lang==='en'?'Payment system is being configured. We will redirect you to WhatsApp.':lang==='pt'?'Sistema em configuração. Vamos te redirecionar ao WhatsApp.':'El sistema de pago se está configurando. Te redirigimos a WhatsApp.');
+        const msg=(lang==='en'?'Hi Ocean, I want to pay ':'Hola Ocean, quiero pagar ')+fmtCOP(payState.totalCOP)+' ('+concept+')';
         window.open('https://wa.me/message/YQTLLAZYI6QVO1?text='+encodeURIComponent(msg),'_blank');
       }finally{
-        btn.disabled=false;lucide.createIcons();
+        btn.disabled=false;
         btn.innerHTML='<i data-lucide="lock" class="w-4 h-4"></i><span>'+(lang==='en'?'Pay with Wompi':lang==='pt'?'Pagar com Wompi':'Pagar con Wompi')+'</span>';
         lucide.createIcons();
       }
     }
     window.startPayment=startPayment;
+    setCurrency('COP');
 
-    /* ===== MATON: cargar calendario de agendamiento =====
-       Reemplaza MATON_EMBED_URL por tu enlace público de booking de Maton.
-       (Panel de Maton → tu agente/calendario → Share / Embed) */
-    const MATON_EMBED_URL = "https://cal.com/ocean-industries-2e5al7/agenda-demo-gratuita"; // <-- pega aquí tu URL de booking de Maton
+    /* ===== CHAT OCEANBOT (agente n8n) ===== */
+    const AGENT_ENDPOINT="/api/agente";
+    let chatSession="web-"+Date.now()+"-"+Math.random().toString(36).slice(2,7);
+    let chatOpen=false, chatGreeted=false;
+    const chatPanel=document.getElementById('chatPanel');
+    const chatToggle=document.getElementById('chatToggle');
+    const chatToggleIcon=document.getElementById('chatToggleIcon');
+    const chatMessages=document.getElementById('chatMessages');
+    const chatInput=document.getElementById('chatInput');
+    const chatSend=document.getElementById('chatSend');
+
+    const greetings={es:"¡Hola! 👋 Soy OceanBot. ¿En qué puedo ayudarte hoy? Cuéntame sobre tu negocio y te muestro cómo podemos automatizarlo.",en:"Hi! 👋 I'm OceanBot. How can I help you today? Tell me about your business and I'll show you how we can automate it.",pt:"Oi! 👋 Sou o OceanBot. Como posso te ajudar hoje? Conte sobre seu negócio e mostro como podemos automatizá-lo."};
+
+    function addMsg(text,who){
+      const wrap=document.createElement('div');
+      wrap.className=who==='user'?'flex justify-end':'flex justify-start';
+      const bubble=document.createElement('div');
+      bubble.className=who==='user'
+        ? 'bg-ocean-green text-ocean-black px-3.5 py-2.5 rounded-2xl rounded-br-sm text-sm max-w-[80%] font-medium'
+        : 'bg-white/8 text-white px-3.5 py-2.5 rounded-2xl rounded-bl-sm text-sm max-w-[80%] font-light';
+      bubble.textContent=text;
+      wrap.appendChild(bubble);
+      chatMessages.appendChild(wrap);
+      chatMessages.scrollTop=chatMessages.scrollHeight;
+      return bubble;
+    }
+    function addTyping(){
+      const wrap=document.createElement('div');
+      wrap.className='flex justify-start';wrap.id='typingIndicator';
+      wrap.innerHTML='<div class="bg-white/8 px-4 py-3 rounded-2xl rounded-bl-sm"><span class="inline-block w-1.5 h-1.5 bg-white/50 rounded-full animate-bounce" style="animation-delay:0s"></span> <span class="inline-block w-1.5 h-1.5 bg-white/50 rounded-full animate-bounce" style="animation-delay:.15s"></span> <span class="inline-block w-1.5 h-1.5 bg-white/50 rounded-full animate-bounce" style="animation-delay:.3s"></span></div>';
+      chatMessages.appendChild(wrap);chatMessages.scrollTop=chatMessages.scrollHeight;
+    }
+    function rmTyping(){const t=document.getElementById('typingIndicator');if(t)t.remove();}
+
+    function toggleChat(){
+      chatOpen=!chatOpen;
+      if(chatOpen){
+        chatPanel.classList.remove('pointer-events-none','opacity-0','scale-95');
+        chatToggleIcon.setAttribute('data-lucide','x');
+        if(!chatGreeted){chatGreeted=true;setTimeout(()=>addMsg(greetings[lang]||greetings.es,'bot'),200);}
+        setTimeout(()=>chatInput.focus(),300);
+      }else{
+        chatPanel.classList.add('pointer-events-none','opacity-0','scale-95');
+        chatToggleIcon.setAttribute('data-lucide','message-square');
+      }
+      lucide.createIcons();
+    }
+    chatToggle.addEventListener('click',toggleChat);
+    document.getElementById('chatClose').addEventListener('click',toggleChat);
+
+    async function sendChat(){
+      const text=chatInput.value.trim();
+      if(!text)return;
+      addMsg(text,'user');
+      chatInput.value='';
+      addTyping();
+      try{
+        const res=await fetch(AGENT_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({message:text,sessionId:chatSession,lang:lang})});
+        const data=await res.json();
+        rmTyping();
+        addMsg(data.reply||'…','bot');
+      }catch(err){
+        rmTyping();
+        const fb={es:"Tuve un problema de conexión. Escríbenos por WhatsApp y te ayudamos al instante 👉",en:"Connection issue. Message us on WhatsApp and we'll help right away 👉",pt:"Problema de conexão. Fale conosco no WhatsApp 👉"};
+        addMsg(fb[lang]||fb.es,'bot');
+      }
+    }
+    chatSend.addEventListener('click',sendChat);
+    chatInput.addEventListener('keydown',e=>{if(e.key==='Enter')sendChat();});
+
+    /* ===== CAL.COM: calendario de agendamiento ===== */
+    const MATON_EMBED_URL="https://cal.com/ocean-industries-2e5al7/agenda-demo-gratuita";
     (function(){
       if(MATON_EMBED_URL){
         const c=document.getElementById('matonBooking');
-        c.innerHTML='<iframe src="'+MATON_EMBED_URL+'" style="width:100%;height:640px;border:0;border-radius:16px;" loading="lazy"></iframe>';
+        const sep=MATON_EMBED_URL.includes('?')?'&':'?';
+        c.innerHTML='<iframe src="'+MATON_EMBED_URL+sep+'theme=dark" style="width:100%;height:680px;border:0;border-radius:16px;background:transparent;" loading="lazy" allow="camera; microphone; fullscreen"></iframe>';
       }
     })();
   </script>
