@@ -4,6 +4,40 @@ Web trilingüe (ES / EN / PT) ultra moderna con animaciones fluidas, mockups de 
 
 ---
 
+## 📱 REELS DE INSTAGRAM AUTO-ACTUALIZADOS (sección "Así nace una estrategia")
+
+La sección de "Trabajo" ahora muestra los **últimos 3 reels** de [@oceanind.co](https://www.instagram.com/oceanind.co/) dentro de mockups de celular realistas. Se autoreproducen sin sonido, tienen botón para activar audio, y al hacer clic abren el reel real en Instagram. La lista se actualiza sola.
+
+### Cómo funciona
+- La función `api/reels.js` consulta la **Instagram Graph API** (única vía oficial en 2026 — la Basic Display API murió en dic 2024) y devuelve los reels más recientes ya filtrados.
+- Cachea 1h (en memoria + CDN de Vercel) para no gastar el rate limit (200 req/h).
+- **Funciona desde el primer deploy sin configurar nada**: si todavía no hay token, cae a un *fallback* con los videos actuales de Cloudinary enlazando al perfil. Cuando agregues el token, empieza a tirar los reels reales automáticamente.
+
+### Activar los reels reales (una vez)
+Requiere que `@oceanind.co` sea cuenta **Empresa/Creador** ligada a una página de Facebook (ya lo es).
+
+1. En [developers.facebook.com](https://developers.facebook.com) crea una App tipo **Business** y agrega el producto **Instagram Graph API**.
+2. Vincula la cuenta y genera en el **Graph API Explorer** un token con permisos `instagram_basic`, `pages_show_list`, `business_management`.
+3. Conviértelo en token de **larga duración** (~60 días):
+   ```
+   GET https://graph.facebook.com/v22.0/oauth/access_token?grant_type=fb_exchange_token&client_id=APP_ID&client_secret=APP_SECRET&fb_exchange_token=TOKEN_CORTO
+   ```
+4. Obtén el **IG_USER_ID**:
+   ```
+   GET https://graph.facebook.com/v22.0/me/accounts?access_token=TOKEN          → page id
+   GET https://graph.facebook.com/v22.0/{PAGE_ID}?fields=instagram_business_account&access_token=TOKEN
+   ```
+5. En Vercel → Settings → Environment Variables agrega:
+   | Nombre | Valor |
+   |---|---|
+   | `IG_ACCESS_TOKEN` | tu token largo |
+   | `IG_USER_ID` | el id de la cuenta business de Instagram |
+6. **Redeploy**. Listo. (El token largo se vence cada ~60 días; conviene refrescarlo o más adelante automatizamos el refresco con un cron.)
+
+> ⚠️ El `IG_ACCESS_TOKEN` es secreto: va SOLO en variables de entorno de Vercel, nunca en el código ni en git.
+
+---
+
 ## ⚠️ ANTES DE NADA: SEGURIDAD (léelo)
 
 Pegaste tus llaves **privadas de producción** en un chat. Trátalas como comprometidas:

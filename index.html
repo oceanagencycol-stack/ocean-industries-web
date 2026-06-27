@@ -82,6 +82,48 @@
     .phone::before{content:'';position:absolute;top:14px;left:50%;transform:translateX(-50%);width:60px;height:5px;border-radius:99px;background:rgba(255,255,255,.18);z-index:3;}
     .phone video{border-radius:26px;display:block;width:100%;height:100%;object-fit:cover;}
 
+    /* ===== Reel phone mockup (realista, sección "Así nace una estrategia") ===== */
+    .reel-phone{position:relative;width:100%;max-width:300px;margin:0 auto;aspect-ratio:9/19.2;border-radius:42px;
+      background:linear-gradient(145deg,#1a2230,#0a0f16);padding:11px;
+      box-shadow:0 40px 80px -28px rgba(0,0,0,.85),0 0 0 1.5px rgba(255,255,255,.07),inset 0 0 0 2px rgba(0,0,0,.5);
+      transition:transform .55s cubic-bezier(.16,1,.3,1),box-shadow .55s ease;will-change:transform;}
+    .reel-phone:hover{transform:translateY(-10px) scale(1.015);box-shadow:0 55px 90px -25px rgba(0,0,0,.9),0 0 0 1.5px rgba(0,255,127,.35);}
+    /* botones laterales */
+    .reel-phone::after{content:'';position:absolute;right:-2px;top:26%;width:3px;height:62px;border-radius:3px;background:linear-gradient(180deg,#222c3a,#0a0f16);box-shadow:0 70px 0 -2px #222c3a,0 130px 0 -2px #222c3a;}
+    .reel-screen{position:relative;width:100%;height:100%;border-radius:32px;overflow:hidden;background:#000;}
+    .reel-screen video,.reel-screen .reel-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+    /* notch / dynamic island */
+    .reel-notch{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:78px;height:24px;border-radius:99px;background:#000;z-index:6;box-shadow:0 0 0 1px rgba(255,255,255,.04);}
+    .reel-notch::after{content:'';position:absolute;right:13px;top:50%;transform:translateY(-50%);width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#2b3b52,#060a12);}
+    /* barra de inicio iOS */
+    .reel-home{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);width:36%;height:4.5px;border-radius:99px;background:rgba(255,255,255,.65);z-index:6;}
+    /* overlay de marca tipo Instagram */
+    .reel-grad{position:absolute;inset:0;z-index:3;pointer-events:none;
+      background:linear-gradient(to top,rgba(0,0,0,.78) 0%,rgba(0,0,0,.25) 26%,transparent 48%,transparent 78%,rgba(0,0,0,.35) 100%);}
+    .reel-tag{position:absolute;top:30px;left:14px;z-index:5;display:inline-flex;align-items:center;gap:7px;
+      padding:5px 11px 5px 6px;border-radius:99px;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,.16);}
+    .reel-tag img{width:22px;height:22px;border-radius:50%;object-fit:cover;background:#fff;}
+    .reel-tag span{font-size:11px;font-weight:700;color:#fff;letter-spacing:.01em;}
+    .reel-cta{position:absolute;left:14px;right:14px;bottom:22px;z-index:5;}
+    .reel-cap{font-size:12.5px;line-height:1.35;color:rgba(255,255,255,.95);font-weight:500;margin-bottom:11px;
+      display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 1px 6px rgba(0,0,0,.6);}
+    .reel-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:99px;
+      background:rgba(255,255,255,.97);color:#101820;font-size:12px;font-weight:800;letter-spacing:.01em;
+      box-shadow:0 6px 18px -6px rgba(0,0,0,.5);transition:transform .3s cubic-bezier(.16,1,.3,1),background .3s;}
+    .reel-card:hover .reel-btn{background:#00FF7F;transform:translateX(3px);}
+    /* botón mute */
+    .reel-mute{position:absolute;top:30px;right:14px;z-index:6;width:34px;height:34px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,.16);color:#fff;cursor:pointer;transition:background .25s,transform .25s;}
+    .reel-mute:hover{background:rgba(0,0,0,.75);transform:scale(1.08);}
+    /* "live" pill */
+    .reel-live{position:absolute;top:30px;left:50%;transform:translateX(-50%);z-index:5;display:none;}
+    .reel-card{display:block;cursor:pointer;}
+    .reel-skel{position:absolute;inset:0;z-index:2;background:linear-gradient(110deg,#0d141d 8%,#161f2b 18%,#0d141d 33%);background-size:220% 100%;animation:reel-shimmer 1.4s linear infinite;}
+    @keyframes reel-shimmer{to{background-position:-220% 0;}}
+    @media(prefers-reduced-motion:reduce){.reel-skel{animation:none;}.reel-phone:hover{transform:none;}}
+
     /* Glow buttons */
     .btn-green{background:#00FF7F;color:#101820;transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s ease;}
     .btn-green:hover{transform:translateY(-2px);box-shadow:0 12px 30px -8px rgba(0,255,127,.6);}
@@ -205,7 +247,7 @@
   </nav>
 
   <!-- ===== HERO ===== -->
-  <section id="hero" class="relative min-h-screen w-full overflow-hidden flex items-center pt-24 pb-16">
+  <section id="hero" class="relative w-full overflow-hidden flex items-center pt-24 pb-16" style="min-height:100vh;min-height:100svh;">
     <!-- aurora bg -->
     <div class="absolute inset-0 overflow-hidden">
       <div class="aurora" style="width:540px;height:540px;background:#0000FF;top:-120px;left:-100px;"></div>
@@ -234,7 +276,7 @@
           </a>
           <a href="#services" class="inline-flex items-center justify-center gap-2 border border-white/25 hover:border-white/60 hover:bg-white/5 px-7 py-4 text-sm font-medium tracking-wide uppercase rounded-full transition-all" data-es="Ver servicios" data-en="See services" data-pt="Ver serviços">Ver servicios</a>
         </div>
-        <div class="hero-fade mt-9 flex items-center gap-6 text-xs text-white/50">
+        <div class="hero-fade mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-white/50">
           <span class="inline-flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4 text-ocean-green"></i><span data-es="Prototipo en 48h" data-en="Prototype in 48h" data-pt="Protótipo em 48h">Prototipo en 48h</span></span>
           <span class="inline-flex items-center gap-2"><i data-lucide="bot" class="w-4 h-4 text-ocean-green"></i><span data-es="Agentes 24/7" data-en="24/7 agents" data-pt="Agentes 24/7">Agentes 24/7</span></span>
           <span class="inline-flex items-center gap-2"><i data-lucide="globe" class="w-4 h-4 text-ocean-green"></i>LATAM · US</span>
@@ -253,10 +295,14 @@
           <video autoplay muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1781713984/SaveClip.App_AQNP9j0LNPCBJVZ-5MuFG7kTHLuMfhYji-x3bGQuBsFmgym_8cCJkslzqYgsh4GUfAteaM6aLzVKYhhPTsrXmfIq0JE8rjJzyraUFQs_nczmnq.jpg"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/v1781713984/SaveClip.App_AQNP9j0LNPCBJVZ-5MuFG7kTHLuMfhYji-x3bGQuBsFmgym_8cCJkslzqYgsh4GUfAteaM6aLzVKYhhPTsrXmfIq0JE8rjJzyraUFQs_nczmnq.mp4" type="video/mp4"></video>
         </div>
       </div>
-      <!-- mobile: single video -->
-      <div class="sm:hidden flex justify-center">
-        <div class="phone" style="width:200px;height:360px;">
-          <video autoplay muted loop playsinline preload="metadata"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/v1781713985/02_-_Asi%CC%81_nace_una_estrategia_yilqmg.mp4" type="video/mp4"></video>
+      <!-- mobile: single video con marco realista -->
+      <div class="sm:hidden flex justify-center mt-4">
+        <div class="reel-phone" style="max-width:230px;">
+          <div class="reel-screen">
+            <video autoplay muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1781713985/02_-_Asi%CC%81_nace_una_estrategia_yilqmg.jpg"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/v1781713985/02_-_Asi%CC%81_nace_una_estrategia_yilqmg.mp4" type="video/mp4"></video>
+            <div class="reel-notch"></div>
+            <div class="reel-home"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -348,26 +394,35 @@
     </div>
   </section>
 
-  <!-- ===== WORK / VIDEOS ===== -->
-  <section id="work" class="py-24 md:py-36 px-5 md:px-10">
-    <div class="max-w-[1440px] mx-auto">
+  <!-- ===== WORK / REELS DE INSTAGRAM (auto-actualizados) ===== -->
+  <section id="work" class="py-24 md:py-36 px-5 md:px-10 relative overflow-hidden">
+    <div class="absolute top-1/4 -left-20 w-[420px] h-[420px] aurora" style="background:#0000FF;opacity:.10;"></div>
+    <div class="max-w-[1440px] mx-auto relative z-10">
       <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14 reveal">
         <div>
           <p class="text-xs font-bold tracking-[0.3em] uppercase text-ocean-green mb-4" data-es="En movimiento" data-en="In motion" data-pt="Em movimento">En movimiento</p>
           <h2 class="font-display font-900 uppercase leading-[0.9] tracking-tight text-4xl md:text-6xl" data-es="Así nace una estrategia" data-en="How a strategy is born" data-pt="Como nasce uma estratégia">Así nace una estrategia</h2>
         </div>
-        <p class="text-sm text-white/55 font-light max-w-sm" data-es="Contenido real, resultados reales. Una muestra de lo que producimos para marcas que quieren dominar su mercado." data-en="Real content, real results. A glimpse of what we produce for brands that want to dominate their market." data-pt="Conteúdo real, resultados reais. Uma amostra do que produzimos para marcas que querem dominar seu mercado.">Contenido real, resultados reales. Una muestra de lo que producimos para marcas que quieren dominar su mercado.</p>
+        <div class="md:text-right md:max-w-sm">
+          <p class="text-sm text-white/55 font-light mb-4" data-es="Nuestros últimos reels, en vivo desde Instagram. Contenido real, resultados reales." data-en="Our latest reels, live from Instagram. Real content, real results." data-pt="Nossos últimos reels, ao vivo do Instagram. Conteúdo real, resultados reais.">Nuestros últimos reels, en vivo desde Instagram. Contenido real, resultados reales.</p>
+          <a href="https://www.instagram.com/oceanind.co/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 text-sm font-bold text-ocean-green ul-hover">
+            <i data-lucide="instagram" class="w-4 h-4"></i><span>@oceanind.co</span>
+          </a>
+        </div>
       </div>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 stagger">
-        <div class="reveal-blur rounded-2xl overflow-hidden bg-ocean-ink aspect-[9/16] phone" style="padding:0;border-radius:18px;">
-          <video class="w-full h-full object-cover" controls muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1781713985/02_-_Asi%CC%81_nace_una_estrategia_yilqmg.jpg" style="border-radius:18px;"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/v1781713985/02_-_Asi%CC%81_nace_una_estrategia_yilqmg.mp4" type="video/mp4"></video>
-        </div>
-        <div class="reveal-blur rounded-2xl overflow-hidden bg-ocean-ink aspect-[9/16] phone" style="padding:0;border-radius:18px;">
-          <video class="w-full h-full object-cover" controls muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1781713984/SaveClip.App_AQN7gUygth0so2QCS0bRsasfFmlcf4OdG9HYq2orPgy8HwMGFJpgISbqf-3qdqC-Vcb51RvmDbK1PgFiylyKIhSyOqNxqW1YFYH21Ao_ahfqb2.jpg" style="border-radius:18px;"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/v1781713984/SaveClip.App_AQN7gUygth0so2QCS0bRsasfFmlcf4OdG9HYq2orPgy8HwMGFJpgISbqf-3qdqC-Vcb51RvmDbK1PgFiylyKIhSyOqNxqW1YFYH21Ao_ahfqb2.mp4" type="video/mp4"></video>
-        </div>
-        <div class="reveal-blur rounded-2xl overflow-hidden bg-ocean-ink aspect-[9/16] phone sm:col-span-2 lg:col-span-1" style="padding:0;border-radius:18px;">
-          <video class="w-full h-full object-cover" controls muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1781713984/SaveClip.App_AQNP9j0LNPCBJVZ-5MuFG7kTHLuMfhYji-x3bGQuBsFmgym_8cCJkslzqYgsh4GUfAteaM6aLzVKYhhPTsrXmfIq0JE8rjJzyraUFQs_nczmnq.jpg" style="border-radius:18px;"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/v1781713984/SaveClip.App_AQNP9j0LNPCBJVZ-5MuFG7kTHLuMfhYji-x3bGQuBsFmgym_8cCJkslzqYgsh4GUfAteaM6aLzVKYhhPTsrXmfIq0JE8rjJzyraUFQs_nczmnq.mp4" type="video/mp4"></video>
-        </div>
+
+      <!-- Los reels se inyectan aquí desde /api/reels (con fallback si aún no hay token de IG) -->
+      <div id="reelsGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 stagger">
+        <!-- Esqueletos mientras carga -->
+        <div class="reel-phone reveal-blur"><div class="reel-screen"><div class="reel-skel"></div><div class="reel-notch"></div><div class="reel-home"></div></div></div>
+        <div class="reel-phone reveal-blur"><div class="reel-screen"><div class="reel-skel"></div><div class="reel-notch"></div><div class="reel-home"></div></div></div>
+        <div class="reel-phone reveal-blur sm:col-span-2 lg:col-span-1"><div class="reel-screen"><div class="reel-skel"></div><div class="reel-notch"></div><div class="reel-home"></div></div></div>
+      </div>
+
+      <div class="text-center mt-14 reveal">
+        <a href="https://www.instagram.com/oceanind.co/" target="_blank" rel="noopener" class="btn-blue btn-shine inline-flex items-center gap-2.5 px-7 py-3.5 text-sm font-bold tracking-wide uppercase rounded-full">
+          <i data-lucide="instagram" class="w-4 h-4"></i><span data-es="Ver todo en Instagram" data-en="See all on Instagram" data-pt="Ver tudo no Instagram">Ver todo en Instagram</span>
+        </a>
       </div>
     </div>
   </section>
@@ -505,12 +560,12 @@
       <button id="chatSend" class="w-10 h-10 flex-shrink-0 btn-green rounded-xl flex items-center justify-center" aria-label="Enviar"><i data-lucide="send" class="w-4 h-4"></i></button>
     </div>
   </div>
-  <button id="chatToggle" class="group fixed bottom-6 right-24 z-50 flex items-center gap-2.5 pl-2 pr-4 py-2 rounded-full shadow-lg shadow-ocean-blue/30 hover:shadow-ocean-green/40 transition-all duration-300 hover:scale-105" style="background:linear-gradient(135deg,#0000FF 0%,#0B1F8C 100%);" aria-label="Chat con OceanBot">
+  <button id="chatToggle" class="group fixed bottom-6 right-24 z-50 flex items-center gap-2.5 pl-2 md:pr-4 pr-2 py-2 rounded-full shadow-lg shadow-ocean-blue/30 hover:shadow-ocean-green/40 transition-all duration-300 hover:scale-105" style="background:linear-gradient(135deg,#0000FF 0%,#0B1F8C 100%);" aria-label="Chat con OceanBot">
     <span class="relative flex items-center justify-center w-9 h-9 rounded-full bg-ocean-green flex-shrink-0">
       <i data-lucide="bot" class="w-5 h-5 text-ocean-black" id="chatToggleIcon"></i>
       <span class="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-ocean-green border-2 border-ocean-blue animate-pulse"></span>
     </span>
-    <span class="text-sm font-bold text-white whitespace-nowrap" data-es="OceanBot" data-en="OceanBot" data-pt="OceanBot">OceanBot</span>
+    <span class="hidden md:inline text-sm font-bold text-white whitespace-nowrap" data-es="OceanBot" data-en="OceanBot" data-pt="OceanBot">OceanBot</span>
   </button>
 
   <!-- Floating WhatsApp -->
@@ -554,12 +609,21 @@
         setTimeout(()=>{pl.style.display='none';},900);
       }
     }
-    // Mínimo 2s para que la animación épica se vea completa, luego espera a que cargue todo
+    // En la primera visita de la sesión se ve la animación completa (1.4s mín).
+    // En navegaciones siguientes dentro de la misma pestaña, se salta para no estorbar.
     let plReady=false, plMinTime=false;
-    window.addEventListener('load',()=>{plReady=true; if(plMinTime) hidePreloader();});
-    setTimeout(()=>{plMinTime=true; if(plReady||document.readyState==='complete') hidePreloader();},2000);
-    // Failsafe: nunca dejar el preloader pegado más de 4.5s
-    setTimeout(hidePreloader,4500);
+    let plSeen=false; try{plSeen=sessionStorage.getItem('ocean_pl')==='1';}catch(e){}
+    if(plSeen){
+      const pl=document.getElementById('preloader');
+      if(pl){pl.style.transition='none';pl.classList.add('done');pl.style.display='none';}
+      setTimeout(heroOn,80);
+    }else{
+      try{sessionStorage.setItem('ocean_pl','1');}catch(e){}
+      window.addEventListener('load',()=>{plReady=true; if(plMinTime) hidePreloader();});
+      setTimeout(()=>{plMinTime=true; if(plReady||document.readyState==='complete') hidePreloader();},1400);
+      // Failsafe: nunca dejar el preloader pegado más de 4s
+      setTimeout(hidePreloader,4000);
+    }
 
     /* ===== Cursor ===== */
     const cd=document.getElementById('cdot'),cr=document.getElementById('cring');
@@ -582,9 +646,19 @@
 
     /* ===== Nav scroll ===== */
     const nav=document.getElementById('nav');let ls=0;
+    const waFloat=document.querySelector('a[aria-label="WhatsApp"].fixed');
+    const chatFloatBtn=document.getElementById('chatToggle');
     window.addEventListener('scroll',()=>{const cs=window.scrollY;
       if(cs>60){nav.classList.add('nav-blur','bg-ocean-black/80');nav.style.borderBottom='1px solid rgba(255,255,255,.06)';}else{nav.classList.remove('nav-blur','bg-ocean-black/80');nav.style.borderBottom='none';}
-      if(cs>ls&&cs>400)nav.style.transform='translateY(-100%)';else nav.style.transform='translateY(0)';ls=cs;});
+      const down = cs>ls && cs>400;
+      if(down)nav.style.transform='translateY(-100%)';else nav.style.transform='translateY(0)';
+      // En móvil, esconde los flotantes al bajar para no tapar el contenido (reels, etc.)
+      if(window.innerWidth<768 && !chatOpen){
+        const off = down ? 'translateY(160%)' : 'translateY(0)';
+        if(waFloat)waFloat.style.transform=off;
+        if(chatFloatBtn)chatFloatBtn.style.transform=off;
+      }
+      ls=cs;});
 
     /* ===== Mobile menu ===== */
     const mb=document.getElementById('menuBtn'),mm=document.getElementById('mobileMenu'),mi=document.getElementById('menuIcon');let mo=false;
@@ -788,6 +862,89 @@
     }
     chatSend.addEventListener('click',sendChat);
     chatInput.addEventListener('keydown',e=>{if(e.key==='Enter')sendChat();});
+
+    /* ===== REELS DE INSTAGRAM (auto-actualizados desde /api/reels) ===== */
+    (function(){
+      const grid=document.getElementById('reelsGrid');
+      if(!grid)return;
+      const AVATAR="https://res.cloudinary.com/dpo9ohngt/image/upload/v1781713983/LOGO-Ocean-INDS-10_2_enpxm1.png";
+      const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      const ctaTxt={es:'Ver en Instagram',en:'Watch on Instagram',pt:'Ver no Instagram'};
+
+      function card(reel,i){
+        const cap=esc(reel.caption||'');
+        const link=reel.permalink||'https://www.instagram.com/oceanind.co/';
+        const poster=reel.thumbnail_url?`poster="${esc(reel.thumbnail_url)}"`:'';
+        const span=(i===2)?'sm:col-span-2 lg:col-span-1':'';
+        const cta=ctaTxt[lang]||ctaTxt.es;
+        const a=document.createElement('a');
+        a.href=link;a.target='_blank';a.rel='noopener';
+        a.className='reel-phone reel-card reveal-blur '+span;
+        a.setAttribute('aria-label','Reel de Instagram: '+(reel.caption||'@oceanind.co'));
+        a.innerHTML=
+          '<div class="reel-screen">'+
+            '<video class="reel-vid" muted loop playsinline preload="metadata" '+poster+'>'+
+              '<source src="'+esc(reel.media_url)+'" type="video/mp4"></video>'+
+            '<div class="reel-grad"></div>'+
+            '<div class="reel-notch"></div>'+
+            '<div class="reel-tag"><img src="'+AVATAR+'" alt="Ocean"><span>@oceanind.co</span></div>'+
+            '<button type="button" class="reel-mute" aria-label="Activar sonido" tabindex="-1">'+
+              '<i data-lucide="volume-x" class="w-4 h-4"></i></button>'+
+            '<div class="reel-cta">'+
+              (cap?'<p class="reel-cap">'+cap+'</p>':'')+
+              '<span class="reel-btn"><i data-lucide="instagram" class="w-3.5 h-3.5"></i>'+cta+'</span>'+
+            '</div>'+
+            '<div class="reel-home"></div>'+
+          '</div>';
+        return a;
+      }
+
+      function wire(){
+        // Mute toggle por reel (sin navegar al hacer click en el botón)
+        grid.querySelectorAll('.reel-mute').forEach(btn=>{
+          btn.addEventListener('click',e=>{
+            e.preventDefault();e.stopPropagation();
+            const v=btn.closest('.reel-screen').querySelector('video');
+            v.muted=!v.muted;
+            btn.innerHTML=v.muted?'<i data-lucide="volume-x" class="w-4 h-4"></i>':'<i data-lucide="volume-2" class="w-4 h-4"></i>';
+            btn.setAttribute('aria-label',v.muted?'Activar sonido':'Silenciar');
+            if(!v.muted)v.play().catch(()=>{});
+            lucide.createIcons();
+          });
+        });
+        // Autoplay solo cuando el reel está visible (ahorra datos/batería en móvil)
+        const vids=grid.querySelectorAll('video.reel-vid');
+        const vo=new IntersectionObserver(es=>{es.forEach(e=>{
+          const v=e.target;
+          if(e.isIntersecting){v.play().catch(()=>{});}else{v.pause();}
+        });},{threshold:.45});
+        vids.forEach(v=>vo.observe(v));
+        // Re-observa reveal/stagger en las nuevas tarjetas
+        grid.classList.add('active');
+        grid.querySelectorAll('.reveal-blur').forEach(el=>ro.observe(el));
+        lucide.createIcons();
+      }
+
+      function render(reels){
+        grid.innerHTML='';
+        reels.slice(0,3).forEach((r,i)=>grid.appendChild(card(r,i)));
+        wire();
+      }
+
+      fetch('/api/reels')
+        .then(r=>r.json())
+        .then(d=>{ if(d&&Array.isArray(d.reels)&&d.reels.length) render(d.reels); })
+        .catch(()=>{ /* deja los esqueletos; la sección no se rompe */ });
+
+      // Si cambia el idioma, actualiza el texto del botón sin recargar
+      langButtons.forEach(b=>b.addEventListener('click',()=>{
+        const t=ctaTxt[b.getAttribute('data-lang')]||ctaTxt.es;
+        grid.querySelectorAll('.reel-btn').forEach(el=>{
+          el.innerHTML='<i data-lucide="instagram" class="w-3.5 h-3.5"></i>'+t;
+        });
+        lucide.createIcons();
+      }));
+    })();
 
     /* ===== CAL.COM: calendario de agendamiento ===== */
     const MATON_EMBED_URL="https://cal.com/ocean-industries-2e5al7/agenda-demo-gratuita";
