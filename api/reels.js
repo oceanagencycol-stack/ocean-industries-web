@@ -39,32 +39,33 @@ const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hora
 
 // Fallback: videos actuales en Cloudinary (se usan si todavía no hay token de IG).
 const PROFILE_URL = "https://www.instagram.com/oceanind.co/";
+// Últimos 3 reels publicados (actualizado manualmente hasta activar el token de IG).
 const FALLBACK_REELS = [
   {
     id: "fallback-1",
     permalink: PROFILE_URL,
     media_url:
-      "https://res.cloudinary.com/dpo9ohngt/video/upload/v1781713985/02_-_Asi%CC%81_nace_una_estrategia_yilqmg.mp4",
+      "https://res.cloudinary.com/dpo9ohngt/video/upload/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.mp4",
     thumbnail_url:
-      "https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1781713985/02_-_Asi%CC%81_nace_una_estrategia_yilqmg.jpg",
-    caption: "Así nace una estrategia",
+      "https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.jpg",
+    caption: "Lo último de Ocean",
   },
   {
     id: "fallback-2",
     permalink: PROFILE_URL,
     media_url:
-      "https://res.cloudinary.com/dpo9ohngt/video/upload/v1781713984/SaveClip.App_AQN7gUygth0so2QCS0bRsasfFmlcf4OdG9HYq2orPgy8HwMGFJpgISbqf-3qdqC-Vcb51RvmDbK1PgFiylyKIhSyOqNxqW1YFYH21Ao_ahfqb2.mp4",
+      "https://res.cloudinary.com/dpo9ohngt/video/upload/v1782600106/Video_1_OceanV4_1_k7v1wb.mp4",
     thumbnail_url:
-      "https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1781713984/SaveClip.App_AQN7gUygth0so2QCS0bRsasfFmlcf4OdG9HYq2orPgy8HwMGFJpgISbqf-3qdqC-Vcb51RvmDbK1PgFiylyKIhSyOqNxqW1YFYH21Ao_ahfqb2.jpg",
+      "https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1782600106/Video_1_OceanV4_1_k7v1wb.jpg",
     caption: "Contenido que convierte",
   },
   {
     id: "fallback-3",
     permalink: PROFILE_URL,
     media_url:
-      "https://res.cloudinary.com/dpo9ohngt/video/upload/v1781713984/SaveClip.App_AQNP9j0LNPCBJVZ-5MuFG7kTHLuMfhYji-x3bGQuBsFmgym_8cCJkslzqYgsh4GUfAteaM6aLzVKYhhPTsrXmfIq0JE8rjJzyraUFQs_nczmnq.mp4",
+      "https://res.cloudinary.com/dpo9ohngt/video/upload/v1782600109/Video_2_OceanV4_1_mx7qmz.mp4",
     thumbnail_url:
-      "https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1781713984/SaveClip.App_AQNP9j0LNPCBJVZ-5MuFG7kTHLuMfhYji-x3bGQuBsFmgym_8cCJkslzqYgsh4GUfAteaM6aLzVKYhhPTsrXmfIq0JE8rjJzyraUFQs_nczmnq.jpg",
+      "https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1782600109/Video_2_OceanV4_1_mx7qmz.jpg",
     caption: "We turn brands into waves",
   },
 ];
