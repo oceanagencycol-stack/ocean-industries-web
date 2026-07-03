@@ -73,12 +73,38 @@ const FALLBACK_REELS = [
 // Cache en memoria (persiste mientras la función esté caliente).
 let _cache = { ts: 0, data: null };
 
+// Inyecta compresión de Cloudinary en URLs propias (los reels se muestran a ~300px:
+// w_540 da margen retina). Las URLs de Instagram/otros hosts pasan intactas.
+function optimizeCloudinary(url) {
+  if (!url || typeof url !== "string") return url;
+  if (!url.includes("res.cloudinary.com")) return url;
+  // Posters generados con so_0: añade compresión conservando el frame (evaluar primero)
+  if (url.includes("/video/upload/so_0/")) {
+    return url.replace("/video/upload/so_0/", "/video/upload/so_0,f_auto,q_auto,w_540/");
+  }
+  if (url.includes("/video/upload/") && !/\/upload\/[^/]*q_auto/.test(url)) {
+    return url.replace("/video/upload/", "/video/upload/q_auto:eco,vc_auto,w_540/");
+  }
+  if (url.includes("/image/upload/") && !/\/upload\/[^/]*q_auto/.test(url)) {
+    return url.replace("/image/upload/", "/image/upload/f_auto,q_auto,w_540/");
+  }
+  return url;
+}
+
+function optimizeReel(r) {
+  return {
+    ...r,
+    media_url: optimizeCloudinary(r.media_url),
+    thumbnail_url: optimizeCloudinary(r.thumbnail_url),
+  };
+}
+
 function fallback(res, reason) {
   return res.status(200).json({
     source: "fallback",
     reason: reason || "IG_ACCESS_TOKEN no configurado",
     profile: PROFILE_URL,
-    reels: FALLBACK_REELS,
+    reels: FALLBACK_REELS.map(optimizeReel),
   });
 }
 
@@ -98,7 +124,7 @@ export default async function handler(req, res) {
 
   // Cache caliente válido → respóndelo.
   if (_cache.data && Date.now() - _cache.ts < CACHE_TTL_MS) {
-    return res.status(200).json({ source: "cache", profile: PROFILE_URL, reels: _cache.data });
+    return res.status(200).json({ source: "cache", profile: PROFILE_URL, reels: _cache.data.map(optimizeReel) });
   }
 
   try {
@@ -132,7 +158,7 @@ export default async function handler(req, res) {
     if (reels.length === 0) return fallback(res, "Sin reels recientes en la respuesta");
 
     _cache = { ts: Date.now(), data: reels };
-    return res.status(200).json({ source: "instagram", profile: PROFILE_URL, reels });
+    return res.status(200).json({ source: "instagram", profile: PROFILE_URL, reels: reels.map(optimizeReel) });
   } catch (err) {
     return fallback(res, "Excepción: " + (err?.message || "desconocida"));
   }

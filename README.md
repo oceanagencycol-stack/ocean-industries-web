@@ -4,6 +4,42 @@ Web trilingüe (ES / EN / PT) ultra moderna con animaciones fluidas, mockups de 
 
 ---
 
+## 🌊 OCÉANO 3D + OPTIMIZACIÓN TOTAL (julio 2026)
+
+### Océano 3D interactivo (firma visual del hero)
+- `assets/ocean.js` — campo de olas en **WebGL puro** (cero dependencias, ~9 KB): miles de puntos desplazados por ondas superpuestas, coloreados por altura con el gradiente de marca (azul profundo → azul eléctrico → cresta verde neón) y con un **ripple que sigue al cursor** (también táctil).
+- Rendimiento: densidad adaptativa (menos puntos en móvil), DPR limitado a 1.5, se **pausa** al salir del viewport o al ocultar la pestaña, y con `prefers-reduced-motion` renderiza **un solo frame estático**. Si WebGL no existe, no hace nada (quedan las auroras CSS).
+- Extra interactivo: **tilt 3D con glare** en las tarjetas de servicios (solo cursor fino, respeta reduced-motion).
+
+### CSS compilado (adiós CDN de Tailwind)
+- El sitio ya **no** carga `cdn.tailwindcss.com` (~110 KB de JS compilando estilos en runtime). Ahora usa `assets/tailwind.css` (~19 KB estáticos).
+- **Si agregas clases nuevas de Tailwind al HTML**, regenera el CSS:
+  ```bash
+  npm install
+  npm run build:css   # → assets/tailwind.css
+  ```
+- El build también **corrige un bug real**: el HTML usa `font-700/800/900` (no existen en Tailwind por defecto) — antes todos los titulares renderizaban en peso 400. La config (`tailwind.config.js`) agrega esos pesos numéricos. Además la fuente Archivo ahora se carga **variable con eje de ancho (wdth 75)** → condensed real, como pedía el diseño original.
+
+### Medios optimizados (Cloudinary)
+- **Videos del hero**: de **129 MB → ~4 MB** en total con `q_auto:eco,vc_auto,w_480` (convención: todo video propio se sirve con esa transformación).
+- **Logos**: `f_auto,q_auto,w_XXX` (WebP/AVIF automático) + `width/height` explícitos contra CLS.
+- `api/reels.js` inyecta la compresión automáticamente en cualquier URL propia de Cloudinary (fallback o futura); las URLs de Instagram pasan intactas.
+- El **widget de Wompi** ahora se descarga **solo al iniciar un pago** (antes cargaba ~100 KB en cada visita).
+
+### SEO
+- `robots.txt` + `sitemap.xml` (antes daban 404).
+- `<head>` completo: canonical, Open Graph completo (imagen 1200×630), Twitter Card, `theme-color`, apple-touch-icon.
+- **JSON-LD** (`Organization` + `WebSite` + `ProfessionalService` con catálogo de los 6 servicios, áreas servidas e idiomas).
+- Title y meta description con keywords reales ("Agencia de IA y Automatización | Cali · Bogotá · Miami").
+
+### UX / accesibilidad
+- **Toasts** propios reemplazan todos los `alert()` del flujo de pago.
+- Foco visible (`:focus-visible`) para navegación con teclado.
+- Overflow horizontal en móvil corregido (el layout viewport se expandía a 434 px; ahora 390 exactos).
+- Año del copyright dinámico.
+
+---
+
 ## 📱 REELS DE INSTAGRAM AUTO-ACTUALIZADOS (sección "Así nace una estrategia")
 
 La sección de "Trabajo" ahora muestra los **últimos 3 reels** de [@oceanind.co](https://www.instagram.com/oceanind.co/) dentro de mockups de celular realistas. Se autoreproducen sin sonido, tienen botón para activar audio, y al hacer clic abren el reel real en Instagram. La lista se actualiza sola.
