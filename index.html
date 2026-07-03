@@ -34,7 +34,7 @@
   <link rel="preconnect" href="https://res.cloudinary.com">
 
   <!-- CSS compilado (Tailwind estático — regenerar con `npm run build:css` si se agregan clases nuevas) -->
-  <link rel="stylesheet" href="/assets/tailwind.css?v=6" />
+  <link rel="stylesheet" href="/assets/tailwind.css?v=8" />
   <!-- Archivo variable con eje de ancho (75 = condensado real, alto impacto) -->
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75,700;75,900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -142,7 +142,7 @@
     .float1{animation:float1 7s ease-in-out infinite;}
     .float2{animation:float2 8.5s ease-in-out infinite;}
     .float3{animation:float3 6.5s ease-in-out infinite;}
-    .phone{position:relative;border-radius:34px;background:#0a0f16;padding:9px;box-shadow:0 30px 70px -20px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.06);}
+    .phone{border-radius:34px;background:#0a0f16;padding:9px;box-shadow:0 30px 70px -20px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.06);}
     .phone::before{content:'';position:absolute;top:14px;left:50%;transform:translateX(-50%);width:60px;height:5px;border-radius:99px;background:rgba(255,255,255,.18);z-index:3;}
     .phone video{border-radius:26px;display:block;width:100%;height:100%;object-fit:cover;}
 
@@ -381,14 +381,17 @@
       </div>
 
       <!-- right: floating phone mockups with videos -->
-      <div class="relative h-[440px] md:h-[600px] hidden sm:block overflow-hidden">
-        <div class="phone float1 absolute" style="width:172px;height:312px;top:8%;left:6%;z-index:2;">
-          <video autoplay muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0,f_auto,q_auto,w_480/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.jpg"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/q_auto:eco,vc_auto,w_480/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.mp4" type="video/mp4"></video>
-        </div>
-        <div class="phone float2 absolute" style="width:200px;height:362px;top:16%;right:8%;z-index:3;">
+      <div class="relative self-center hidden sm:block" style="height:560px;">
+        <!-- Teléfono principal (derecha, más grande) -->
+        <div class="phone float2 absolute" style="width:212px;height:384px;top:60px;right:6%;z-index:3;">
           <video autoplay muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0,f_auto,q_auto,w_480/v1782600106/Video_1_OceanV4_1_k7v1wb.jpg"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/q_auto:eco,vc_auto,w_480/v1782600106/Video_1_OceanV4_1_k7v1wb.mp4" type="video/mp4"></video>
         </div>
-        <div class="phone float3 absolute" style="width:156px;height:284px;bottom:6%;left:32%;z-index:1;opacity:.92;">
+        <!-- Teléfono secundario (izquierda) -->
+        <div class="phone float1 absolute" style="width:180px;height:326px;top:36px;left:2%;z-index:2;">
+          <video autoplay muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0,f_auto,q_auto,w_480/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.jpg"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/q_auto:eco,vc_auto,w_480/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.mp4" type="video/mp4"></video>
+        </div>
+        <!-- Teléfono inferior (centro-abajo, más pequeño) -->
+        <div class="phone float3 absolute" style="width:164px;height:298px;top:250px;left:34%;z-index:1;opacity:.9;">
           <video autoplay muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0,f_auto,q_auto,w_480/v1782600109/Video_2_OceanV4_1_mx7qmz.jpg"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/q_auto:eco,vc_auto,w_480/v1782600109/Video_2_OceanV4_1_mx7qmz.mp4" type="video/mp4"></video>
         </div>
       </div>
@@ -1124,7 +1127,7 @@
     })();
   </script>
   <!-- Océano 3D del hero (WebGL propio, ~6KB, sin dependencias) -->
-  <script src="/assets/ocean.js?v=6" defer></script>
+  <script src="/assets/ocean.js?v=8" defer></script>
 
 </body>
 </html>
