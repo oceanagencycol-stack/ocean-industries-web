@@ -34,7 +34,7 @@
   <link rel="preconnect" href="https://res.cloudinary.com">
 
   <!-- CSS compilado (Tailwind estático — regenerar con `npm run build:css` si se agregan clases nuevas) -->
-  <link rel="stylesheet" href="/assets/tailwind.css?v=4" />
+  <link rel="stylesheet" href="/assets/tailwind.css?v=5" />
   <!-- Archivo variable con eje de ancho (75 = condensado real, alto impacto) -->
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75,700;75,900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -227,6 +227,14 @@
     /* Accesibilidad: foco visible para navegación con teclado */
     :focus-visible{outline:2px solid #00FF7F;outline-offset:3px;border-radius:6px;}
 
+    /* ===== Botones flotantes (OceanBot + WhatsApp) ===== */
+    .fab-tip{position:absolute;right:calc(100% + 12px);top:50%;transform:translateY(-50%) translateX(6px);
+      white-space:nowrap;padding:6px 12px;border-radius:10px;font-size:13px;font-weight:600;color:#F4F5F0;
+      background:rgba(16,24,32,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,.1);box-shadow:0 8px 24px -8px rgba(0,0,0,.6);
+      opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s cubic-bezier(.16,1,.3,1);}
+    .fab-btn:hover .fab-tip{opacity:1;transform:translateY(-50%) translateX(0);}
+
     .field{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);color:#fff;transition:border-color .3s,background .3s;}
     .field:focus{outline:none;border-color:#00FF7F;background:rgba(255,255,255,.06);}
 
@@ -373,14 +381,14 @@
       </div>
 
       <!-- right: floating phone mockups with videos -->
-      <div class="relative h-[420px] md:h-[560px] hidden sm:block">
-        <div class="phone float1 absolute" style="width:188px;height:340px;top:10px;left:4%;z-index:2;">
+      <div class="relative h-[440px] md:h-[600px] hidden sm:flex items-center justify-center">
+        <div class="phone float1 absolute" style="width:186px;height:336px;top:6%;left:2%;z-index:2;">
           <video autoplay muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0,f_auto,q_auto,w_480/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.jpg"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/q_auto:eco,vc_auto,w_480/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.mp4" type="video/mp4"></video>
         </div>
-        <div class="phone float2 absolute" style="width:210px;height:380px;top:60px;right:2%;z-index:3;">
+        <div class="phone float2 absolute" style="width:216px;height:392px;top:14%;right:4%;z-index:3;">
           <video autoplay muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0,f_auto,q_auto,w_480/v1782600106/Video_1_OceanV4_1_k7v1wb.jpg"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/q_auto:eco,vc_auto,w_480/v1782600106/Video_1_OceanV4_1_k7v1wb.mp4" type="video/mp4"></video>
         </div>
-        <div class="phone float3 absolute" style="width:170px;height:310px;bottom:0;left:30%;z-index:1;opacity:.96;">
+        <div class="phone float3 absolute" style="width:168px;height:304px;bottom:4%;left:28%;z-index:1;opacity:.94;">
           <video autoplay muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0,f_auto,q_auto,w_480/v1782600109/Video_2_OceanV4_1_mx7qmz.jpg"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/q_auto:eco,vc_auto,w_480/v1782600109/Video_2_OceanV4_1_mx7qmz.mp4" type="video/mp4"></video>
         </div>
       </div>
@@ -649,18 +657,20 @@
       <button id="chatSend" class="w-10 h-10 flex-shrink-0 btn-green rounded-xl flex items-center justify-center" aria-label="Enviar"><i data-lucide="send" class="w-4 h-4"></i></button>
     </div>
   </div>
-  <button id="chatToggle" class="group fixed bottom-6 right-24 z-50 flex items-center gap-2.5 pl-2 md:pr-4 pr-2 py-2 rounded-full shadow-lg shadow-ocean-blue/30 hover:shadow-ocean-green/40 transition-all duration-300 hover:scale-105" style="background:linear-gradient(135deg,#0000FF 0%,#0B1F8C 100%);" aria-label="Chat con OceanBot">
-    <span class="relative flex items-center justify-center w-9 h-9 rounded-full bg-ocean-green flex-shrink-0">
-      <i data-lucide="bot" class="w-5 h-5 text-ocean-black" id="chatToggleIcon"></i>
-      <span class="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-ocean-green border-2 border-ocean-blue animate-pulse"></span>
-    </span>
-    <span class="hidden md:inline text-sm font-bold text-white whitespace-nowrap" data-es="OceanBot" data-en="OceanBot" data-pt="OceanBot">OceanBot</span>
-  </button>
-
-  <!-- Floating WhatsApp -->
-  <a href="https://wa.me/message/YQTLLAZYI6QVO1" target="_blank" rel="noopener" class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-lg shadow-black/30 hover:scale-110 transition-transform wa-pulse" aria-label="WhatsApp">
-    <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-  </a>
+  <!-- ===== Botones flotantes: OceanBot + WhatsApp (apilados, esquina inferior derecha) ===== -->
+  <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+    <!-- OceanBot -->
+    <button id="chatToggle" class="fab-btn group relative w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-300 hover:scale-105" style="background:linear-gradient(135deg,#0000FF 0%,#0B1F8C 100%);box-shadow:0 10px 30px -6px rgba(0,0,255,.5);" aria-label="Chat con OceanBot">
+      <i data-lucide="bot" class="w-6 h-6 text-white" id="chatToggleIcon"></i>
+      <span class="absolute top-0 right-0 w-3.5 h-3.5 rounded-full bg-ocean-green border-2 border-ocean-black animate-pulse"></span>
+      <span class="fab-tip">OceanBot</span>
+    </button>
+    <!-- WhatsApp -->
+    <a href="https://wa.me/message/YQTLLAZYI6QVO1" target="_blank" rel="noopener" class="fab-btn group relative w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-300 hover:scale-105" style="background:#25D366;box-shadow:0 10px 30px -6px rgba(37,211,102,.5);" aria-label="WhatsApp">
+      <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      <span class="fab-tip">WhatsApp</span>
+    </a>
+  </div>
 
   <script src="https://unpkg.com/lucide@0.469.0"></script>
   <script>
@@ -1114,7 +1124,7 @@
     })();
   </script>
   <!-- Océano 3D del hero (WebGL propio, ~6KB, sin dependencias) -->
-  <script src="/assets/ocean.js?v=4" defer></script>
+  <script src="/assets/ocean.js?v=5" defer></script>
 
 </body>
 </html>
