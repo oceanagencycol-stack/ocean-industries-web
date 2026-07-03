@@ -1,15 +1,20 @@
 /* ============================================================================
-   OCÉANO 3D — Ocean Industries
-   Campo de olas en WebGL puro (cero dependencias). Miles de puntos desplazados
-   por ondas sinusoidales superpuestas, coloreados por altura con el gradiente
-   de marca (azul profundo → azul eléctrico → verde neón) y con un ripple que
-   sigue al cursor. "We turn brands into waves", literal.
+   OCÉANO — Ocean Industries
+   Olas fluidas dibujadas en canvas 2D (cero dependencias, cero WebGL).
+   Líneas horizontales que ondulan como la superficie del mar, con un
+   gradiente de marca (azul profundo → azul eléctrico → verde neón) y un
+   halo de luz que sigue al cursor. "We turn brands into waves", literal.
+
+   Por qué canvas 2D y no WebGL:
+   - Se ve orgánico y suave (olas reales, no una rejilla de puntos).
+   - Funciona en absolutamente todos los navegadores y GPUs (sin depender
+     de que el driver de WebGL colabore).
+   - Ligero: se dibuja solo la mitad inferior del hero.
 
    Rendimiento:
-   - Densidad adaptativa (menos puntos en móvil), DPR limitado a 1.5.
-   - Se pausa cuando el hero sale del viewport o la pestaña se oculta.
-   - prefers-reduced-motion → un solo frame estático (sin animación).
-   - Si WebGL no está disponible, no hace nada (quedan las auroras CSS).
+   - Se pausa fuera del viewport y con la pestaña oculta.
+   - prefers-reduced-motion → dibuja un fotograma estático (sin animación).
+   - DPR limitado a 2 para no reventar pantallas retina.
    ========================================================================== */
 (function () {
   "use strict";
@@ -18,198 +23,52 @@
   var hero = document.getElementById("hero");
   if (!canvas || !hero) return;
 
+  var ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
   var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  var gl = canvas.getContext("webgl", {
-    alpha: true,
-    antialias: false,
-    depth: false,
-    stencil: false,
-    powerPreference: "low-power",
-    preserveDrawingBuffer: false,
-  });
-  if (!gl) return;
-
-  /* ---------- Shaders ---------- */
-  var VS = [
-    "precision mediump float;",
-    "attribute vec2 aGrid;", // x ∈ [-1,1], z ∈ [0,1]
-    "uniform float uTime;",
-    "uniform float uAspect;",
-    "uniform float uSpan;", // semiancho del campo en X
-    "uniform float uDepth;", // profundidad del campo en Z
-    "uniform float uDpr;",
-    "uniform vec2  uMouse;", // posición del cursor en el plano (mundo XZ)
-    "uniform float uMAmp;", // intensidad del ripple (0..1)
-    "varying float vH;", // altura normalizada para color
-    "varying float vFog;",
-    "varying float vGlow;", // energía extra cerca del cursor
-    "",
-    "float waves(vec2 p, float t){",
-    "  float h = 0.0;",
-    "  h += 0.30 * sin(dot(p, vec2( 0.32, 0.18)) + t * 0.9);", // marejada larga
-    "  h += 0.18 * sin(dot(p, vec2(-0.24, 0.42)) + t * 1.3);",
-    "  h += 0.10 * sin(dot(p, vec2( 0.75,-0.55)) + t * 1.9);",
-    "  h += 0.05 * sin(dot(p, vec2(-1.60, 1.10)) + t * 2.6);", // chop fino
-    "  return h;",
-    "}",
-    "",
-    "void main(){",
-    "  vec2 p = vec2(aGrid.x * uSpan, -aGrid.y * uDepth);", // mundo XZ (z hacia -∞)
-    "  float t = uTime;",
-    "  float h = waves(p.xy, t);",
-    "",
-    "  float md = distance(p, uMouse);",
-    "  float rip = exp(-md * md * 0.30) * sin(md * 5.5 - t * 5.0) * 0.42;",
-    "  float lift = exp(-md * md * 0.18) * 0.22;",
-    "  h += (rip + lift) * uMAmp;",
-    "  vGlow = exp(-md * md * 0.22) * uMAmp;",
-    "",
-    "  vH = clamp((h + 0.55) / 1.25, 0.0, 1.0);",
-    "",
-    "  // Cámara: baja, mirando hacia el horizonte con leve picada",
-    "  vec3 world = vec3(p.x, h, p.y);",
-    "  vec3 cam = vec3(0.0, 2.55, 2.0);",
-    "  vec3 v = world - cam;",
-    "  float cp = 0.976, sp = -0.218;", // pitch ≈ -12.6°
-    "  float vy = v.y * cp - v.z * sp;",
-    "  float vz = v.y * sp + v.z * cp;",
-    "  v = vec3(v.x, vy, vz);",
-    "  if (v.z > -0.1) v.z = -0.1;",
-    "",
-    "  float f = 1.9626;", // 1/tan(fov/2), fov ≈ 54°
-    "  gl_Position = vec4(v.x * f / uAspect, v.y * f, 0.0, -v.z);",
-    "",
-    "  float dist = -v.z;",
-    "  vFog = smoothstep(6.0, 26.0, dist);",
-    "  // desvanecer también en los bordes laterales",
-    "  vFog = max(vFog, smoothstep(0.72, 1.0, abs(aGrid.x)));",
-    "",
-    "  float sz = (4.5 + vH * 2.4 + vGlow * 3.0) * uDpr * f / dist;",
-    "  gl_PointSize = clamp(sz, 2.0, 16.0 * uDpr);",
-    "}",
-  ].join("\n");
-
-  var FS = [
-    "precision mediump float;",
-    "varying float vH;",
-    "varying float vFog;",
-    "varying float vGlow;",
-    "",
-    "void main(){",
-    "  vec2 c = gl_PointCoord - 0.5;",
-    "  float d = dot(c, c);",
-    "  if (d > 0.25) discard;",
-    "  float soft = smoothstep(0.25, 0.05, d);",
-    "",
-    "  vec3 deep    = vec3(0.043, 0.122, 0.549);", // #0B1F8C
-    "  vec3 electric= vec3(0.0,   0.0,   1.0  );", // #0000FF
-    "  vec3 crest   = vec3(0.0,   1.0,   0.498);", // #00FF7F
-    "  vec3 col = mix(deep, electric, smoothstep(0.05, 0.55, vH));",
-    "  col = mix(col, crest, smoothstep(0.62, 0.97, vH));",
-    "  col = mix(col, crest, vGlow * 0.85);", // energía bajo el cursor
-    "",
-    "  float a = soft * (1.0 - vFog) * (0.55 + vH * 0.55 + vGlow * 0.4);",
-    "  gl_FragColor = vec4(col * a, a);", // premultiplicado para blending aditivo suave
-    "}",
-  ].join("\n");
-
-  function compile(type, src) {
-    var s = gl.createShader(type);
-    gl.shaderSource(s, src);
-    gl.compileShader(s);
-    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-      return null;
+  // Paleta de marca
+  var COLORS = [
+    { p: 0.0, c: [11, 31, 140] },   // #0B1F8C azul profundo
+    { p: 0.55, c: [0, 80, 255] },   // azul eléctrico
+    { p: 1.0, c: [0, 255, 127] },   // #00FF7F verde neón
+  ];
+  function lerpColor(t) {
+    t = Math.max(0, Math.min(1, t));
+    for (var i = 0; i < COLORS.length - 1; i++) {
+      var a = COLORS[i], b = COLORS[i + 1];
+      if (t >= a.p && t <= b.p) {
+        var k = (t - a.p) / (b.p - a.p);
+        return [
+          Math.round(a.c[0] + (b.c[0] - a.c[0]) * k),
+          Math.round(a.c[1] + (b.c[1] - a.c[1]) * k),
+          Math.round(a.c[2] + (b.c[2] - a.c[2]) * k),
+        ];
+      }
     }
-    return s;
+    return b.c;
   }
 
-  var vs = compile(gl.VERTEX_SHADER, VS);
-  var fs = compile(gl.FRAGMENT_SHADER, FS);
-  if (!vs || !fs) return;
-
-  var prog = gl.createProgram();
-  gl.attachShader(prog, vs);
-  gl.attachShader(prog, fs);
-  gl.linkProgram(prog);
-  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
-  gl.useProgram(prog);
-
-  /* ---------- Malla de puntos ---------- */
-  var isSmall = Math.min(screen.width, innerWidth) < 768;
-  var COLS = isSmall ? 130 : 240;
-  var ROWS = isSmall ? 80 : 150;
-  var N = COLS * ROWS;
-  var data = new Float32Array(N * 2);
-  var i = 0;
-  for (var r = 0; r < ROWS; r++) {
-    for (var c = 0; c < COLS; c++) {
-      data[i++] = (c / (COLS - 1)) * 2.0 - 1.0; // x: -1..1
-      data[i++] = r / (ROWS - 1); //              z:  0..1
-    }
-  }
-  var buf = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-  var locGrid = gl.getAttribLocation(prog, "aGrid");
-  gl.enableVertexAttribArray(locGrid);
-  gl.vertexAttribPointer(locGrid, 2, gl.FLOAT, false, 0, 0);
-
-  var U = {};
-  ["uTime", "uAspect", "uSpan", "uDepth", "uDpr", "uMouse", "uMAmp"].forEach(function (n) {
-    U[n] = gl.getUniformLocation(prog, n);
-  });
-
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA); // aditivo premultiplicado
-  gl.clearColor(0, 0, 0, 0);
-
-  /* ---------- Cámara / proyección inversa para el cursor ---------- */
-  var CAM = { x: 0, y: 2.55, z: 2.0 };
-  var PITCH_C = 0.976, PITCH_S = -0.218, F = 1.9626;
-  var DEPTH = 26.0;
-  var dpr = 1, aspect = 1, span = 16;
-
+  var dpr = 1, W = 0, H = 0;
   function resize() {
-    dpr = Math.min(devicePixelRatio || 1, 1.5);
-    var w = hero.clientWidth, h = hero.clientHeight;
-    canvas.width = Math.round(w * dpr);
-    canvas.height = Math.round(h * dpr);
-    aspect = w / Math.max(h, 1);
-    span = Math.max(15, 12.5 * aspect);
-    gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.uniform1f(U.uAspect, aspect);
-    gl.uniform1f(U.uSpan, span);
-    gl.uniform1f(U.uDepth, DEPTH);
-    gl.uniform1f(U.uDpr, dpr);
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = hero.clientWidth;
+    H = hero.clientHeight;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  // Proyecta el cursor de pantalla al plano y=0 del océano (rayo exacto)
-  function screenToSea(clientX, clientY) {
-    var rect = canvas.getBoundingClientRect();
-    var nx = ((clientX - rect.left) / rect.width) * 2 - 1;
-    var ny = 1 - ((clientY - rect.top) / rect.height) * 2;
-    var dx = (nx * aspect) / F, dy = ny / F, dz = -1;
-    // des-rotar el pitch (inversa: cp, -sp)
-    var wy = dy * PITCH_C + dz * PITCH_S;
-    var wz = -dy * PITCH_S + dz * PITCH_C;
-    var t = -CAM.y / wy;
-    if (!(t > 0)) t = 1e4;
-    t = Math.min(t, 60);
-    return [CAM.x + dx * t, CAM.z + wz * t];
-  }
-
-  /* ---------- Estado de interacción ---------- */
-  var mouse = [0, -9.5], mouseT = [0, -9.5];
-  var mAmp = 0, mAmpT = 0;
-
+  // Cursor (halo de luz)
+  var mx = -9999, my = -9999, tmx = -9999, tmy = -9999;
   function onMove(e) {
     var p = e.touches ? e.touches[0] : e;
-    mouseT = screenToSea(p.clientX, p.clientY);
-    mAmpT = 1;
+    var r = canvas.getBoundingClientRect();
+    tmx = p.clientX - r.left;
+    tmy = p.clientY - r.top;
   }
-  function onLeave() { mAmpT = 0; }
-
+  function onLeave() { tmx = -9999; tmy = -9999; }
   if (!reduced) {
     hero.addEventListener("pointermove", onMove, { passive: true });
     hero.addEventListener("pointerleave", onLeave, { passive: true });
@@ -217,27 +76,79 @@
     hero.addEventListener("touchend", onLeave, { passive: true });
   }
 
-  /* ---------- Loop ---------- */
-  var t0 = performance.now();
-  var raf = null;
-  var visible = true;
+  // Parámetros de las olas
+  var LINES = 22;          // número de crestas
+  var POINTS = 90;         // resolución horizontal de cada cresta
 
-  function frame(now) {
-    raf = null;
-    var t = ((now - t0) / 1000) * 0.85;
-    mouse[0] += (mouseT[0] - mouse[0]) * 0.08;
-    mouse[1] += (mouseT[1] - mouse[1]) * 0.08;
-    mAmp += (mAmpT - mAmp) * 0.05;
+  function draw(time) {
+    ctx.clearRect(0, 0, W, H);
+    // suavizar el seguimiento del cursor
+    if (tmx > -9000) { mx += (tmx - mx) * 0.09; my += (tmy - my) * 0.09; }
+    else { mx += (-9999 - mx) * 0.05; my += (-9999 - my) * 0.05; }
 
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.uniform1f(U.uTime, t);
-    gl.uniform2f(U.uMouse, mouse[0], mouse[1]);
-    gl.uniform1f(U.uMAmp, mAmp);
-    gl.drawArrays(gl.POINTS, 0, N);
+    var t = time * 0.00035;
+    // Las olas ocupan la mitad inferior del hero (donde no está el texto)
+    var top = H * 0.42;
+    var bandH = H - top;
 
-    if (visible && !document.hidden && !reduced) raf = requestAnimationFrame(frame);
+    ctx.globalCompositeOperation = "lighter"; // acumula luz (efecto glow)
+
+    for (var i = 0; i < LINES; i++) {
+      var li = i / (LINES - 1);              // 0 arriba → 1 abajo
+      var baseY = top + bandH * li;
+      // Amplitud crece hacia el frente (abajo), como olas que se agrandan
+      var amp = (6 + li * li * 30);
+      var col = lerpColor(li * 0.85 + 0.05);
+
+      // Opacidad: tenue atrás, más viva adelante
+      var alpha = 0.06 + li * 0.20;
+
+      ctx.beginPath();
+      for (var j = 0; j <= POINTS; j++) {
+        var x = (j / POINTS) * W;
+        var nx = j / POINTS;
+        // Suma de ondas con distintas frecuencias/velocidades = superficie orgánica
+        var y = baseY
+          + Math.sin(nx * 6.0 + t * 1.7 + i * 0.5) * amp
+          + Math.sin(nx * 11.0 - t * 2.3 + i * 0.9) * amp * 0.4
+          + Math.sin(nx * 3.0 + t * 1.1) * amp * 0.5;
+
+        // Empuje del cursor: las olas se elevan cerca del puntero
+        if (mx > -9000) {
+          var dx = x - mx;
+          var dy = baseY - my;
+          var d2 = dx * dx + dy * dy;
+          var infl = Math.exp(-d2 / (2 * 120 * 120));
+          y -= infl * 42 * (0.4 + li);
+        }
+
+        if (j === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = "rgba(" + col[0] + "," + col[1] + "," + col[2] + "," + alpha + ")";
+      ctx.lineWidth = 1 + li * 1.4;
+      ctx.stroke();
+    }
+
+    // Halo suave bajo el cursor
+    if (mx > -9000) {
+      var g = ctx.createRadialGradient(mx, my, 0, mx, my, 160);
+      g.addColorStop(0, "rgba(0,255,127,0.10)");
+      g.addColorStop(1, "rgba(0,255,127,0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(mx - 160, my - 160, 320, 320);
+    }
+
+    ctx.globalCompositeOperation = "source-over";
   }
 
+  // Loop
+  var raf = null, visible = true;
+  function frame(now) {
+    raf = null;
+    draw(now);
+    if (visible && !document.hidden && !reduced) raf = requestAnimationFrame(frame);
+  }
   function play() { if (!raf && !reduced) raf = requestAnimationFrame(frame); }
   function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
 
@@ -252,19 +163,14 @@
   });
 
   var rT;
-  addEventListener("resize", function () {
+  window.addEventListener("resize", function () {
     clearTimeout(rT);
-    rT = setTimeout(function () { resize(); if (reduced) frame(t0 + 9000); }, 120);
+    rT = setTimeout(function () { resize(); if (reduced) draw(9000); }, 120);
   }, { passive: true });
 
-  canvas.addEventListener("webglcontextlost", function (e) { e.preventDefault(); stop(); }, false);
-
-  /* ---------- Arranque ---------- */
+  // Arranque
   resize();
-  if (reduced) {
-    frame(t0 + 9000); // un solo frame estático, sin movimiento
-  } else {
-    play();
-  }
+  if (reduced) draw(9000);
+  else play();
   canvas.classList.add("on");
 })();
