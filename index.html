@@ -34,7 +34,7 @@
   <link rel="preconnect" href="https://res.cloudinary.com">
 
   <!-- CSS compilado (Tailwind estático — regenerar con `npm run build:css` si se agregan clases nuevas) -->
-  <link rel="stylesheet" href="/assets/tailwind.css?v=2" />
+  <link rel="stylesheet" href="/assets/tailwind.css?v=4" />
   <!-- Archivo variable con eje de ancho (75 = condensado real, alto impacto) -->
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75,700;75,900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -210,7 +210,7 @@
       transition:opacity .45s ease;}
 
     /* ===== OCÉANO 3D (WebGL) ===== */
-    #oceanCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;opacity:0;transition:opacity 1.6s ease .2s;}
+    #oceanCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:2;opacity:0;transition:opacity 1.6s ease .2s;}
     #oceanCanvas.on{opacity:1;}
 
     /* ===== Toasts (reemplazan alert) ===== */
@@ -339,10 +339,11 @@
       <div class="aurora" style="width:540px;height:540px;background:#0000FF;top:-120px;left:-100px;"></div>
       <div class="aurora" style="width:460px;height:460px;background:#00FF7F;bottom:-140px;right:-80px;animation-delay:-6s;opacity:.35;"></div>
       <div class="aurora" style="width:380px;height:380px;background:#0B1F8C;top:40%;left:55%;animation-delay:-11s;"></div>
-      <div class="absolute inset-0 dots opacity-20"></div>
+      <!-- Viñeta suave para fundir bordes (va DEBAJO del océano, por eso primero) -->
+      <div class="absolute inset-0" style="background:radial-gradient(ellipse at center,transparent 45%,#101820 100%);z-index:1;"></div>
+      <div class="absolute inset-0 dots opacity-20" style="z-index:1;"></div>
       <!-- Océano 3D en vivo: campo de olas WebGL que reacciona al cursor (assets/ocean.js) -->
       <canvas id="oceanCanvas" aria-hidden="true"></canvas>
-      <div class="absolute inset-0" style="background:radial-gradient(ellipse at center,transparent 30%,#101820 95%);"></div>
     </div>
 
     <div class="relative z-10 max-w-[1440px] mx-auto px-5 md:px-10 grid lg:grid-cols-2 gap-12 items-center w-full">
@@ -1113,7 +1114,7 @@
     })();
   </script>
   <!-- Océano 3D del hero (WebGL propio, ~6KB, sin dependencias) -->
-  <script src="/assets/ocean.js?v=2" defer></script>
+  <script src="/assets/ocean.js?v=4" defer></script>
 
 </body>
 </html>

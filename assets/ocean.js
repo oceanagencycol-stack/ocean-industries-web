@@ -85,8 +85,8 @@
     "  // desvanecer también en los bordes laterales",
     "  vFog = max(vFog, smoothstep(0.72, 1.0, abs(aGrid.x)));",
     "",
-    "  float sz = (2.1 + vH * 1.5 + vGlow * 2.0) * uDpr * f / dist;",
-    "  gl_PointSize = clamp(sz, 1.0, 8.0 * uDpr);",
+    "  float sz = (4.5 + vH * 2.4 + vGlow * 3.0) * uDpr * f / dist;",
+    "  gl_PointSize = clamp(sz, 2.0, 16.0 * uDpr);",
     "}",
   ].join("\n");
 
@@ -109,7 +109,7 @@
     "  col = mix(col, crest, smoothstep(0.62, 0.97, vH));",
     "  col = mix(col, crest, vGlow * 0.85);", // energía bajo el cursor
     "",
-    "  float a = soft * (1.0 - vFog) * (0.34 + vH * 0.5 + vGlow * 0.35);",
+    "  float a = soft * (1.0 - vFog) * (0.55 + vH * 0.55 + vGlow * 0.4);",
     "  gl_FragColor = vec4(col * a, a);", // premultiplicado para blending aditivo suave
     "}",
   ].join("\n");
@@ -137,8 +137,8 @@
 
   /* ---------- Malla de puntos ---------- */
   var isSmall = Math.min(screen.width, innerWidth) < 768;
-  var COLS = isSmall ? 110 : 190;
-  var ROWS = isSmall ? 64 : 110;
+  var COLS = isSmall ? 130 : 240;
+  var ROWS = isSmall ? 80 : 150;
   var N = COLS * ROWS;
   var data = new Float32Array(N * 2);
   var i = 0;
