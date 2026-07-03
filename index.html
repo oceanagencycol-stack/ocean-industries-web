@@ -34,7 +34,7 @@
   <link rel="preconnect" href="https://res.cloudinary.com">
 
   <!-- CSS compilado (Tailwind estático — regenerar con `npm run build:css` si se agregan clases nuevas) -->
-  <link rel="stylesheet" href="/assets/tailwind.css" />
+  <link rel="stylesheet" href="/assets/tailwind.css?v=2" />
   <!-- Archivo variable con eje de ancho (75 = condensado real, alto impacto) -->
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75,700;75,900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -350,7 +350,7 @@
       <div id="heroContent">
         <div class="hero-fade inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass mb-6">
           <span class="w-2 h-2 rounded-full bg-ocean-green animate-pulse"></span>
-          <span class="text-xs font-medium tracking-wide text-white/80" data-es="Agencia de IA · Empresa Autónoma 2027" data-en="AI Agency · Autonomous Company 2027" data-pt="Agência de IA · Empresa Autônoma 2027">Agencia de IA · Empresa Autónoma 2027</span>
+          <span class="text-xs font-medium tracking-wide text-white/80" data-es="Agencia de IA · Empresa Autónoma 2026" data-en="AI Agency · Autonomous Company 2026" data-pt="Agência de IA · Empresa Autônoma 2026">Agencia de IA · Empresa Autónoma 2026</span>
         </div>
         <h1 class="font-display font-900 leading-[0.88] tracking-tight text-5xl md:text-7xl xl:text-8xl uppercase">
           <span class="h-line"><span data-es="Convertimos" data-en="We turn" data-pt="Transformamos">Convertimos</span></span>
@@ -427,7 +427,7 @@
         </h2>
       </div>
       <div class="md:col-span-6 reveal-r">
-        <p class="text-base md:text-lg font-light text-white/70 leading-relaxed mb-6" data-es="El modelo tradicional de agencia digital caducó. En 2027 el éxito no se mide por cuántos empleados copian y pegan datos, sino por tu capacidad de automatizar operaciones y escalar sin fricción." data-en="The traditional digital agency model is obsolete. In 2027, success isn't measured by how many employees copy and paste data, but by your ability to automate operations and scale without friction." data-pt="O modelo tradicional de agência digital expirou. Em 2027 o sucesso não se mede por quantos funcionários copiam e colam dados, mas pela sua capacidade de automatizar operações e escalar sem atrito.">El modelo tradicional de agencia digital caducó. En 2027 el éxito no se mide por cuántos empleados copian y pegan datos, sino por tu capacidad de automatizar operaciones y escalar sin fricción.</p>
+        <p class="text-base md:text-lg font-light text-white/70 leading-relaxed mb-6" data-es="El modelo tradicional de agencia digital caducó. Hoy el éxito no se mide por cuántos empleados copian y pegan datos, sino por tu capacidad de automatizar operaciones y escalar sin fricción." data-en="The traditional digital agency model is obsolete. Today, success isn't measured by how many employees copy and paste data, but by your ability to automate operations and scale without friction." data-pt="O modelo tradicional de agência digital expirou. Hoje o sucesso não se mede por quantos funcionários copiam e colam dados, mas pela sua capacidade de automatizar operações e escalar sem atrito.">El modelo tradicional de agencia digital caducó. Hoy el éxito no se mide por cuántos empleados copian y pegan datos, sino por tu capacidad de automatizar operaciones y escalar sin fricción.</p>
         <p class="text-base md:text-lg font-light text-white/70 leading-relaxed" data-es="Democratizamos la tecnología corporativa de élite para las pymes. Integramos sistemas que piensan, analizan y venden por ti 24/7." data-en="We democratize elite corporate technology for SMBs. We integrate systems that think, analyze and sell for you 24/7." data-pt="Democratizamos a tecnologia corporativa de elite para PMEs. Integramos sistemas que pensam, analisam e vendem por você 24/7.">Democratizamos la tecnología corporativa de élite para las pymes. Integramos sistemas que piensan, analizan y venden por ti 24/7.</p>
         <div class="grid grid-cols-3 gap-6 mt-10 stagger" id="stats">
           <div><p class="font-display font-900 text-4xl md:text-5xl text-ocean-green"><span class="count" data-target="48">0</span>h</p><p class="text-xs text-white/50 mt-1" data-es="Prototipo funcional" data-en="Working prototype" data-pt="Protótipo funcional">Prototipo funcional</p></div>
@@ -1030,6 +1030,19 @@
         });
         // Autoplay solo cuando el reel está visible (ahorra datos/batería en móvil)
         const vids=grid.querySelectorAll('video.reel-vid');
+        // Fallback: si un video no puede reproducirse (codec/red), deja ver el poster como imagen
+        vids.forEach(v=>{
+          v.addEventListener('error',()=>showPoster(v),{once:true});
+          // Si a los 6s no cargó nada de datos, asumimos fallo y mostramos el poster
+          setTimeout(()=>{ if(v.readyState===0) showPoster(v); },6000);
+        });
+        function showPoster(v){
+          const p=v.getAttribute('poster'); if(!p)return;
+          if(v.dataset.fallback)return; v.dataset.fallback='1';
+          const img=document.createElement('img');
+          img.src=p; img.alt='@oceanind.co'; img.className='reel-poster'; img.loading='lazy';
+          v.replaceWith(img);
+        }
         const vo=new IntersectionObserver(es=>{es.forEach(e=>{
           const v=e.target;
           if(e.isIntersecting){v.play().catch(()=>{});}else{v.pause();}
@@ -1100,7 +1113,7 @@
     })();
   </script>
   <!-- Océano 3D del hero (WebGL propio, ~6KB, sin dependencias) -->
-  <script src="/assets/ocean.js" defer></script>
+  <script src="/assets/ocean.js?v=2" defer></script>
 
 </body>
 </html>
