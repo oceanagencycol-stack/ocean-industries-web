@@ -4,7 +4,11 @@
 // La URL del webhook (y cualquier credencial) vive en variables de entorno, nunca en el frontend.
 
 export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  // CORS restringido: solo el dominio propio puede consumir este endpoint desde el navegador.
+  const ALLOWED = ["https://oceanindustries.com.co", "https://www.oceanindustries.com.co"];
+  const reqOrigin = req.headers.origin || "";
+  res.setHeader("Access-Control-Allow-Origin", ALLOWED.includes(reqOrigin) ? reqOrigin : ALLOWED[0]);
+  res.setHeader("Vary", "Origin");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") return res.status(200).end();
