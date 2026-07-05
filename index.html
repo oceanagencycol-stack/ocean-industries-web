@@ -189,7 +189,7 @@
     @media(prefers-reduced-motion:reduce){.reel-skel{animation:none;}.reel-phone:hover{transform:none;}}
 
     /* Glow buttons */
-    .btn-green{background:#00FF7F;color:#101820;transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s ease;}
+    .btn-green{background:linear-gradient(180deg,#3dff9b,#00FF7F 55%,#00e673);color:#101820;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.12);transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s ease;}
     .btn-green:hover{transform:translateY(-2px);box-shadow:0 12px 30px -8px rgba(0,255,127,.6);}
     .btn-blue{background:#0000FF;color:#fff;transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s ease;}
     .btn-blue:hover{transform:translateY(-2px);box-shadow:0 12px 30px -8px rgba(0,0,255,.6);}
@@ -201,7 +201,31 @@
     .ul-hover::after{content:'';position:absolute;left:0;bottom:-3px;height:1.5px;width:0;background:#00FF7F;transition:width .4s cubic-bezier(.16,1,.3,1);}
     .ul-hover:hover::after{width:100%;}
 
-    .glass{background:rgba(16,24,32,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.08);}
+    /* ===== LIQUID GLASS — vidrio de agua viva =====
+       Multicapa: (1) fondo con gradiente de luz, (2) backdrop blur+saturate
+       (el saturate separa el vidrio real del gris lavado), (3) especular
+       superior + asiento inferior via inset shadows, (4) canto refractivo
+       en ::before con mask (solo pinta el anillo del borde).
+       Iridiscencia derivada de la paleta: azul #0000FF → cian → verde #00FF7F. */
+    .glass{position:relative;
+      background:linear-gradient(180deg,rgba(30,42,56,.52) 0%,rgba(16,24,32,.62) 45%,rgba(12,19,27,.68) 100%);
+      backdrop-filter:blur(18px) saturate(170%) brightness(1.05);
+      -webkit-backdrop-filter:blur(18px) saturate(170%) brightness(1.05);
+      border:1px solid rgba(255,255,255,.09);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,0,0,.28),0 18px 44px -18px rgba(0,0,0,.55);}
+    .glass::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
+      background:linear-gradient(135deg,rgba(0,120,255,.34),rgba(255,255,255,.10) 28%,rgba(0,207,255,.20) 52%,rgba(255,255,255,.05) 74%,rgba(0,255,127,.28));
+      -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+      -webkit-mask-composite:xor;mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;
+      opacity:.8;}
+    /* Firma: canto de luz líquida — un arco de luz recorre el perímetro.
+       Solo en superficies clave, solo en dispositivos con hover (desktop). */
+    @property --lq-a{syntax:'<angle>';inherits:false;initial-value:0deg;}
+    @keyframes lq-orbit{to{--lq-a:360deg;}}
+    .lq-ring::before{background:conic-gradient(from var(--lq-a),rgba(0,120,255,.42),rgba(0,207,255,.55) 14%,rgba(0,255,127,.42) 30%,rgba(255,255,255,.07) 46%,rgba(255,255,255,.05) 82%,rgba(0,120,255,.42));opacity:1;}
+    @media(hover:hover) and (prefers-reduced-motion:no-preference){
+      .lq-ring::before{animation:lq-orbit 9s linear infinite;}
+    }
     .card-svc{position:relative;transition:transform .5s cubic-bezier(.16,1,.3,1),border-color .5s,background .5s;will-change:transform;}
     .card-svc:hover{transform:translateY(-6px);border-color:rgba(0,255,127,.4);background:rgba(255,255,255,.02);}
     /* Glare que sigue al cursor (lo posiciona el JS del tilt 3D) */
@@ -215,7 +239,7 @@
 
     /* ===== Toasts (reemplazan alert) ===== */
     .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);z-index:10000;display:flex;align-items:center;gap:10px;
-      max-width:min(92vw,440px);padding:13px 18px;border-radius:16px;background:rgba(16,24,32,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+      max-width:min(92vw,440px);padding:13px 18px;border-radius:16px;background:linear-gradient(180deg,rgba(26,37,50,.9),rgba(14,21,29,.94));backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 18px 50px -12px rgba(0,0,0,.7);
       border:1px solid rgba(255,255,255,.12);color:#F4F5F0;font-size:14px;font-weight:500;line-height:1.4;
       box-shadow:0 18px 50px -12px rgba(0,0,0,.7);opacity:0;transition:opacity .35s ease,transform .35s cubic-bezier(.16,1,.3,1);pointer-events:none;}
     .toast.show{opacity:1;transform:translate(-50%,0);}
@@ -230,15 +254,17 @@
     /* ===== Botones flotantes (OceanBot + WhatsApp) ===== */
     .fab-tip{position:absolute;right:calc(100% + 12px);top:50%;transform:translateY(-50%) translateX(6px);
       white-space:nowrap;padding:6px 12px;border-radius:10px;font-size:13px;font-weight:600;color:#F4F5F0;
-      background:rgba(16,24,32,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+      background:linear-gradient(180deg,rgba(26,37,50,.9),rgba(14,21,29,.94));backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);
       border:1px solid rgba(255,255,255,.1);box-shadow:0 8px 24px -8px rgba(0,0,0,.6);
       opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s cubic-bezier(.16,1,.3,1);}
     .fab-btn:hover .fab-tip{opacity:1;transform:translateY(-50%) translateX(0);}
 
     .field{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);color:#fff;transition:border-color .3s,background .3s;}
-    .field:focus{outline:none;border-color:#00FF7F;background:rgba(255,255,255,.06);}
+    .field:focus{outline:none;border-color:rgba(0,255,127,.75);background:rgba(255,255,255,.06);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 0 3px rgba(0,255,127,.14);}
 
-    .nav-blur{backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+    .nav-blur{backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);}
+    #nav.nav-blur::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;pointer-events:none;
+      background:linear-gradient(90deg,transparent 4%,rgba(0,120,255,.35) 28%,rgba(0,207,255,.5) 50%,rgba(0,255,127,.35) 72%,transparent 96%);}
     @keyframes pulse-ring{0%{transform:scale(1);opacity:1;}100%{transform:scale(1.5);opacity:0;}}
     .wa-pulse::before{content:'';position:absolute;inset:-4px;border-radius:50%;background:#25D366;animation:pulse-ring 2s ease-out infinite;z-index:-1;}
 
@@ -257,7 +283,7 @@
 
     @media(prefers-reduced-motion:reduce){
       .reveal,.reveal-l,.reveal-r,.reveal-blur,.stagger>*,.h-line>span,.hero-fade{opacity:1!important;transform:none!important;filter:none!important;transition:none!important;}
-      .marquee,.aurora,.float1,.float2,.float3{animation:none!important;}
+      .marquee,.aurora,.float1,.float2,.float3,.lq-ring::before{animation:none!important;}
     }
 
     /* ===== PRELOADER ÉPICO ===== */
@@ -484,7 +510,7 @@
           <h3 class="font-display font-700 text-xl uppercase mb-3" data-es="UGC & social" data-en="UGC & social" data-pt="UGC & social">UGC & social</h3>
           <p class="text-sm text-white/60 font-light leading-relaxed" data-es="Contenido vertical disruptivo para TikTok, Reels y Facebook. Ritmo frenético y retención visual que capta la atención en 3 segundos. Likes no pagan nóminas; las ventas sí." data-en="Disruptive vertical content for TikTok, Reels and Facebook. Frantic pace and visual retention that grabs attention in 3 seconds. Likes don't pay payroll; sales do." data-pt="Conteúdo vertical disruptivo para TikTok, Reels e Facebook. Ritmo frenético e retenção visual que captura a atenção em 3 segundos. Likes não pagam salários; vendas sim.">Contenido vertical disruptivo para TikTok, Reels y Facebook. Ritmo frenético y retención visual que capta la atención en 3 segundos. Likes no pagan nóminas; las ventas sí.</p>
         </div>
-        <div class="card-svc glass p-8 rounded-2xl border-ocean-green/30">
+        <div class="card-svc glass lq-ring p-8 rounded-2xl border-ocean-green/30">
           <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-ocean-green/20 border border-ocean-green/40 mb-6"><i data-lucide="sparkles" class="w-6 h-6 text-ocean-green"></i></div>
           <h3 class="font-display font-700 text-xl uppercase mb-3" data-es="Automatización total" data-en="Full automation" data-pt="Automação total">Automatización total</h3>
           <p class="text-sm text-white/60 font-light leading-relaxed mb-4" data-es="Conectamos todo tu negocio: CRM, pagos, WhatsApp, calendario e IA en un solo ecosistema que trabaja solo." data-en="We connect your whole business: CRM, payments, WhatsApp, calendar and AI into one ecosystem that runs itself." data-pt="Conectamos todo o seu negócio: CRM, pagamentos, WhatsApp, calendário e IA em um único ecossistema autônomo.">Conectamos todo tu negocio: CRM, pagos, WhatsApp, calendario e IA en un solo ecosistema que trabaja solo.</p>
@@ -536,7 +562,7 @@
         <h2 class="font-display font-900 uppercase leading-[0.9] tracking-tight text-4xl md:text-5xl mb-4" data-es="Paga o abona tu servicio" data-en="Pay or deposit for your service" data-pt="Pague ou deposite seu serviço">Paga o abona tu servicio</h2>
         <p class="text-sm text-white/60 font-light max-w-xl mx-auto" data-es="Pago seguro con tarjeta, PSE, Nequi o Bancolombia vía Wompi. Ingresa el monto y te mostramos el total con la comisión incluida." data-en="Secure payment by card, PSE, Nequi or Bancolombia via Wompi. Enter the amount and we'll show the total with the fee included." data-pt="Pagamento seguro por cartão, PSE, Nequi ou Bancolombia via Wompi. Insira o valor e mostramos o total com a taxa incluída.">Pago seguro con tarjeta, PSE, Nequi o Bancolombia vía Wompi. Ingresa el monto y te mostramos el total con la comisión incluida.</p>
       </div>
-      <div class="glass rounded-3xl p-7 md:p-10 reveal-blur">
+      <div class="glass lq-ring rounded-3xl p-7 md:p-10 reveal-blur">
         <!-- Selector de moneda -->
         <div class="flex items-center justify-center gap-2 mb-7">
           <span class="text-xs text-white/50 mr-1" data-es="Moneda:" data-en="Currency:" data-pt="Moeda:">Moneda:</span>
@@ -677,7 +703,8 @@
 
   <script src="https://unpkg.com/lucide@0.469.0"></script>
   <script>
-    lucide.createIcons();
+    let _icoTry=0;const drawIcons=()=>{if(window.lucide){lucide.createIcons();}else if(_icoTry++<40){setTimeout(drawIcons,150);}};
+    drawIcons();
     document.getElementById('copyYear').textContent = new Date().getFullYear();
 
     /* ===== Toasts (feedback sin alert) ===== */
@@ -764,7 +791,7 @@
     const waFloat=document.querySelector('a[aria-label="WhatsApp"].fixed');
     const chatFloatBtn=document.getElementById('chatToggle');
     window.addEventListener('scroll',()=>{const cs=window.scrollY;
-      if(cs>60){nav.classList.add('nav-blur','bg-ocean-black/80');nav.style.borderBottom='1px solid rgba(255,255,255,.06)';}else{nav.classList.remove('nav-blur','bg-ocean-black/80');nav.style.borderBottom='none';}
+      if(cs>60){nav.classList.add('nav-blur','bg-ocean-black/80');}else{nav.classList.remove('nav-blur','bg-ocean-black/80');}
       const down = cs>ls && cs>400;
       if(down)nav.style.transform='translateY(-100%)';else nav.style.transform='translateY(0)';
       // En móvil, esconde los flotantes al bajar para no tapar el contenido (reels, etc.)
@@ -777,8 +804,8 @@
 
     /* ===== Mobile menu ===== */
     const mb=document.getElementById('menuBtn'),mm=document.getElementById('mobileMenu'),mi=document.getElementById('menuIcon');let mo=false;
-    mb.addEventListener('click',()=>{mo=!mo;if(mo){mm.style.transform='translateX(0)';document.body.style.overflow='hidden';mi.setAttribute('data-lucide','x');}else{mm.style.transform='translateX(100%)';document.body.style.overflow='';mi.setAttribute('data-lucide','menu');}lucide.createIcons();});
-    document.querySelectorAll('.mlink').forEach(l=>l.addEventListener('click',()=>{mo=false;mm.style.transform='translateX(100%)';document.body.style.overflow='';mi.setAttribute('data-lucide','menu');lucide.createIcons();}));
+    mb.addEventListener('click',()=>{mo=!mo;if(mo){mm.style.transform='translateX(0)';document.body.style.overflow='hidden';mi.setAttribute('data-lucide','x');}else{mm.style.transform='translateX(100%)';document.body.style.overflow='';mi.setAttribute('data-lucide','menu');}drawIcons();});
+    document.querySelectorAll('.mlink').forEach(l=>l.addEventListener('click',()=>{mo=false;mm.style.transform='translateX(100%)';document.body.style.overflow='';mi.setAttribute('data-lucide','menu');drawIcons();}));
 
     /* ===== Smooth scroll ===== */
     document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',function(e){e.preventDefault();const t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'});}));
@@ -905,7 +932,7 @@
       }finally{
         btn.disabled=false;
         btn.innerHTML='<i data-lucide="lock" class="w-4 h-4"></i><span>'+(lang==='en'?'Pay with Wompi':lang==='pt'?'Pagar com Wompi':'Pagar con Wompi')+'</span>';
-        lucide.createIcons();
+        drawIcons();
       }
     }
     window.startPayment=startPayment;
@@ -1039,7 +1066,7 @@
             btn.innerHTML=v.muted?'<i data-lucide="volume-x" class="w-4 h-4"></i>':'<i data-lucide="volume-2" class="w-4 h-4"></i>';
             btn.setAttribute('aria-label',v.muted?'Activar sonido':'Silenciar');
             if(!v.muted)v.play().catch(()=>{});
-            lucide.createIcons();
+            drawIcons();
           });
         });
         // Autoplay solo cuando el reel está visible (ahorra datos/batería en móvil)
@@ -1065,7 +1092,7 @@
         // Re-observa reveal/stagger en las nuevas tarjetas
         grid.classList.add('active');
         grid.querySelectorAll('.reveal-blur').forEach(el=>ro.observe(el));
-        lucide.createIcons();
+        drawIcons();
       }
 
       function render(reels){
@@ -1085,7 +1112,7 @@
         grid.querySelectorAll('.reel-btn').forEach(el=>{
           el.innerHTML='<i data-lucide="instagram" class="w-3.5 h-3.5"></i>'+t;
         });
-        lucide.createIcons();
+        drawIcons();
       }));
     })();
 
