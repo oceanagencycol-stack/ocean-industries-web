@@ -16,7 +16,12 @@ export default async function handler(req, res) {
 
   try {
     const { message, sessionId, lang } = req.body || {};
-    if (!message) return res.status(400).json({ error: "Missing message" });
+    if (typeof message !== "string" || !message.trim()) {
+      return res.status(400).json({ error: "Missing message" });
+    }
+    // Cap defensivo: un mensaje de chat legítimo no pasa de ~2000 chars.
+    // Trunca en vez de rechazar para no romper la conversación por un pegado largo.
+    const safeMessage = message.slice(0, 2000);
 
     // URL del WEBHOOK de tu workflow de n8n (NO la API key del panel).
     // Se configura en Vercel como variable de entorno N8N_WEBHOOK_URL.
@@ -32,18 +37,33 @@ export default async function handler(req, res) {
       });
     }
 
-    const r = await fetch(webhook, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, sessionId, lang }),
-    });
+    // Timeout defensivo: si n8n cuelga, no dejamos al usuario esperando indefinido.
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
+    let r;
+    try {
+      r = await fetch(webhook, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: safeMessage, sessionId, lang }),
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
 
     const data = await r.json().catch(() => ({}));
     // n8n debe responder { reply: "..." }
     return res.status(200).json({ reply: data.reply || data.output || "…" });
   } catch (err) {
+    const l = (req.body && req.body.lang) || "es";
     return res.status(200).json({
-      reply: "WhatsApp: https://wa.me/message/YQTLLAZYI6QVO1",
+      reply:
+        l === "en"
+          ? "I had a connection issue. Message us on WhatsApp and we'll help you right away 👉 https://wa.me/message/YQTLLAZYI6QVO1"
+          : l === "pt"
+          ? "Tive um problema de conexão. Fale conosco no WhatsApp e ajudamos na hora 👉 https://wa.me/message/YQTLLAZYI6QVO1"
+          : "Tuve un problema de conexión. Escríbenos por WhatsApp y te ayudamos al instante 👉 https://wa.me/message/YQTLLAZYI6QVO1",
     });
   }
 }

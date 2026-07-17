@@ -207,6 +207,17 @@
        superior + asiento inferior via inset shadows, (4) canto refractivo
        en ::before con mask (solo pinta el anillo del borde).
        Iridiscencia derivada de la paleta: azul #0000FF → cian → verde #00FF7F. */
+    /* El panel del chat usa .glass (que fuerza position:relative para su borde ::before).
+       Un selector por ID gana en especificidad y le devuelve el position:fixed que la
+       utilidad .fixed de Tailwind no puede aplicar aquí. Flex-col para que header + mensajes
+       + input repartan la altura sin desbordar. */
+    #chatPanel{position:fixed!important;display:flex;flex-direction:column;
+      max-height:calc(100vh - 7.5rem);}
+    #chatPanel.opacity-0{opacity:0;transform:scale(.95);pointer-events:none;}
+    #chatMessages{flex:1 1 auto;min-height:0;}
+    /* En pantallas bajas, el panel se ancla más cerca del borde para no cortar el input. */
+    @media(max-height:640px){#chatPanel{bottom:5rem!important;height:auto!important;max-height:calc(100vh - 6.5rem);}}
+
     .glass{position:relative;
       background:
         radial-gradient(120% 70% at 50% -12%,rgba(150,215,255,.09),transparent 46%),
@@ -701,7 +712,7 @@
   </footer>
 
   <!-- ===== CHAT AGENTE OCEANBOT ===== -->
-  <div id="chatPanel" class="fixed bottom-24 right-6 z-50 w-[340px] max-w-[calc(100vw-3rem)] glass rounded-2xl overflow-hidden shadow-2xl shadow-black/50 origin-bottom-right transition-all duration-300 pointer-events-none opacity-0 scale-95" style="height:480px;">
+  <div id="chatPanel" class="fixed bottom-24 right-6 z-50 w-[340px] max-w-[calc(100vw-3rem)] glass rounded-2xl overflow-hidden shadow-2xl shadow-black/50 origin-bottom-right transition-all duration-300 opacity-0" style="height:480px;">
     <div class="flex items-center gap-3 px-4 py-3 bg-ocean-blue/90 border-b border-white/10">
       <div class="w-9 h-9 rounded-full bg-ocean-green flex items-center justify-center"><i data-lucide="bot" class="w-5 h-5 text-ocean-black"></i></div>
       <div class="flex-1">
@@ -710,7 +721,7 @@
       </div>
       <button id="chatClose" class="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors" aria-label="Cerrar"><i data-lucide="x" class="w-5 h-5"></i></button>
     </div>
-    <div id="chatMessages" class="px-4 py-4 space-y-3 overflow-y-auto" style="height:360px;"></div>
+    <div id="chatMessages" class="px-4 py-4 space-y-3 overflow-y-auto"></div>
     <div class="px-3 py-3 border-t border-white/10 flex items-center gap-2 bg-ocean-black/40">
       <input id="chatInput" type="text" class="field flex-1 px-3 py-2.5 text-sm rounded-xl" data-ph-es="Escribe tu mensaje…" data-ph-en="Type your message…" data-ph-pt="Escreva sua mensagem…" placeholder="Escribe tu mensaje…" />
       <button id="chatSend" class="w-10 h-10 flex-shrink-0 btn-green rounded-xl flex items-center justify-center" aria-label="Enviar"><i data-lucide="send" class="w-4 h-4"></i></button>
@@ -1015,13 +1026,13 @@
     function toggleChat(){
       chatOpen=!chatOpen;
       if(chatOpen){
-        chatPanel.classList.remove('pointer-events-none','opacity-0','scale-95');
+        chatPanel.classList.remove('opacity-0');
         chatToggle.style.opacity='0';
         chatToggle.style.pointerEvents='none';
         if(!chatGreeted){chatGreeted=true;setTimeout(()=>addMsg(greetings[lang]||greetings.es,'bot'),200);}
         setTimeout(()=>chatInput.focus(),300);
       }else{
-        chatPanel.classList.add('pointer-events-none','opacity-0','scale-95');
+        chatPanel.classList.add('opacity-0');
         chatToggle.style.opacity='1';
         chatToggle.style.pointerEvents='auto';
       }
