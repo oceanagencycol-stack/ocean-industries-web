@@ -317,6 +317,27 @@
     @media(prefers-reduced-motion:reduce){
       .has-js .oi-entra{opacity:1;transform:none;animation:none}}
 
+    /* --- Interruptor de sonido de interfaz ---------------------------
+       Apagado de fábrica si el sistema pide movimiento reducido, y siempre
+       visible: un sitio que suena sin control es un sitio del que se huye. */
+    .oi-sonido{display:inline-grid;place-items:center;width:36px;height:36px;
+      border-radius:999px;border:1px solid var(--oc-l-20);background:var(--oc-l-05);
+      color:inherit;cursor:pointer;flex:none;margin-left:6px;
+      transition:border-color var(--oi-t-hover) var(--oi-ease),
+                 background var(--oi-t-hover) var(--oi-ease)}
+    .oi-sonido:hover{border-color:var(--oc-acento);background:var(--oc-l-08)}
+    .oi-sonido[aria-pressed="true"]{border-color:var(--oc-verde);
+      background:color-mix(in srgb,var(--oc-verde) 14%,transparent)}
+    .oi-sonido__ondas{display:flex;align-items:flex-end;gap:2.5px;height:13px}
+    .oi-sonido__ondas i{width:2.5px;border-radius:2px;background:currentColor;
+      height:4px;opacity:.42;transition:height .2s,opacity .2s}
+    .oi-sonido[aria-pressed="true"] .oi-sonido__ondas i{opacity:1;
+      animation:oi-eq 1s ease-in-out infinite;background:var(--oc-verde)}
+    .oi-sonido[aria-pressed="true"] .oi-sonido__ondas i:nth-child(2){animation-delay:.16s}
+    .oi-sonido[aria-pressed="true"] .oi-sonido__ondas i:nth-child(3){animation-delay:.32s}
+    @keyframes oi-eq{0%,100%{height:4px}50%{height:13px}}
+    @media(prefers-reduced-motion:reduce){.oi-sonido__ondas i{animation:none!important}}
+
     /* --- Franja de estado en vivo del hero: prueba, no promesa. --- */
     .oi-pulso{display:inline-flex;align-items:center;gap:12px;padding:10px 18px;
       border-radius:999px;background:rgba(0,255,127,.07);
@@ -736,6 +757,10 @@
           <a href="#pay" class="text-sm font-medium tracking-wide uppercase ul-hover" data-es="Pagos" data-en="Payments" data-pt="Pagamentos">Pagos</a>
           <a href="#talk" class="text-sm font-medium tracking-wide uppercase ul-hover text-ocean-green" data-es="Contacto" data-en="Contact" data-pt="Contato">Contacto</a>
           <a href="#book" class="text-sm font-medium tracking-wide uppercase ul-hover" data-es="Agenda" data-en="Book" data-pt="Agende">Agenda</a>
+          <button id="oiSonido" class="oi-sonido" aria-pressed="false"
+                  aria-label="Activar sonido de la interfaz" title="Sonido de la interfaz">
+            <span class="oi-sonido__ondas" aria-hidden="true"><i></i><i></i><i></i></span>
+          </button>
           <div class="flex items-center gap-0.5 ml-1">
             <button class="lang-btn active" data-lang="es">ES</button><span class="text-white/20">·</span>
             <button class="lang-btn" data-lang="en">EN</button><span class="text-white/20">·</span>
@@ -1805,6 +1830,7 @@
   <!-- Ocean UI — componentes propios. Sin dependencias, cargan diferidos. -->
   <script src="/assets/ocean-ui/ocean-motion.js" defer></script>
   <script src="/assets/ocean-ui/ocean-live.js" defer></script>
+  <script src="/assets/ocean-ui/ocean-sound.js" defer></script>
   <script src="/assets/ocean-ui/ocean-escena.js" defer></script>
   <script>
     // La web ya tiene su propio motor de reveals: de OceanMotion solo se usan
@@ -1880,11 +1906,21 @@
       v.load();                       // libera el búfer descargado
       setTimeout(function(){ delete v.dataset.oCambiando; }, 400);
     }
+    /* Los tres videos del héroe están en pantalla desde el primer píxel y
+       se montaban a la vez: 5,5 MB compitiendo por el mismo ancho de banda,
+       de los que solo el primero se ve completo. Se escalonan 700 ms para
+       que el primero tenga la línea libre. */
+    var turno = 0;
     var io = new IntersectionObserver(function(es){
       es.forEach(function(e){
         var v = e.target;
-        if (e.isIntersecting) montar(v);
-        else if (e.intersectionRatio === 0) {
+        if (e.isIntersecting) {
+          if (v.dataset.oMontado) return;
+          var esperar = v.closest('#hero, .hero') ? (turno++ * 700) : 0;
+          esperar ? setTimeout(function(){ montar(v); }, esperar) : montar(v);
+          return;
+        }
+        if (e.intersectionRatio === 0) {
           v.pause();
           // solo se libera si quedó muy lejos: soltar y remontar en cada
           // scroll corto sería peor que dejarlo en memoria
@@ -2133,6 +2169,65 @@
       b.addEventListener('click', function(){ setTimeout(correr, 120); });
     });
   })();
+  </script>
+  <script>
+  /* ==================================================================
+     SONIDO DE INTERFAZ (Ocean UI · ocean-sound.js)
+     Doce sonidos sintetizados con osciladores y ruido filtrado: cero
+     archivos de audio, pesa lo que pesa el módulo y suena igual con mala
+     conexión. Apagado de fábrica si el sistema pide movimiento reducido,
+     control siempre visible, y el contexto de audio solo arranca tras un
+     gesto real del usuario (política del navegador).
+     ================================================================== */
+  window.addEventListener('load', function(){
+    if (!window.OceanSound) return;
+    var btn = document.getElementById('oiSonido');
+    if (!btn) return;
+    function pintar(){
+      var on = OceanSound.encendido;
+      btn.setAttribute('aria-pressed', String(on));
+      btn.setAttribute('aria-label', on ? 'Silenciar la interfaz' : 'Activar sonido de la interfaz');
+    }
+    // Apagado en la primera visita. El módulo viene encendido por defecto,
+    // que está bien en una demo de la biblioteca; en un sitio comercial, un
+    // visitante al que le suena algo sin haberlo pedido se va. Solo se
+    // respeta lo que el visitante haya elegido antes.
+    try{
+      if (localStorage.getItem('ocean-sonido') === null && OceanSound.encendido)
+        OceanSound.alternar(false);
+    }catch(e){ if (OceanSound.encendido) OceanSound.alternar(false); }
+    btn.addEventListener('click', function(){ OceanSound.alternar(); pintar(); });
+    pintar();
+    OceanSound.volumen(0.34);          // esto acompaña, no protagoniza
+    OceanSound.conectar(document);
+
+    document.querySelectorAll('nav a[href^="#"]').forEach(function(a){
+      if (a.querySelector('img')) return;
+      a.setAttribute('data-o-roce','');
+      a.addEventListener('click', function(){ OceanSound.reproducir('paso'); });
+    });
+    document.querySelectorAll('.btn-blue,.btn-green,.oi-cta,a[href*="wa.me"]').forEach(function(b){
+      b.setAttribute('data-o-roce','');
+      b.addEventListener('click', function(){ OceanSound.reproducir('toque'); });
+    });
+    document.querySelectorAll('.lang-btn').forEach(function(b){
+      b.addEventListener('click', function(){ OceanSound.reproducir('muesca'); });
+    });
+    // La conversación del agente: el bot y el cliente suenan distinto, como
+    // en una app de mensajería real.
+    var chat = document.getElementById('oiChat');
+    if (chat) new MutationObserver(function(ms){
+      ms.forEach(function(m){ m.addedNodes.forEach(function(n){
+        if (n.nodeType !== 1 || !n.classList) return;
+        if (n.classList.contains('oi-b--bot')) OceanSound.reproducir('bien');
+        else if (n.classList.contains('oi-b--cli')) OceanSound.reproducir('roce');
+      }); });
+    }).observe(chat, {childList:true});
+    var ruta = document.getElementById('rutaOcean');
+    if (ruta) new MutationObserver(function(){
+      if (ruta.getAttribute('actual') === '3') OceanSound.reproducir('aviso');
+    }).observe(ruta, {attributes:true, attributeFilter:['actual']});
+  });
   </script>
 </body>
 </html>
