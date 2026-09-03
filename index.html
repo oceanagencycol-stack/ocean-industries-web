@@ -283,6 +283,29 @@
     /* --- Corrección de contraste donde el azul se usaba como texto --- */
     .text-ocean-blue{color:var(--oc-azul-tx)!important}
 
+    /* --- Controles del reel: el visitante debe poder ver y escuchar. --- */
+    .reel-mute{transition:background var(--oi-t-hover) var(--oi-ease),
+      transform var(--oi-t-hover) var(--oi-ease),box-shadow var(--oi-t-hover) var(--oi-ease)}
+    .reel-mute:hover{transform:scale(1.1)}
+    .reel-mute.sonando{background:var(--oc-verde)!important;color:#04140b!important;
+      box-shadow:0 0 0 3px rgba(0,255,127,.25);animation:oi-sonando 2s infinite}
+    @keyframes oi-sonando{0%,100%{box-shadow:0 0 0 3px rgba(0,255,127,.25)}
+      50%{box-shadow:0 0 0 7px rgba(0,255,127,.06)}}
+    .reel-screen{cursor:pointer}
+    /* Señal de pausa: sin esto el visitante no sabe si el clic hizo algo. */
+    .reel-screen::before{content:"";position:absolute;inset:0;z-index:4;opacity:0;
+      pointer-events:none;background:rgba(4,10,16,.42);
+      transition:opacity var(--oi-t-hover) var(--oi-ease)}
+    .reel-screen.pausado::before{opacity:1}
+    .reel-screen::after{content:"";position:absolute;left:50%;top:50%;z-index:5;
+      width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;
+      background:rgba(255,255,255,.92) center/22px no-repeat;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23101820'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E");
+      opacity:0;transform:scale(.7);pointer-events:none;
+      transition:opacity var(--oi-t-hover) var(--oi-ease),transform var(--oi-t-hover) var(--oi-ease)}
+    .reel-screen.pausado::after{opacity:1;transform:scale(1)}
+    @media(prefers-reduced-motion:reduce){.reel-mute.sonando{animation:none}}
+
     /* Entrada de los reels: animación CSS pura, sin JavaScript de por medio.
        El desenfoque anterior dependía del observador, del orden del archivo
        y de que /api/reels respondiera: tres puntos de fallo para un efecto
@@ -1591,6 +1614,7 @@
         a.innerHTML=
           '<div class="reel-screen">'+
             '<video class="reel-vid" muted loop playsinline preload="none" data-o-video '+poster+'>'+
+              (reel.media_webm?'<source data-src="'+esc(reel.media_webm)+'" type="video/webm">':'')+
               '<source data-src="'+esc(reel.media_url)+'" type="video/mp4"></video>'+
             '<div class="reel-grad"></div>'+
             '<div class="reel-notch"></div>'+
@@ -1612,31 +1636,79 @@
           btn.addEventListener('click',e=>{
             e.preventDefault();e.stopPropagation();
             const v=btn.closest('.reel-screen').querySelector('video');
+            if(!v) return;
+            const activando = v.muted;
+            if(activando){
+              // Un solo reel con sonido a la vez: tres audios simultáneos son
+              // ruido, no experiencia.
+              grid.querySelectorAll('video').forEach(o=>{
+                if(o!==v && !o.muted){
+                  o.muted=true;
+                  const ob=o.closest('.reel-screen').querySelector('.reel-mute');
+                  if(ob){ob.innerHTML='<i data-lucide="volume-x" class="w-4 h-4"></i>';
+                         ob.setAttribute('aria-label','Activar sonido');
+                         ob.classList.remove('sonando');}
+                }
+              });
+              // Si el visitante pide sonido antes de que el video se monte
+              // solo, se monta aquí: pedir audio es un gesto explícito.
+              if(!v.dataset.oMontado && window.OceanVideo) window.OceanVideo.montarYa(v);
+            }
             v.muted=!v.muted;
             btn.innerHTML=v.muted?'<i data-lucide="volume-x" class="w-4 h-4"></i>':'<i data-lucide="volume-2" class="w-4 h-4"></i>';
             btn.setAttribute('aria-label',v.muted?'Activar sonido':'Silenciar');
-            if(!v.muted)v.play().catch(()=>{});
+            btn.classList.toggle('sonando',!v.muted);
+            v.play().catch(()=>{});
             drawIcons();
           });
         });
         // Autoplay solo cuando el reel está visible (ahorra datos/batería en móvil)
+        // Clic sobre el video: pausa o reanuda. El enlace a Instagram queda
+        // en su botón, para que ver el reel no obligue a salir del sitio.
+        grid.querySelectorAll('.reel-card').forEach(card=>{
+          card.addEventListener('click',e=>{
+            // El botón de sonido y el de Instagram conservan su función.
+            if(e.target.closest('.reel-mute')||e.target.closest('.reel-btn')) return;
+            const sc=card.querySelector('.reel-screen');
+            const v=card.querySelector('video');
+            if(!v||!sc) return;
+            e.preventDefault(); e.stopPropagation();
+            if(!v.dataset.oMontado && window.OceanVideo) window.OceanVideo.montarYa(v);
+            if(v.paused){ delete v.dataset.oPausaManual; v.play().catch(()=>{}); }
+            else { v.dataset.oPausaManual='1'; v.pause(); }
+            sc.classList.toggle('pausado', v.paused);
+          });
+        });
         const vids=grid.querySelectorAll('video.reel-vid');
         // Fallback: si un video no puede reproducirse (codec/red), deja ver el poster como imagen
         vids.forEach(v=>{
-          v.addEventListener('error',()=>showPoster(v),{once:true});
+          v.addEventListener('error',()=>{
+            if(v.dataset.oCambiando) return;   // error del montaje, no un fallo real
+            showPoster(v);
+          });
           // Si a los 6s no cargó nada de datos, asumimos fallo y mostramos el poster
-          setTimeout(()=>{ if(v.readyState===0) showPoster(v); },6000);
+          // Solo es fallo si el video ya se montó y aun así no cargó nada.
+          // Antes bastaba con que el reel estuviera fuera de pantalla para
+          // que a los 6 s se reemplazara por una foto fija, para siempre.
+          setTimeout(()=>{ if(v.dataset.oMontado && v.readyState===0) showPoster(v); },6000);
         });
         function showPoster(v){
           const p=v.getAttribute('poster'); if(!p)return;
           if(v.dataset.fallback)return; v.dataset.fallback='1';
+          // Se SUPERPONE, no se reemplaza: quitar el <video> del DOM impedía
+          // reintentar y dejaba al visitante sin sonido ni control.
           const img=document.createElement('img');
           img.src=p; img.alt='@oceanind.co'; img.className='reel-poster'; img.loading='lazy';
-          v.replaceWith(img);
+          img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1';
+          v.parentElement.insertBefore(img, v.nextSibling);
         }
         const vo=new IntersectionObserver(es=>{es.forEach(e=>{
           const v=e.target;
-          if(e.isIntersecting){v.play().catch(()=>{});}else{v.pause();}
+          if(e.isIntersecting){
+            if(!v.dataset.oMontado && window.OceanVideo) window.OceanVideo.montarYa(v);
+            // Si el visitante lo pausó a mano, no se le reanuda por debajo.
+            if(!v.dataset.oPausaManual) v.play().catch(()=>{});
+          } else { v.pause(); }
         });},{threshold:.45});
         vids.forEach(v=>vo.observe(v));
         // Re-observa reveal/stagger en las nuevas tarjetas
@@ -1665,13 +1737,13 @@
       // sección se pinta igual: dejar esqueletos era mostrar una sección rota.
       const REELS_LOCALES=[
         {id:'sem6-1',permalink:'https://www.instagram.com/oceanind.co/',
-         media_url:'/assets/reels/reel-1.mp4',thumbnail_url:'/assets/reels/reel-1.jpg',
+         media_url:'/assets/reels/reel-1.mp4',media_webm:'/assets/reels/reel-1.webm',thumbnail_url:'/assets/reels/reel-1.jpg',
          caption:'La prueba más útil: pregúntale a una IA antes de contratar'},
         {id:'sem6-2',permalink:'https://www.instagram.com/oceanind.co/',
-         media_url:'/assets/reels/reel-2.mp4',thumbnail_url:'/assets/reels/reel-2.jpg',
+         media_url:'/assets/reels/reel-2.mp4',media_webm:'/assets/reels/reel-2.webm',thumbnail_url:'/assets/reels/reel-2.jpg',
          caption:'Te doy el consejo que nadie te da sobre automatizar'},
         {id:'sem6-3',permalink:'https://www.instagram.com/oceanind.co/',
-         media_url:'/assets/reels/reel-3.mp4',thumbnail_url:'/assets/reels/reel-3.jpg',
+         media_url:'/assets/reels/reel-3.mp4',media_webm:'/assets/reels/reel-3.webm',thumbnail_url:'/assets/reels/reel-3.jpg',
          caption:'Cuatro mensajes y el cliente ya está agendado'}
       ];
       render(REELS_LOCALES);                       // pinta ya, sin esperar red
@@ -1769,22 +1841,44 @@
     var pocos = matchMedia('(prefers-reduced-motion: reduce)').matches;
     var ahorro = navigator.connection && (navigator.connection.saveData ||
                  /2g/.test(navigator.connection.effectiveType||''));
+    /* Un <source> sin atributo src hace que el navegador marque el video como
+       NETWORK_NO_SOURCE (networkState 3) al parsear, y asignarle el src
+       después no siempre lo recupera: medido en producción, los cuatro videos
+       del héroe quedaban en readyState 0 con el src ya puesto. La forma que
+       sí funciona es poner el src en el propio <video> y quitar el <source>. */
     function montar(v){
       if (v.dataset.oMontado) return;
-      var s = v.querySelector('source[data-src]');
-      if (!s) return;
-      s.src = s.dataset.src;
+      var fuentes = v.querySelectorAll('source[data-src]');
+      v.dataset.oCambiando = '1';     // los errores de este momento no son fallos
+      if (fuentes.length){
+        // Varias fuentes: el navegador elige la primera que sabe decodificar.
+        // WebM/VP9 va antes que MP4/H.264 porque no depende de una licencia:
+        // Chromium sin códecs propietarios no reproduce H.264 y el visitante
+        // se quedaría con el póster fijo.
+        fuentes.forEach(function(f){ f.src = f.dataset.src; });
+      } else {
+        var url = v.dataset.src;
+        if (!url) { delete v.dataset.oCambiando; return; }
+        v.src = url;
+      }
       v.dataset.oMontado = '1';
       v.load();
-      if (!pocos) v.play().catch(function(){});
+      setTimeout(function(){ delete v.dataset.oCambiando; }, 400);
+      if (!pocos) {
+        var pr = v.play();
+        if (pr && pr.catch) pr.catch(function(){ /* el navegador lo bloqueó: queda el póster */ });
+      }
     }
     function soltar(v){
       if (!v.dataset.oMontado) return;
       v.pause();
-      var s = v.querySelector('source[data-src]');
-      if (s) s.removeAttribute('src');
+      v.dataset.oCambiando = '1';
+      var fs = v.querySelectorAll('source[data-src]');
+      if (fs.length) fs.forEach(function(f){ f.removeAttribute('src'); });
+      else { v.dataset.src = v.src; v.removeAttribute('src'); }
       v.removeAttribute('data-o-montado');
       v.load();                       // libera el búfer descargado
+      setTimeout(function(){ delete v.dataset.oCambiando; }, 400);
     }
     var io = new IntersectionObserver(function(es){
       es.forEach(function(e){
@@ -1812,7 +1906,7 @@
     // Los reels se inyectan por JS después: se vigila lo que aparezca.
     new MutationObserver(function(){ vigilar(); })
       .observe(document.body, { childList:true, subtree:true });
-    window.OceanVideo = { vigilar: vigilar };
+    window.OceanVideo = { vigilar: vigilar, montarYa: montar, soltar: soltar };
   })();
   </script>
   <script>
