@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
+<!-- has-js se pone antes de pintar: sin JavaScript la página se ve completa -->
+<script>document.documentElement.className+=" has-js"</script>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -101,14 +103,14 @@
     ::-webkit-scrollbar-thumb:hover{background:#00FF7F;}
 
     /* ===== Animaciones base ===== */
-    .reveal{opacity:0;transform:translateY(44px);transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1);}
-    .reveal.active{opacity:1;transform:translateY(0);}
-    .reveal-l{opacity:0;transform:translateX(-64px);transition:all 1s cubic-bezier(.16,1,.3,1);}
-    .reveal-l.active{opacity:1;transform:translateX(0);}
-    .reveal-r{opacity:0;transform:translateX(64px);transition:all 1s cubic-bezier(.16,1,.3,1);}
-    .reveal-r.active{opacity:1;transform:translateX(0);}
-    .reveal-blur{opacity:0;filter:blur(14px);transform:translateY(30px) scale(.98);transition:opacity 1.1s ease,filter 1.1s ease,transform 1.1s cubic-bezier(.16,1,.3,1);}
-    .reveal-blur.active{opacity:1;filter:blur(0);transform:translateY(0) scale(1);}
+    .has-js .reveal{opacity:0;transform:translateY(44px);transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1);}
+    .has-js .reveal.active{opacity:1;transform:translateY(0);}
+    .has-js .reveal-l{opacity:0;transform:translateX(-64px);transition:opacity 1s cubic-bezier(.19,1,.22,1),transform 1s cubic-bezier(.19,1,.22,1);}
+    .has-js .reveal-l.active{opacity:1;transform:translateX(0);}
+    .has-js .reveal-r{opacity:0;transform:translateX(64px);transition:opacity 1s cubic-bezier(.19,1,.22,1),transform 1s cubic-bezier(.19,1,.22,1);}
+    .has-js .reveal-r.active{opacity:1;transform:translateX(0);}
+    .has-js .reveal-blur{opacity:0;filter:blur(14px);transform:translateY(30px) scale(.98);transition:opacity 1.1s ease,filter 1.1s ease,transform 1.1s cubic-bezier(.16,1,.3,1);}
+    .has-js .reveal-blur.active{opacity:1;filter:blur(0);transform:translateY(0) scale(1);}
     .stagger>*{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s cubic-bezier(.16,1,.3,1);}
     .stagger.active>*:nth-child(1){transition-delay:.06s;opacity:1;transform:translateY(0);}
     .stagger.active>*:nth-child(2){transition-delay:.16s;opacity:1;transform:translateY(0);}
@@ -123,8 +125,8 @@
     .hero-on .h-line>span{transform:translateY(0);}
     .h-line:nth-child(2)>span{transition-delay:.1s;}
     .h-line:nth-child(3)>span{transition-delay:.2s;}
-    .hero-fade{opacity:0;transform:translateY(22px);transition:opacity 1s ease .55s,transform 1s ease .55s;}
-    .hero-on .hero-fade{opacity:1;transform:translateY(0);}
+    .has-js .hero-fade{opacity:0;transform:translateY(22px);transition:opacity 1s cubic-bezier(.19,1,.22,1) .55s,transform 1s cubic-bezier(.19,1,.22,1) .55s;}
+    .has-js .hero-on .hero-fade{opacity:1;transform:translateY(0);}
 
     /* Aurora animated background */
     @keyframes aurora{0%{transform:translate(0,0) scale(1);}33%{transform:translate(6%,-4%) scale(1.1);}66%{transform:translate(-5%,5%) scale(.95);}100%{transform:translate(0,0) scale(1);}}
@@ -133,6 +135,12 @@
     /* Marquee */
     @keyframes marquee{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
     .marquee{animation:marquee 30s linear infinite;}
+    /* La cinta mide el doble del viewport por diseño: su carril la recorta. */
+    .marquee-carril{overflow:hidden;max-width:100%}
+    /* El CSS de Tailwind está precompilado: cualquier clase suya que no esté
+       ya en assets/tailwind.css no existe. Las utilidades nuevas van aquí,
+       con prefijo oi- para no chocar con el framework. */
+    .oi-clip{overflow:hidden}
     .marquee:hover{animation-play-state:paused;}
 
     /* Phone mockup float */
@@ -233,7 +241,11 @@
        radial-gradients (cero filter/blur: barato en móvil). Bokeh abisal:
        azul profundo → cian → verde bioluminiscente, más tres motas
        pequeñas fuera de foco. z-index negativo = siempre detrás del contenido. */
-    .deep-field{position:fixed;inset:-14vh -14vw;z-index:-1;pointer-events:none;
+    /* El fondo mide más que el viewport a propósito. Al ser position:fixed
+       escapa del overflow-x del ancestro y crea scroll horizontal real:
+       182 px en móvil. Se recorta con clip-path, que sí afecta a fixed. */
+    .deep-field{overflow:hidden;contain:layout paint;position:fixed;inset:0;z-index:-1;pointer-events:none;
+      transform:scale(1.3);transform-origin:center;
       background:
         linear-gradient(180deg,rgba(6,10,16,.55) 0%,rgba(16,24,32,0) 16%,rgba(16,24,32,0) 78%,rgba(6,10,16,.6) 100%),
         radial-gradient(38vw 38vw at 12% 6%,rgba(0,64,255,.13),transparent 62%),
@@ -245,7 +257,7 @@
         radial-gradient(9vw 9vw at 52% 88%,rgba(80,160,255,.05),transparent 66%);}
     @keyframes deep-drift{0%{transform:translate3d(0,0,0) scale(1);}50%{transform:translate3d(1.6%,-1.2%,0) scale(1.03);}100%{transform:translate3d(0,0,0) scale(1);}}
     @media(hover:hover) and (prefers-reduced-motion:no-preference){
-      .deep-field{animation:deep-drift 46s ease-in-out infinite;will-change:transform;}
+      .deep-field{animation:deep-drift 46s ease-in-out infinite;will-change:transform;transform:scale(1.3)}
     }
     .glass::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
       background:linear-gradient(135deg,rgba(0,120,255,.34),rgba(255,255,255,.10) 28%,rgba(0,207,255,.20) 52%,rgba(255,255,255,.05) 74%,rgba(0,255,127,.28));
@@ -348,6 +360,7 @@
   </style>
 </head>
 <body class="cursor-none">
+  <a class="skip-link" href="#hero">Saltar al contenido</a>
 
   <!-- Columna de agua: bokeh abisal detrás de todo el contenido (deep field) -->
   <div class="deep-field" aria-hidden="true"></div>
@@ -409,6 +422,8 @@
       </a>
     </div>
   </nav>
+
+  <main id="contenido">
 
   <!-- ===== HERO ===== -->
   <section id="hero" class="relative w-full overflow-hidden flex items-center pt-24 pb-16" style="min-height:100vh;min-height:100svh;">
@@ -503,7 +518,7 @@
   </div>
 
   <!-- ===== ABOUT ===== -->
-  <section id="about" class="py-24 md:py-36 px-5 md:px-10 relative">
+  <section id="about" class="py-24 md:py-36 px-5 md:px-10 relative oi-clip">
     <div class="max-w-[1440px] mx-auto grid md:grid-cols-12 gap-12 items-center">
       <div class="md:col-span-6 reveal-l">
         <p class="text-xs font-bold tracking-[0.3em] uppercase text-ocean-green mb-5" data-es="Sobre nosotros" data-en="About us" data-pt="Sobre nós">Sobre nosotros</p>
@@ -527,7 +542,7 @@
   </section>
 
   <!-- ===== SERVICES ===== -->
-  <section id="services" class="py-24 md:py-36 px-5 md:px-10 bg-ocean-ink relative overflow-hidden">
+  <section id="services" class="py-24 md:py-36 px-5 md:px-10 bg-ocean-ink relative oi-clip">
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] aurora" style="background:#0000FF;opacity:.15;"></div>
     <div class="max-w-[1440px] mx-auto relative z-10">
       <div class="text-center mb-16 reveal">
@@ -572,7 +587,7 @@
   </section>
 
   <!-- ===== WORK / REELS DE INSTAGRAM (auto-actualizados) ===== -->
-  <section id="work" class="py-24 md:py-36 px-5 md:px-10 relative overflow-hidden">
+  <section id="work" class="py-24 md:py-36 px-5 md:px-10 relative oi-clip">
     <div class="absolute top-1/4 -left-20 w-[420px] h-[420px] aurora" style="background:#0000FF;opacity:.10;"></div>
     <div class="max-w-[1440px] mx-auto relative z-10">
       <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14 reveal">
@@ -605,7 +620,7 @@
   </section>
 
   <!-- ===== FRANJA DE CONVERSIÓN — WHATSAPP (punto de máxima intención) ===== -->
-  <section id="talk" class="py-20 md:py-28 px-5 md:px-10 relative overflow-hidden">
+  <section id="talk" class="py-20 md:py-28 px-5 md:px-10 relative oi-clip">
     <div class="absolute inset-0" style="background:radial-gradient(ellipse at 30% 20%,rgba(0,255,127,.10),transparent 55%),radial-gradient(ellipse at 80% 90%,rgba(0,0,255,.12),transparent 55%);"></div>
     <div class="max-w-[900px] mx-auto relative z-10 text-center">
       <div class="reveal inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass mb-7">
@@ -630,7 +645,7 @@
   </section>
 
   <!-- ===== PAYMENTS (WOMPI) ===== -->
-  <section id="pay" class="py-24 md:py-36 px-5 md:px-10 bg-ocean-ink relative overflow-hidden">
+  <section id="pay" class="py-24 md:py-36 px-5 md:px-10 bg-ocean-ink relative oi-clip">
     <div class="absolute bottom-0 right-0 w-[500px] h-[500px] aurora" style="background:#00FF7F;opacity:.12;"></div>
     <div class="max-w-[900px] mx-auto relative z-10">
       <div class="text-center mb-12 reveal">
@@ -688,7 +703,7 @@
   </section>
 
   <!-- ===== BOOK (MATON) ===== -->
-  <section id="book" class="py-24 md:py-36 px-5 md:px-10">
+  <section id="book" class="py-24 md:py-36 px-5 md:px-10 oi-clip">
     <div class="max-w-[1100px] mx-auto">
       <div class="text-center mb-12 reveal">
         <p class="text-xs font-bold tracking-[0.3em] uppercase text-ocean-green mb-4" data-es="Asesoría gratis" data-en="Free consultation" data-pt="Consultoria grátis">Asesoría gratis</p>
@@ -709,6 +724,8 @@
   </section>
 
   <!-- ===== CONTACT / FOOTER ===== -->
+  </main>
+
   <footer class="bg-ocean-ink border-t border-white/10 pt-20 pb-10 px-5 md:px-10 relative overflow-hidden">
     <div class="absolute top-0 left-1/4 w-[400px] h-[400px] aurora" style="background:#0000FF;opacity:.1;"></div>
     <div class="max-w-[1440px] mx-auto relative z-10">
@@ -857,9 +874,11 @@
     }
     langButtons.forEach(b=>b.addEventListener('click',()=>setLang(b.getAttribute('data-lang'))));
     (function(){let s=null;try{s=localStorage.getItem('ocean_lang');}catch(e){}
-      const nav=(navigator.language||'es').toLowerCase();
-      let def='es'; if(nav.startsWith('en'))def='en'; else if(nav.startsWith('pt'))def='pt';
-      setLang(s||def);
+      // El documento se sirve en español y el canonical es es_CO. Solo se cambia
+      // de idioma si el visitante lo eligió antes: detectar por navigator.language
+      // dejaba <html lang="en"> con el contenido en español, lo que rompe el
+      // anuncio a lectores de pantalla y confunde a los buscadores.
+      setLang(s || 'es');
     })();
 
     /* ===== Preloader + Hero intro ===== */
