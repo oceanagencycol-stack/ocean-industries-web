@@ -129,13 +129,18 @@
       display:grid;grid-template-columns:repeat(5,1fr);visibility:hidden}
     .oi-cortina i{display:block;transform:scaleY(0);transform-origin:bottom;
       will-change:transform;
-      background:linear-gradient(180deg,#0B1F8C 0%,#050a10 55%,#04140b 100%);
+      background:linear-gradient(180deg,#0B1F8C 0%,#07223A 38%,#052018 72%,#04140b 100%);
       transition-property:transform;
       transition-duration:380ms;
       transition-timing-function:var(--oi-ease-io)}
     /* borde de luz en el filo de cada franja: es lo que hace legible el barrido */
     .oi-cortina i::after{content:"";position:absolute;inset:auto 0 0;height:2px;
-      background:linear-gradient(90deg,transparent,#00FF7F,transparent);opacity:.55}
+      background:linear-gradient(90deg,transparent,var(--filo,#00FF7F),transparent);opacity:.6}
+    .oi-cortina i:nth-child(1)::after{--filo:#5B8CFF}
+    .oi-cortina i:nth-child(2)::after{--filo:#59C3E6}
+    .oi-cortina i:nth-child(3)::after{--filo:#5BE69A}
+    .oi-cortina i:nth-child(4)::after{--filo:#00FF7F}
+    .oi-cortina i:nth-child(5)::after{--filo:#00FF7F}
     .oi-cortina i{position:relative;overflow:hidden}
 
     /* al cerrar entran de izquierda a derecha */
@@ -188,7 +193,7 @@
 
     /* --- Barra de progreso de lectura, arriba del todo. --- */
     .oi-progreso{position:fixed;left:0;top:0;height:2px;z-index:8500;
-      background:linear-gradient(90deg,#00FF7F,#0000FF);
+      background:linear-gradient(90deg,#5B8CFF,#59C3E6 35%,#5BE69A 70%,#00FF7F);
       transform:scaleX(var(--oi-p,0));transform-origin:left;
       will-change:transform;pointer-events:none}
 
@@ -213,6 +218,81 @@
       .btn-shine::after{display:none}
       ::view-transition-old(root),::view-transition-new(root){animation:none}
     }
+
+    /* =================================================================
+       SISTEMA DE COLOR  ·  auditoría del 3-sep
+
+       El azul de marca #0000FF da 2,08 de contraste sobre el fondo negro:
+       ilegible como texto, ni siquiera pasa AA para texto grande (3,0).
+       Se conserva como color de SUPERFICIE —fondos, halos, gradientes— y
+       se añade un azul de TEXTO que sí pasa. Es el principio de los pares
+       on-color: cada color declara dónde se puede usar.
+       ================================================================= */
+    :root{
+      /* superficie (nunca texto sobre oscuro) */
+      --oc-azul:#0000FF;
+      --oc-azul-hondo:#0B1F8C;
+      /* texto y trazo sobre fondo oscuro — 5,66 y 8,84 de contraste */
+      --oc-azul-tx:#5B8CFF;
+      --oc-cian:#59C3E6;
+      --oc-verde:#00FF7F;         /* 13,30 sobre negro */
+      --oc-verde-suave:#5BE69A;   /* 11,27 */
+
+      /* Escalera alfa: bordes y separadores sin inventar grises sueltos. */
+      --oc-l-05:rgba(244,245,240,.05); --oc-l-08:rgba(244,245,240,.08);
+      --oc-l-12:rgba(244,245,240,.12); --oc-l-20:rgba(244,245,240,.20);
+      --oc-l-45:rgba(244,245,240,.45); --oc-l-70:rgba(244,245,240,.70);
+
+      /* Acento activo. Lo cambia cada sección: el color cuenta el recorrido
+         del sitio, del azul de marca al verde del resultado. */
+      --oc-acento:var(--oc-verde);
+      --oc-acento-tx:var(--oc-verde);
+    }
+
+    /* --- Temperatura por sección -------------------------------------
+       Frío arriba (quiénes somos), templado en medio (lo que hacemos),
+       verde abajo (lo que consigues). El acento se hereda por CSS, así que
+       cada sección tiñe sus propios detalles sin tocar el HTML. */
+    #about   { --oc-acento:var(--oc-cian);       --oc-acento-tx:var(--oc-cian) }
+    #services{ --oc-acento:var(--oc-azul-tx);    --oc-acento-tx:var(--oc-azul-tx) }
+    #work    { --oc-acento:#8E7BFF;              --oc-acento-tx:#A895FF }
+    #agente-vivo{ --oc-acento:var(--oc-verde);   --oc-acento-tx:var(--oc-verde) }
+    #pricing,#pagos{ --oc-acento:var(--oc-verde-suave); --oc-acento-tx:var(--oc-verde-suave) }
+    #contact { --oc-acento:var(--oc-verde);      --oc-acento-tx:var(--oc-verde) }
+
+    /* El ojo del eyebrow, el punto y el subrayado toman el acento de sección */
+    section .text-ocean-green{color:var(--oc-acento-tx)}
+    section [class~="bg-ocean-green"]:not(a):not(button):not([class*="/"]){background-color:var(--oc-acento)}
+    /* Los contenedores de icono conservan su transparencia y solo tiñen el
+       borde y el glifo con el acento de la sección. */
+    section [class*="bg-ocean-blue/"],section [class*="bg-ocean-green/"]{
+      border-color:color-mix(in srgb, var(--oc-acento) 42%, transparent)!important}
+    section [class*="bg-ocean-blue/"] svg,section [class*="bg-ocean-green/"] svg{
+      color:var(--oc-acento-tx)}
+    .nav-link::after{background:var(--oc-acento)}
+    .oi-tit{color:var(--oc-l-45)}
+
+    /* Halo de sección: un foco del color del acento detrás del contenido.
+       Es lo que hace que el cambio de temperatura se perciba sin que el
+       fondo entero cambie de color. */
+    section{position:relative}
+    section > .oi-halo{position:absolute;inset:0;pointer-events:none;z-index:0;
+      background:radial-gradient(60% 46% at 50% 0%,
+        color-mix(in srgb, var(--oc-acento) 13%, transparent), transparent 68%)}
+
+    /* --- Corrección de contraste donde el azul se usaba como texto --- */
+    .text-ocean-blue{color:var(--oc-azul-tx)!important}
+
+    /* Entrada de los reels: animación CSS pura, sin JavaScript de por medio.
+       El desenfoque anterior dependía del observador, del orden del archivo
+       y de que /api/reels respondiera: tres puntos de fallo para un efecto
+       que encima tapaba el contenido. */
+    .has-js .oi-entra{opacity:0;transform:translateY(22px) scale(.985);
+      animation:oi-entrar .62s var(--oi-ease) forwards;
+      animation-delay:var(--oi-ed,0ms)}
+    @keyframes oi-entrar{to{opacity:1;transform:none}}
+    @media(prefers-reduced-motion:reduce){
+      .has-js .oi-entra{opacity:1;transform:none;animation:none}}
 
     /* --- Franja de estado en vivo del hero: prueba, no promesa. --- */
     .oi-pulso{display:inline-flex;align-items:center;gap:12px;padding:10px 18px;
@@ -336,7 +416,8 @@
     .has-js .reveal-l.active{opacity:1;transform:translateX(0);}
     .has-js .reveal-r{opacity:0;transform:translateX(64px);transition:opacity 1s cubic-bezier(.19,1,.22,1),transform 1s cubic-bezier(.19,1,.22,1);}
     .has-js .reveal-r.active{opacity:1;transform:translateX(0);}
-    .has-js .reveal-blur{opacity:0;filter:blur(14px);transform:translateY(30px) scale(.98);transition:opacity 1.1s ease,filter 1.1s ease,transform 1.1s cubic-bezier(.16,1,.3,1);}
+    .has-js .reveal-blur{opacity:0;filter:blur(8px);transform:translateY(26px) scale(.985);
+      transition:opacity .7s var(--oi-ease),filter .7s var(--oi-ease),transform .7s var(--oi-ease);}
     .has-js .reveal-blur.active{opacity:1;filter:blur(0);transform:translateY(0) scale(1);}
     .stagger>*{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s cubic-bezier(.16,1,.3,1);}
     .stagger.active>*:nth-child(1){transition-delay:.06s;opacity:1;transform:translateY(0);}
@@ -762,6 +843,7 @@
 
   <!-- ===== ABOUT ===== -->
   <section id="about" class="py-24 md:py-36 px-5 md:px-10 relative oi-clip">
+    <div class="oi-halo" aria-hidden="true"></div>
     <div class="max-w-[1440px] mx-auto grid md:grid-cols-12 gap-12 items-center">
       <div class="md:col-span-6 reveal-l">
         <p class="text-xs font-bold tracking-[0.3em] uppercase text-ocean-green mb-5" data-es="Sobre nosotros" data-en="About us" data-pt="Sobre nós">Sobre nosotros</p>
@@ -786,6 +868,7 @@
 
   <!-- ===== SERVICES ===== -->
   <section id="services" class="py-24 md:py-36 px-5 md:px-10 bg-ocean-ink relative oi-clip">
+    <div class="oi-halo" aria-hidden="true"></div>
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] aurora" style="background:#0000FF;opacity:.15;"></div>
     <div class="max-w-[1440px] mx-auto relative z-10">
       <div class="text-center mb-16 reveal">
@@ -831,6 +914,7 @@
 
   <!-- ===== EL AGENTE, EN VIVO (Ocean UI · ocean-live.js) ===== -->
   <section id="agente-vivo" class="py-20 md:py-28 px-5 md:px-10 relative oi-clip" data-o-tema-bg="#06111a" data-o-tema-fg="#F4F5F0">
+    <div class="oi-halo" aria-hidden="true"></div>
     <div class="max-w-[1240px] mx-auto relative z-10">
       <div class="text-center mb-14 reveal">
         <p class="text-xs font-bold tracking-[0.3em] uppercase text-ocean-green mb-4"
@@ -910,6 +994,7 @@
 
   <!-- ===== WORK / REELS DE INSTAGRAM (auto-actualizados) ===== -->
   <section id="work" class="py-24 md:py-36 px-5 md:px-10 relative oi-clip">
+    <div class="oi-halo" aria-hidden="true"></div>
     <div class="absolute top-1/4 -left-20 w-[420px] h-[420px] aurora" style="background:#0000FF;opacity:.10;"></div>
     <div class="max-w-[1440px] mx-auto relative z-10">
       <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14 reveal">
@@ -928,9 +1013,9 @@
       <!-- Los reels se inyectan aquí desde /api/reels (con fallback si aún no hay token de IG) -->
       <div id="reelsGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 stagger">
         <!-- Esqueletos mientras carga -->
-        <div class="reel-phone reveal-blur"><div class="reel-screen"><div class="reel-skel"></div><div class="reel-notch"></div><div class="reel-home"></div></div></div>
-        <div class="reel-phone reveal-blur"><div class="reel-screen"><div class="reel-skel"></div><div class="reel-notch"></div><div class="reel-home"></div></div></div>
-        <div class="reel-phone reveal-blur sm:col-span-2 lg:col-span-1"><div class="reel-screen"><div class="reel-skel"></div><div class="reel-notch"></div><div class="reel-home"></div></div></div>
+        <div class="reel-phone oi-entra"><div class="reel-screen"><div class="reel-skel"></div><div class="reel-notch"></div><div class="reel-home"></div></div></div>
+        <div class="reel-phone oi-entra"><div class="reel-screen"><div class="reel-skel"></div><div class="reel-notch"></div><div class="reel-home"></div></div></div>
+        <div class="reel-phone oi-entra sm:col-span-2 lg:col-span-1"><div class="reel-screen"><div class="reel-skel"></div><div class="reel-notch"></div><div class="reel-home"></div></div></div>
       </div>
 
       <div class="text-center mt-14 reveal">
@@ -1242,6 +1327,9 @@
 
     /* ===== Reveal ===== */
     const ro=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('active');});},{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+    // Se expone para que el contenido inyectado después (los reels) pueda
+    // registrarse: si no, nunca entra en la lista y se queda desenfocado.
+    window.oceanRO = ro;
     document.querySelectorAll('.reveal,.reveal-l,.reveal-r,.reveal-blur,.stagger').forEach(el=>ro.observe(el));
 
     /* ===== Counters ===== */
@@ -1498,7 +1586,7 @@
         const cta=ctaTxt[lang]||ctaTxt.es;
         const a=document.createElement('a');
         a.href=link;a.target='_blank';a.rel='noopener';
-        a.className='reel-phone reel-card reveal-blur '+span;
+        a.className='reel-phone reel-card oi-entra '+span;
         a.setAttribute('aria-label','Reel de Instagram: '+(reel.caption||'@oceanind.co'));
         a.innerHTML=
           '<div class="reel-screen">'+
@@ -1560,6 +1648,15 @@
       function render(reels){
         grid.innerHTML='';
         reels.slice(0,3).forEach((r,i)=>grid.appendChild(card(r,i)));
+        // Si la reja ya está en pantalla cuando se inyectan, se revelan de
+        // inmediato: esperar al observador dejaba los reels borrosos.
+        // Los reels entran solos con una animación CSS escalonada: sin
+        // observador, sin depender del orden del archivo ni de la API.
+        requestAnimationFrame(()=>{
+          grid.querySelectorAll('.oi-entra').forEach((e,i)=>{
+            e.style.setProperty('--oi-ed', (i*110)+'ms');
+          });
+        });
         wire();
       }
 
