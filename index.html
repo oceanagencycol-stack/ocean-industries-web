@@ -1241,10 +1241,25 @@
         wire();
       }
 
+      // Los mismos tres reels que devuelve el fallback de /api/reels. Si la
+      // función serverless no responde —o se abre el HTML sin servidor— la
+      // sección se pinta igual: dejar esqueletos era mostrar una sección rota.
+      const REELS_LOCALES=[
+        {id:'sem6-1',permalink:'https://www.instagram.com/oceanind.co/',
+         media_url:'/assets/reels/reel-1.mp4',thumbnail_url:'/assets/reels/reel-1.jpg',
+         caption:'La prueba más útil: pregúntale a una IA antes de contratar'},
+        {id:'sem6-2',permalink:'https://www.instagram.com/oceanind.co/',
+         media_url:'/assets/reels/reel-2.mp4',thumbnail_url:'/assets/reels/reel-2.jpg',
+         caption:'Te doy el consejo que nadie te da sobre automatizar'},
+        {id:'sem6-3',permalink:'https://www.instagram.com/oceanind.co/',
+         media_url:'/assets/reels/reel-3.mp4',thumbnail_url:'/assets/reels/reel-3.jpg',
+         caption:'Cuatro mensajes y el cliente ya está agendado'}
+      ];
+      render(REELS_LOCALES);                       // pinta ya, sin esperar red
       fetch('/api/reels')
-        .then(r=>r.json())
+        .then(r=>r.ok?r.json():null)
         .then(d=>{ if(d&&Array.isArray(d.reels)&&d.reels.length) render(d.reels); })
-        .catch(()=>{ /* deja los esqueletos; la sección no se rompe */ });
+        .catch(()=>{ /* ya está pintado con los locales */ });
 
       // Si cambia el idioma, actualiza el texto del botón sin recargar
       langButtons.forEach(b=>b.addEventListener('click',()=>{

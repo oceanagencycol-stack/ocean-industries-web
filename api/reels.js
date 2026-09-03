@@ -37,36 +37,35 @@
 const GRAPH = "https://graph.facebook.com/v22.0";
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hora
 
-// Fallback: videos actuales en Cloudinary (se usan si todavía no hay token de IG).
+// Fallback: producción propia de la 6ta semana (Ángel Díaz), servida desde el
+// mismo dominio. Origen: Drive 4K vertical de ~90 MB, recomprimido a 720x1280
+// H.264 CRF 25 con faststart y sin pista de audio (los reels van en mute hasta
+// que el visitante activa el sonido). 17 MB los tres, contra 281 MB del origen.
+// Se usan mientras no haya token de Instagram; en cuanto lo haya, la API los
+// reemplaza sola por los reels reales.
 const PROFILE_URL = "https://www.instagram.com/oceanind.co/";
 // Últimos 3 reels publicados (actualizado manualmente hasta activar el token de IG).
 const FALLBACK_REELS = [
   {
-    id: "fallback-1",
+    id: "sem6-1",
     permalink: PROFILE_URL,
-    media_url:
-      "https://res.cloudinary.com/dpo9ohngt/video/upload/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.mp4",
-    thumbnail_url:
-      "https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.jpg",
-    caption: "Lo último de Ocean",
+    media_url: "/assets/reels/reel-1.mp4",
+    thumbnail_url: "/assets/reels/reel-1.jpg",
+    caption: "La prueba más útil: pregúntale a una IA antes de contratar",
   },
   {
-    id: "fallback-2",
+    id: "sem6-2",
     permalink: PROFILE_URL,
-    media_url:
-      "https://res.cloudinary.com/dpo9ohngt/video/upload/v1782600106/Video_1_OceanV4_1_k7v1wb.mp4",
-    thumbnail_url:
-      "https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1782600106/Video_1_OceanV4_1_k7v1wb.jpg",
-    caption: "Contenido que convierte",
+    media_url: "/assets/reels/reel-2.mp4",
+    thumbnail_url: "/assets/reels/reel-2.jpg",
+    caption: "Te doy el consejo que nadie te da sobre automatizar",
   },
   {
-    id: "fallback-3",
+    id: "sem6-3",
     permalink: PROFILE_URL,
-    media_url:
-      "https://res.cloudinary.com/dpo9ohngt/video/upload/v1782600109/Video_2_OceanV4_1_mx7qmz.mp4",
-    thumbnail_url:
-      "https://res.cloudinary.com/dpo9ohngt/video/upload/so_0/v1782600109/Video_2_OceanV4_1_mx7qmz.jpg",
-    caption: "We turn brands into waves",
+    media_url: "/assets/reels/reel-3.mp4",
+    thumbnail_url: "/assets/reels/reel-3.jpg",
+    caption: "Cuatro mensajes y el cliente ya está agendado",
   },
 ];
 
