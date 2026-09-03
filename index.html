@@ -174,6 +174,92 @@
       ::view-transition-old(root),::view-transition-new(root){animation:none}
     }
 
+    /* --- Franja de estado en vivo del hero: prueba, no promesa. --- */
+    .oi-pulso{display:inline-flex;align-items:center;gap:12px;padding:10px 18px;
+      border-radius:999px;background:rgba(0,255,127,.07);
+      border:1px solid rgba(0,255,127,.22);max-width:100%;flex-wrap:wrap}
+    .oi-pulso__luz{width:9px;height:9px;border-radius:50%;background:#00FF7F;flex:none;
+      box-shadow:0 0 12px rgba(0,255,127,.8);animation:oi-late 1.9s infinite}
+    .oi-pulso__tx{font-size:.82rem;color:rgba(255,255,255,.78);font-weight:500}
+    .oi-pulso__onda{width:60px;flex:none}
+    @media(max-width:520px){.oi-pulso__onda{display:none}}
+
+    /* --- Logo: era h-12 (48 px) y se perdía contra el menú. --- */
+    .oi-logo{height:64px;transition:transform var(--oi-t-hover) var(--oi-ease),
+      filter var(--oi-t-hover) var(--oi-ease);
+      filter:drop-shadow(0 0 18px rgba(0,255,127,.18))}
+    .oi-logo:hover{transform:scale(1.06);filter:drop-shadow(0 0 26px rgba(0,255,127,.4))}
+    nav.pegada .oi-logo,.nav-scrolled .oi-logo{height:52px}
+    @media(max-width:768px){.oi-logo{height:52px}}
+
+    /* ================= BENTO DEL AGENTE EN VIVO =================
+       Tres columnas de alturas independientes: la conversación manda y
+       las otras dos se estiran a su medida. Antes eran dos columnas y la
+       derecha quedaba con medio metro de aire debajo.
+       =========================================================== */
+    .oi-bento{display:grid;gap:16px;align-items:stretch;
+      grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr) minmax(0,1fr)}
+    @media(max-width:1080px){.oi-bento{grid-template-columns:1fr 1fr}
+      .oi-bento > :first-child{grid-column:1/-1}}
+    @media(max-width:720px){.oi-bento{grid-template-columns:1fr}
+      .oi-bento > *{grid-column:auto!important}}
+    .oi-col{display:flex;flex-direction:column;gap:12px}
+    .oi-tit{font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+      color:rgba(255,255,255,.45);margin-bottom:14px}
+
+    /* --- conversación --- */
+    .oi-chat{display:flex;flex-direction:column;overflow:hidden;min-height:420px}
+    .oi-chat__cab{display:flex;align-items:center;gap:12px;padding:16px 18px;
+      border-bottom:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
+    .oi-chat__av{width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;
+      background:rgba(0,255,127,.16);color:#00FF7F;font-size:17px}
+    .oi-chat__cab b{display:block;font-size:.95rem;font-weight:600}
+    .oi-chat__est{display:flex;align-items:center;gap:6px;font-size:.75rem;color:rgba(255,255,255,.5)}
+    .oi-chat__est i{width:7px;height:7px;border-radius:50%;background:#00FF7F;
+      animation:oi-late 1.9s infinite}
+    @keyframes oi-late{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+    .oi-chat__hora{margin-left:auto;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+      color:rgba(255,255,255,.35)}
+    .oi-chat__cuerpo{flex:1;padding:18px;display:flex;flex-direction:column;gap:10px;
+      justify-content:flex-end;overflow:hidden}
+    .oi-b{max-width:82%;padding:11px 15px;border-radius:18px;font-size:.88rem;line-height:1.45;
+      opacity:0;transform:translateY(10px);animation:oi-burbuja .5s var(--oi-ease) forwards}
+    @keyframes oi-burbuja{to{opacity:1;transform:none}}
+    .oi-b--cli{align-self:flex-start;background:rgba(255,255,255,.09);border-bottom-left-radius:6px}
+    .oi-b--bot{align-self:flex-end;background:#00FF7F;color:#04140b;font-weight:500;
+      border-bottom-right-radius:6px}
+    .oi-b--esc{align-self:flex-end;display:flex;gap:4px;padding:14px 16px;background:#00FF7F;
+      border-bottom-right-radius:6px}
+    .oi-b--esc i{width:6px;height:6px;border-radius:50%;background:#04140b;
+      animation:oi-punto 1.25s infinite}
+    .oi-b--esc i:nth-child(2){animation-delay:.16s}.oi-b--esc i:nth-child(3){animation-delay:.32s}
+    @keyframes oi-punto{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+    .oi-chat__pie{display:flex;align-items:center;gap:14px;padding:14px 18px;
+      border-top:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02)}
+    .oi-chat__nota{font-size:.72rem;color:rgba(255,255,255,.45);white-space:nowrap}
+
+    /* --- cifras --- */
+    .oi-cifras{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1}
+    .oi-cifra{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;justify-content:center;
+      transition:border-color var(--oi-t-hover) var(--oi-ease),transform var(--oi-t-hover) var(--oi-ease)}
+    .oi-cifra:hover{border-color:rgba(0,255,127,.4);transform:translateY(-2px)}
+    .oi-cifra strong{font-family:'Archivo','Inter',sans-serif;font-weight:900;font-size:2.1rem;
+      line-height:1;color:#00FF7F;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+    .oi-cifra span{font-size:.74rem;color:rgba(255,255,255,.5);margin-top:6px;line-height:1.3}
+
+    /* --- CTA --- */
+    .oi-cta{display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:16px 22px;border-radius:999px;background:#00FF7F;color:#04140b;
+      font-weight:700;font-size:.95rem;text-decoration:none;
+      transition:transform var(--oi-t-hover) var(--oi-ease),box-shadow var(--oi-t-hover) var(--oi-ease)}
+    .oi-cta:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,255,127,.32)}
+
+    @media(prefers-reduced-motion:reduce){
+      .oi-b{opacity:1;transform:none;animation:none}
+      .oi-chat__est i,.oi-b--esc i{animation:none}
+    }
+
     /* Salto al contenido: fuera de la vista hasta que el teclado lo enfoca. */
     .skip-link{position:fixed;left:12px;top:12px;z-index:9999;padding:12px 22px;
       background:#00FF7F;color:#101820;border-radius:999px;font-weight:700;
@@ -488,7 +574,7 @@
     <div class="max-w-[1440px] mx-auto px-5 md:px-10">
       <div class="flex items-center justify-between h-20">
         <a href="#hero" class="relative z-50 flex items-center">
-          <img src="https://res.cloudinary.com/dpo9ohngt/image/upload/f_auto,q_auto,w_120/v1781713983/LOGO-Ocean-INDS-10_2_enpxm1.png" alt="Ocean Industries" width="56" height="56" class="h-12 md:h-14 w-auto transition-transform hover:scale-105" />
+          <img src="https://res.cloudinary.com/dpo9ohngt/image/upload/f_auto,q_auto,w_240/v1781713983/LOGO-Ocean-INDS-10_2_enpxm1.png" alt="Ocean Industries" width="112" height="112" fetchpriority="high" class="oi-logo w-auto" />
         </a>
         <div class="hidden md:flex items-center gap-8">
           <a href="#about" class="text-sm font-medium tracking-wide uppercase ul-hover" data-es="Nosotros" data-en="About" data-pt="Sobre">Nosotros</a>
@@ -561,6 +647,13 @@
           <a href="#book" class="inline-flex items-center justify-center gap-2 border-2 border-ocean-green/40 hover:border-ocean-green hover:bg-ocean-green/10 px-7 py-4 text-sm font-bold tracking-wide uppercase rounded-full transition-all">
             <i data-lucide="zap" class="w-4 h-4 text-ocean-green"></i><span data-es="Quiero mi demo" data-en="I want my demo" data-pt="Quero minha demo">Quiero mi demo</span>
           </a>
+        </div>
+        <div class="hero-fade oi-pulso mt-6" aria-label="Estado del sistema">
+          <span class="oi-pulso__luz" aria-hidden="true"></span>
+          <span class="oi-pulso__tx"
+            data-es="Los agentes están respondiendo ahora mismo" data-en="The agents are replying right now"
+            data-pt="Os agentes estão respondendo agora mesmo">Los agentes están respondiendo ahora mismo</span>
+          <ocean-onda modo="vivo" barras="14" color="#00FF7F" alto="16px" class="oi-pulso__onda"></ocean-onda>
         </div>
         <p class="hero-fade mt-4 text-xs text-white/50 flex items-center gap-2" data-es="Respondemos en minutos · Sin compromiso, tú decides" data-en="We reply in minutes · No strings, you decide" data-pt="Respondemos em minutos · Sem compromisso, você decide">
           <i data-lucide="message-circle-heart" class="w-4 h-4 text-ocean-green"></i>Respondemos en minutos · Sin compromiso, tú decides
@@ -689,23 +782,43 @@
 
   <!-- ===== EL AGENTE, EN VIVO (Ocean UI · ocean-live.js) ===== -->
   <section id="agente-vivo" class="py-20 md:py-28 px-5 md:px-10 relative oi-clip" data-o-tema-bg="#06111a" data-o-tema-fg="#F4F5F0">
-    <div class="max-w-[1100px] mx-auto relative z-10">
-      <div class="text-center mb-12 reveal">
+    <div class="max-w-[1240px] mx-auto relative z-10">
+      <div class="text-center mb-14 reveal">
         <p class="text-xs font-bold tracking-[0.3em] uppercase text-ocean-green mb-4"
            data-es="El agente, en vivo" data-en="The agent, live" data-pt="O agente, ao vivo">El agente, en vivo</p>
         <h2 class="font-display font-900 uppercase leading-[0.9] tracking-tight text-3xl md:text-5xl mb-4"
             data-es="Esto es lo que ve tu cliente" data-en="This is what your customer sees" data-pt="Isto é o que seu cliente vê">Esto es lo que ve tu cliente</h2>
-        <p class="text-sm text-white/55 font-light max-w-[52ch] mx-auto"
+        <p class="text-sm text-white/55 font-light max-w-[54ch] mx-auto"
            data-es="No es una captura de pantalla: son los mismos componentes que corren en los agentes que operamos. Los tiempos son los que medimos en nuestra propia línea."
            data-en="Not a screenshot: these are the same components running in the agents we operate. The times are the ones we measure on our own line."
            data-pt="Não é uma captura de tela: são os mesmos componentes que rodam nos agentes que operamos. Os tempos são os que medimos na nossa própria linha.">No es una captura de pantalla: son los mismos componentes que corren en los agentes que operamos. Los tiempos son los que medimos en nuestra propia línea.</p>
       </div>
 
-      <div class="grid md:grid-cols-2 gap-5 items-start">
-        <!-- columna de actividad -->
-        <div class="flex flex-col gap-3 reveal-l">
+      <!-- Bento de tres columnas: la conversación es la protagonista -->
+      <div class="oi-bento">
+
+        <!-- CONVERSACIÓN EN VIVO — el corazón de la sección -->
+        <div class="oi-chat glass rounded-2xl reveal-l" aria-label="Conversación de ejemplo con el agente">
+          <div class="oi-chat__cab">
+            <span class="oi-chat__av">◉</span>
+            <div>
+              <b>Valeria</b>
+              <span class="oi-chat__est"><i></i><span data-es="en línea" data-en="online" data-pt="online">en línea</span></span>
+            </div>
+            <span class="oi-chat__hora">WhatsApp</span>
+          </div>
+          <div class="oi-chat__cuerpo" id="oiChat"></div>
+          <div class="oi-chat__pie">
+            <ocean-onda modo="vivo" barras="18" color="#00FF7F" alto="18px" style="flex:1"></ocean-onda>
+            <span class="oi-chat__nota" data-es="Respuesta media: 11 s" data-en="Avg. reply: 11 s" data-pt="Resposta média: 11 s">Respuesta media: 11 s</span>
+          </div>
+        </div>
+
+        <!-- ESTADOS DEL AGENTE -->
+        <div class="oi-col reveal">
+          <p class="oi-tit" data-es="Estados reales" data-en="Real states" data-pt="Estados reais">Estados reales</p>
           <ocean-actividad densidad="compacta" icono="&#9673;" tono="ok" vivo
-            principal="Agente activo" secundario="Respondiendo en WhatsApp ahora mismo"></ocean-actividad>
+            principal="Agente activo" secundario="Respondiendo ahora mismo"></ocean-actividad>
           <ocean-actividad densidad="compacta" icono="&#10003;" tono="acento" progreso="100"
             principal="Cita agendada" secundario="Sin intervención humana"></ocean-actividad>
           <ocean-actividad densidad="compacta" icono="&#8594;" tono="alerta"
@@ -714,23 +827,32 @@
             principal="Monitoreo 24/7"></ocean-actividad>
         </div>
 
-        <!-- columna de proceso -->
-        <div class="glass rounded-2xl p-7 reveal-r">
-          <p class="text-[11px] font-bold tracking-[0.24em] uppercase text-white/45 mb-6"
-             data-es="Del primer mensaje a producción" data-en="From first message to production" data-pt="Da primeira mensagem à produção">Del primer mensaje a producción</p>
-          <ocean-ruta id="rutaOcean" color="#00FF7F" actual="1"
-            etapas="Contacto,Demo,Ajuste,En producción"
-            iconos="&#9675;,&#9680;,&#9681;,&#9679;"></ocean-ruta>
-          <div class="mt-8 pt-6 border-t border-white/10 flex items-end justify-between gap-4">
-            <div>
-              <p class="text-[11px] uppercase tracking-[0.2em] text-white/45 mb-1"
-                 data-es="Demo funcionando en" data-en="Working demo in" data-pt="Demo funcionando em">Demo funcionando en</p>
-              <strong class="font-display font-900 text-4xl md:text-5xl leading-none text-ocean-green"
-                      data-o-contador="48">48</strong>
-              <span class="text-white/45 text-sm ml-1">horas</span>
-            </div>
-            <ocean-anillo indeterminado tam="34px" color="#00FF7F" aria-hidden="true"></ocean-anillo>
+        <!-- PROCESO + CIFRAS -->
+        <div class="oi-col reveal-r">
+          <div class="glass rounded-2xl p-6">
+            <p class="oi-tit" data-es="Del primer mensaje a producción" data-en="From first message to production" data-pt="Da primeira mensagem à produção">Del primer mensaje a producción</p>
+            <ocean-ruta id="rutaOcean" color="#00FF7F" actual="1"
+              etapas="Contacto,Demo,Ajuste,En producción"
+              iconos="&#9675;,&#9680;,&#9681;,&#9679;"></ocean-ruta>
           </div>
+          <div class="oi-cifras">
+            <div class="oi-cifra">
+              <strong data-o-contador="48">48</strong><span data-es="horas al demo" data-en="hours to demo" data-pt="horas até a demo">horas al demo</span>
+            </div>
+            <div class="oi-cifra">
+              <strong data-o-contador="24">24</strong><span data-es="horas al día" data-en="hours a day" data-pt="horas por dia">horas al día</span>
+            </div>
+            <div class="oi-cifra">
+              <strong data-o-contador="11">11</strong><span data-es="segundos de respuesta" data-en="seconds to reply" data-pt="segundos de resposta">segundos de respuesta</span>
+            </div>
+            <div class="oi-cifra">
+              <strong>0</strong><span data-es="respuestas inventadas" data-en="made-up answers" data-pt="respostas inventadas">respuestas inventadas</span>
+            </div>
+          </div>
+          <a href="#contact" class="oi-cta btn-shine">
+            <span data-es="Quiero uno para mi negocio" data-en="I want one for my business" data-pt="Quero um para meu negócio">Quiero uno para mi negocio</span>
+            <span aria-hidden="true">&#8594;</span>
+          </a>
         </div>
       </div>
     </div>
@@ -1623,7 +1745,8 @@
     document.body.appendChild(barra);
 
     /* --- 4. Enlace del menú activo según la sección visible ---------- */
-    var enlaces = [].slice.call(document.querySelectorAll('nav a[href^="#"]'));
+    var enlaces = [].slice.call(document.querySelectorAll('nav a[href^="#"]'))
+                    .filter(function(a){ return !a.querySelector('img'); });
     enlaces.forEach(function(a){ a.classList.add('nav-link'); });
     var secciones = enlaces.map(function(a){
       return document.querySelector(a.getAttribute('href'));
@@ -1681,6 +1804,87 @@
         }, true);
       });
     }
+  })();
+  </script>
+  <script>
+  /* Conversación de ejemplo del agente. Es un guion real de Valeria:
+     el cliente pregunta, el agente responde con dato y cierra agendando.
+     Se reproduce sola al entrar en pantalla y se repite en bucle. */
+  (function(){
+    var caja = document.getElementById('oiChat');
+    if (!caja) return;
+    var quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var GUION = {
+      es:[['cli','Hola, ¿ustedes hacen agentes para WhatsApp?'],
+          ['bot','Sí. Montamos el agente sobre tu número actual y responde solo, 24/7.'],
+          ['cli','¿Cuánto se demora?'],
+          ['bot','Demo funcionando en 48 horas. ¿Le agendo una llamada de 20 minutos?'],
+          ['cli','Dale, mañana en la mañana'],
+          ['bot','Listo: mañana 10:00 a. m. Le llega el enlace por aquí. ✅']],
+      en:[['cli','Hi, do you build WhatsApp agents?'],
+          ['bot','We do. We set it up on your current number and it replies on its own, 24/7.'],
+          ['cli','How long does it take?'],
+          ['bot','Working demo in 48 hours. Shall I book you a 20-minute call?'],
+          ['cli','Sure, tomorrow morning'],
+          ['bot','Done: tomorrow 10:00 a.m. The link comes right here. ✅']],
+      pt:[['cli','Oi, vocês fazem agentes para WhatsApp?'],
+          ['bot','Fazemos. Montamos no seu número atual e ele responde sozinho, 24/7.'],
+          ['cli','Quanto tempo leva?'],
+          ['bot','Demo funcionando em 48 horas. Posso agendar uma call de 20 minutos?'],
+          ['cli','Pode ser, amanhã de manhã'],
+          ['bot','Pronto: amanhã 10:00. O link chega por aqui. ✅']]
+    };
+    var t = null;
+    function idioma(){ return (document.documentElement.lang || 'es').slice(0,2); }
+    function burbuja(tipo, txt){
+      var d = document.createElement('div');
+      d.className = 'oi-b oi-b--' + tipo;
+      d.textContent = txt;
+      caja.appendChild(d);
+      while (caja.children.length > 4) caja.removeChild(caja.firstChild);
+    }
+    function escribiendo(){
+      var d = document.createElement('div');
+      d.className = 'oi-b oi-b--esc';
+      d.innerHTML = '<i></i><i></i><i></i>';
+      caja.appendChild(d);
+      while (caja.children.length > 4) caja.removeChild(caja.firstChild);
+      return d;
+    }
+    function correr(){
+      clearTimeout(t);
+      caja.innerHTML = '';
+      var g = GUION[idioma()] || GUION.es, i = 0;
+      function paso(){
+        if (i >= g.length){ t = setTimeout(correr, 4200); return; }
+        var linea = g[i++];
+        if (linea[0] === 'bot'){
+          var e = escribiendo();
+          t = setTimeout(function(){
+            e.remove(); burbuja('bot', linea[1]);
+            t = setTimeout(paso, 1500);
+          }, 900);
+        } else {
+          burbuja('cli', linea[1]);
+          t = setTimeout(paso, 1200);
+        }
+      }
+      paso();
+    }
+    if (quieto){
+      // Sin animación se muestra la conversación completa, no un hueco.
+      var g = GUION[idioma()] || GUION.es;
+      g.forEach(function(l){ burbuja(l[0], l[1]); });
+      return;
+    }
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ e.isIntersecting ? correr() : clearTimeout(t); });
+    }, {threshold:.25});
+    io.observe(caja);
+    document.addEventListener('visibilitychange', function(){ if (document.hidden) clearTimeout(t); });
+    document.querySelectorAll('.lang-btn').forEach(function(b){
+      b.addEventListener('click', function(){ setTimeout(correr, 120); });
+    });
   })();
   </script>
 </body>
