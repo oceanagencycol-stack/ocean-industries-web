@@ -92,6 +92,33 @@
   }
   </script>
   <style>
+    /* ---------------------------------------------------------------
+       Accesibilidad y contención. Insertado en la auditoría del 3-sep.
+       En la pasada anterior este bloque se perdió: el reemplazo se hizo
+       sobre un patrón que ya no existía y falló en silencio, así que el
+       enlace de salto quedó en el HTML sin su regla y se veía siempre.
+       --------------------------------------------------------------- */
+    html,body{overflow-x:clip;max-width:100%}
+
+    /* Salto al contenido: fuera de la vista hasta que el teclado lo enfoca. */
+    .skip-link{position:fixed;left:12px;top:12px;z-index:9999;padding:12px 22px;
+      background:#00FF7F;color:#101820;border-radius:999px;font-weight:700;
+      font-size:.95rem;text-decoration:none;transform:translateY(-250%);
+      transition:transform .28s cubic-bezier(.19,1,.22,1)}
+    .skip-link:focus{transform:none;outline:2px solid #101820;outline-offset:2px}
+
+    /* Foco visible. La élite de Awwwards promedia 6.86 en accesibilidad
+       justamente por saltarse esto; aquí no se salta. */
+    a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,
+    textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible{
+      outline:2px solid #59C3E6;outline-offset:3px;border-radius:8px}
+
+    /* El cursor propio oculta el del sistema: se restituye donde no hay
+       puntero fino, o el usuario táctil se queda sin señal de dónde toca. */
+    @media (hover:none),(pointer:coarse){
+      body.cursor-none,body.cursor-none *{cursor:auto!important}
+      .cur-dot,.cur-ring{display:none!important}
+    }
     *{margin:0;padding:0;box-sizing:border-box;}
     html{font-family:'Inter',sans-serif;background:#101820;overflow-x:hidden;overflow-x:clip;}
     body{background:#101820;color:#F4F5F0;overflow-x:hidden;overflow-x:clip;}
@@ -585,6 +612,56 @@
       </div>
     </div>
   </section>
+
+  <!-- ===== EL AGENTE, EN VIVO (Ocean UI · ocean-live.js) ===== -->
+  <section id="agente-vivo" class="py-20 md:py-28 px-5 md:px-10 relative oi-clip" data-o-tema-bg="#06111a" data-o-tema-fg="#F4F5F0">
+    <div class="max-w-[1100px] mx-auto relative z-10">
+      <div class="text-center mb-12 reveal">
+        <p class="text-xs font-bold tracking-[0.3em] uppercase text-ocean-green mb-4"
+           data-es="El agente, en vivo" data-en="The agent, live" data-pt="O agente, ao vivo">El agente, en vivo</p>
+        <h2 class="font-display font-900 uppercase leading-[0.9] tracking-tight text-3xl md:text-5xl mb-4"
+            data-es="Esto es lo que ve tu cliente" data-en="This is what your customer sees" data-pt="Isto é o que seu cliente vê">Esto es lo que ve tu cliente</h2>
+        <p class="text-sm text-white/55 font-light max-w-[52ch] mx-auto"
+           data-es="No es una captura de pantalla: son los mismos componentes que corren en los agentes que operamos. Los tiempos son los que medimos en nuestra propia línea."
+           data-en="Not a screenshot: these are the same components running in the agents we operate. The times are the ones we measure on our own line."
+           data-pt="Não é uma captura de tela: são os mesmos componentes que rodam nos agentes que operamos. Os tempos são os que medimos na nossa própria linha.">No es una captura de pantalla: son los mismos componentes que corren en los agentes que operamos. Los tiempos son los que medimos en nuestra propia línea.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-5 items-start">
+        <!-- columna de actividad -->
+        <div class="flex flex-col gap-3 reveal-l">
+          <ocean-actividad densidad="compacta" icono="&#9673;" tono="ok" vivo
+            principal="Agente activo" secundario="Respondiendo en WhatsApp ahora mismo"></ocean-actividad>
+          <ocean-actividad densidad="compacta" icono="&#10003;" tono="acento" progreso="100"
+            principal="Cita agendada" secundario="Sin intervención humana"></ocean-actividad>
+          <ocean-actividad densidad="compacta" icono="&#8594;" tono="alerta"
+            principal="Escalado a una persona" secundario="Cuando el agente no sabe, no inventa"></ocean-actividad>
+          <ocean-actividad densidad="minima" icono="&#9679;" tono="ok" vivo
+            principal="Monitoreo 24/7"></ocean-actividad>
+        </div>
+
+        <!-- columna de proceso -->
+        <div class="glass rounded-2xl p-7 reveal-r">
+          <p class="text-[11px] font-bold tracking-[0.24em] uppercase text-white/45 mb-6"
+             data-es="Del primer mensaje a producción" data-en="From first message to production" data-pt="Da primeira mensagem à produção">Del primer mensaje a producción</p>
+          <ocean-ruta id="rutaOcean" color="#00FF7F" actual="1"
+            etapas="Contacto,Demo,Ajuste,En producción"
+            iconos="&#9675;,&#9680;,&#9681;,&#9679;"></ocean-ruta>
+          <div class="mt-8 pt-6 border-t border-white/10 flex items-end justify-between gap-4">
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.2em] text-white/45 mb-1"
+                 data-es="Demo funcionando en" data-en="Working demo in" data-pt="Demo funcionando em">Demo funcionando en</p>
+              <strong class="font-display font-900 text-4xl md:text-5xl leading-none text-ocean-green"
+                      data-o-contador="48">48</strong>
+              <span class="text-white/45 text-sm ml-1">horas</span>
+            </div>
+            <ocean-anillo indeterminado tam="34px" color="#00FF7F" aria-hidden="true"></ocean-anillo>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 
   <!-- ===== WORK / REELS DE INSTAGRAM (auto-actualizados) ===== -->
   <section id="work" class="py-24 md:py-36 px-5 md:px-10 relative oi-clip">
@@ -1311,5 +1388,32 @@
   <!-- Océano 3D del hero (WebGL propio, ~6KB, sin dependencias) -->
   <script src="/assets/ocean.js?v=8" defer></script>
 
+  <!-- Ocean UI — componentes propios. Sin dependencias, cargan diferidos. -->
+  <script src="/assets/ocean-ui/ocean-motion.js" defer></script>
+  <script src="/assets/ocean-ui/ocean-live.js" defer></script>
+  <script src="/assets/ocean-ui/ocean-escena.js" defer></script>
+  <script>
+    // La web ya tiene su propio motor de reveals: de OceanMotion solo se usan
+    // los contadores y el aviso de ids duplicados, para no duplicar observadores.
+    window.addEventListener('load', function(){
+      if (window.OceanMotion) {
+        OceanMotion.avisarIdsDuplicados();
+        OceanMotion.contadores(document.getElementById('agente-vivo'));
+      }
+      if (window.OceanEscena) OceanEscena.temaPorSeccion(document);
+      // La ruta avanza sola una vez, para que se lea como un proceso vivo.
+      var r = document.getElementById('rutaOcean');
+      if (r && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        var i = 1;
+        var t = setInterval(function(){
+          i = i >= 3 ? 0 : i + 1;
+          r.setAttribute('actual', i);
+        }, 2600);
+        document.addEventListener('visibilitychange', function(){
+          if (document.hidden) clearInterval(t);
+        });
+      }
+    });
+  </script>
 </body>
 </html>
