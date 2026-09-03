@@ -120,27 +120,53 @@
     @keyframes oi-vt-entra{from{opacity:0;transform:translateY(14px)}}
 
     /* --- Cortina de sección: barre al saltar por un ancla del menú. --- */
-    /* Cortina de tránsito: tres franjas que barren desfasadas, con la marca
-       al centro. Un panel plano que sube se lee como un fundido y pasa
-       desapercibido; el desfase es lo que lo convierte en un gesto. */
+    /* Cortina de tránsito: cinco franjas que barren en diagonal.
+       OJO con el shorthand: `transition: transform 360ms ease` RESETEA el
+       transition-delay a 0, así que las franjas se movían todas a la vez y
+       el efecto volvía a ser un corte plano a negro. Aquí las propiedades
+       van separadas y el delay se declara después. */
     .oi-cortina{position:fixed;inset:0;z-index:8000;pointer-events:none;
-      display:grid;grid-template-columns:repeat(3,1fr);visibility:hidden}
-    .oi-cortina i{display:block;background:#050a10;transform:scaleY(0);
-      transform-origin:bottom;will-change:transform;
-      border-right:1px solid rgba(0,255,127,.12)}
-    .oi-cortina i:nth-child(1){transition-delay:0ms}
-    .oi-cortina i:nth-child(2){transition-delay:70ms}
-    .oi-cortina i:nth-child(3){transition-delay:140ms}
-    .oi-cortina b{position:absolute;inset:0;display:grid;place-items:center;
-      opacity:0;transform:scale(.86);transition:opacity 260ms var(--oi-ease),transform 420ms var(--oi-ease)}
-    .oi-cortina b img{height:78px;width:auto;filter:drop-shadow(0 0 26px rgba(0,255,127,.45))}
+      display:grid;grid-template-columns:repeat(5,1fr);visibility:hidden}
+    .oi-cortina i{display:block;transform:scaleY(0);transform-origin:bottom;
+      will-change:transform;
+      background:linear-gradient(180deg,#0B1F8C 0%,#050a10 55%,#04140b 100%);
+      transition-property:transform;
+      transition-duration:380ms;
+      transition-timing-function:var(--oi-ease-io)}
+    /* borde de luz en el filo de cada franja: es lo que hace legible el barrido */
+    .oi-cortina i::after{content:"";position:absolute;inset:auto 0 0;height:2px;
+      background:linear-gradient(90deg,transparent,#00FF7F,transparent);opacity:.55}
+    .oi-cortina i{position:relative;overflow:hidden}
+
+    /* al cerrar entran de izquierda a derecha */
     .oi-cortina.cerrando{visibility:visible}
-    .oi-cortina.cerrando i{transform:scaleY(1);transition:transform 360ms var(--oi-ease-io)}
-    .oi-cortina.cerrando b{opacity:1;transform:none;transition-delay:200ms}
+    .oi-cortina.cerrando i{transform:scaleY(1)}
+    .oi-cortina.cerrando i:nth-child(1){transition-delay:0ms}
+    .oi-cortina.cerrando i:nth-child(2){transition-delay:45ms}
+    .oi-cortina.cerrando i:nth-child(3){transition-delay:90ms}
+    .oi-cortina.cerrando i:nth-child(4){transition-delay:135ms}
+    .oi-cortina.cerrando i:nth-child(5){transition-delay:180ms}
+
+    /* al abrir salen en el orden inverso: el ojo lee ida y vuelta */
     .oi-cortina.abriendo{visibility:visible}
-    .oi-cortina.abriendo i{transform:scaleY(0);transform-origin:top;
-      transition:transform 440ms var(--oi-ease-io)}
-    .oi-cortina.abriendo b{opacity:0;transform:scale(1.1);transition-duration:200ms}
+    .oi-cortina.abriendo i{transform:scaleY(0);transform-origin:top}
+    .oi-cortina.abriendo i:nth-child(5){transition-delay:0ms}
+    .oi-cortina.abriendo i:nth-child(4){transition-delay:45ms}
+    .oi-cortina.abriendo i:nth-child(3){transition-delay:90ms}
+    .oi-cortina.abriendo i:nth-child(2){transition-delay:135ms}
+    .oi-cortina.abriendo i:nth-child(1){transition-delay:180ms}
+
+    /* la marca respira en el centro del tránsito */
+    .oi-cortina b{position:absolute;inset:0;display:grid;place-items:center;
+      opacity:0;transform:scale(.82);
+      transition-property:opacity,transform;
+      transition-duration:240ms;
+      transition-timing-function:var(--oi-ease)}
+    .oi-cortina b img{height:clamp(52px,7vw,92px);width:auto;
+      filter:drop-shadow(0 0 34px rgba(0,255,127,.5))}
+    .oi-cortina.cerrando b{opacity:1;transform:none;transition-delay:190ms}
+    .oi-cortina.abriendo b{opacity:0;transform:scale(1.14);transition-delay:0ms;
+      transition-duration:240ms}
 
     /* --- Split por líneas del titular: cada línea sube enmascarada. --- */
     .oi-linea{display:block;overflow:hidden;padding-bottom:.09em;margin-bottom:-.09em}
@@ -1743,7 +1769,7 @@
        viaje y lo convierte en una transición deliberada. */
     var cortina = document.createElement('div');
     cortina.className = 'oi-cortina'; cortina.setAttribute('aria-hidden','true');
-    cortina.innerHTML = '<i></i><i></i><i></i>' +
+    cortina.innerHTML = '<i></i><i></i><i></i><i></i><i></i>' +
       '<b><img src="/assets/marca/logo.png" alt="" width="292" height="118"></b>';
     document.body.appendChild(cortina);
     function viajar(destino){
@@ -1755,7 +1781,7 @@
         cortina.classList.remove('cerrando');
         cortina.classList.add('abriendo');
         setTimeout(function(){ cortina.classList.remove('abriendo'); }, 620);
-      }, 620);
+      }, 470);
     }
     document.querySelectorAll('a[href^="#"]').forEach(function(a){
       var id = a.getAttribute('href');
