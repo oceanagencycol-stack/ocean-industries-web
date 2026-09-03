@@ -100,6 +100,80 @@
        --------------------------------------------------------------- */
     html,body{overflow-x:clip;max-width:100%}
 
+    /* =================================================================
+       TRANSICIONES Y DETALLE  ·  auditoría del 3-sep
+       Curva por defecto: easeOutExpo (.19,1,.22,1), la firma medida en
+       23 sitios premiados de Awwwards. Duraciones tokenizadas.
+       ================================================================= */
+    :root{
+      --oi-ease:cubic-bezier(.19,1,.22,1);
+      --oi-ease-io:cubic-bezier(.76,0,.24,1);
+      --oi-t-micro:180ms; --oi-t-hover:260ms; --oi-t-rev:700ms; --oi-t-cine:1100ms;
+    }
+
+    /* --- View Transitions nativas: el cambio de idioma deja de ser un
+           parpadeo de texto y pasa a ser un cruce suave. --- */
+    @view-transition{navigation:auto}
+    ::view-transition-old(root){animation:oi-vt-sale 320ms var(--oi-ease-io) both}
+    ::view-transition-new(root){animation:oi-vt-entra 460ms var(--oi-ease) both}
+    @keyframes oi-vt-sale{to{opacity:0;transform:translateY(-10px)}}
+    @keyframes oi-vt-entra{from{opacity:0;transform:translateY(14px)}}
+
+    /* --- Cortina de sección: barre al saltar por un ancla del menú. --- */
+    .oi-cortina{position:fixed;inset:0;z-index:8000;pointer-events:none;
+      background:linear-gradient(180deg,#00FF7F 0%,#0000FF 100%);
+      transform:scaleY(0);transform-origin:bottom;will-change:transform}
+    .oi-cortina.cerrando{transform:scaleY(1);
+      transition:transform 420ms var(--oi-ease-io)}
+    .oi-cortina.abriendo{transform:scaleY(0);transform-origin:top;
+      transition:transform 520ms var(--oi-ease-io)}
+
+    /* --- Split por líneas del titular: cada línea sube enmascarada. --- */
+    .oi-linea{display:block;overflow:hidden;padding-bottom:.09em;margin-bottom:-.09em}
+    .oi-linea > span{display:block;transform:translateY(112%);
+      transition:transform var(--oi-t-cine) var(--oi-ease);
+      transition-delay:var(--oi-d,0ms)}
+    .has-js .hero-on .oi-linea > span,
+    html:not(.has-js) .oi-linea > span{transform:none}
+
+    /* --- Luz especular que sigue al puntero en las tarjetas de vidrio. --- */
+    .glass{position:relative;isolation:isolate}
+    .glass::before{content:"";position:absolute;inset:0;border-radius:inherit;
+      pointer-events:none;z-index:0;opacity:0;
+      transition:opacity var(--oi-t-hover) var(--oi-ease);
+      background:radial-gradient(340px circle at var(--oi-mx,50%) var(--oi-my,50%),
+                 rgba(0,255,127,.10),transparent 62%)}
+    @media (hover:hover) and (pointer:fine){ .glass:hover::before{opacity:1} }
+    .glass > *{position:relative;z-index:1}
+
+    /* --- Barra de progreso de lectura, arriba del todo. --- */
+    .oi-progreso{position:fixed;left:0;top:0;height:2px;z-index:8500;
+      background:linear-gradient(90deg,#00FF7F,#0000FF);
+      transform:scaleX(var(--oi-p,0));transform-origin:left;
+      will-change:transform;pointer-events:none}
+
+    /* --- Detalle de botón: brillo que barre al pasar el puntero. --- */
+    .btn-shine{position:relative;overflow:hidden}
+    .btn-shine::after{content:"";position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.28) 50%,transparent 62%);
+      transform:translateX(-120%);transition:transform 720ms var(--oi-ease)}
+    @media (hover:hover) and (pointer:fine){ .btn-shine:hover::after{transform:translateX(120%)} }
+
+    /* --- El enlace del menú activo se marca solo al cruzar su sección. --- */
+    .nav-link{position:relative}
+    .nav-link::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:2px;
+      background:#00FF7F;transform:scaleX(0);transform-origin:left;
+      transition:transform var(--oi-t-hover) var(--oi-ease)}
+    .nav-link[aria-current="true"]::after,
+    .nav-link:hover::after{transform:scaleX(1)}
+
+    @media(prefers-reduced-motion:reduce){
+      .oi-linea > span{transform:none!important;transition:none}
+      .oi-cortina{display:none}
+      .btn-shine::after{display:none}
+      ::view-transition-old(root),::view-transition-new(root){animation:none}
+    }
+
     /* Salto al contenido: fuera de la vista hasta que el teclado lo enfoca. */
     .skip-link{position:fixed;left:12px;top:12px;z-index:9999;padding:12px 22px;
       background:#00FF7F;color:#101820;border-radius:999px;font-weight:700;
@@ -502,22 +576,22 @@
       <div class="relative self-center hidden sm:block" style="height:560px;">
         <!-- Teléfono principal (derecha, más grande) -->
         <div class="phone float2 absolute" style="width:212px;height:384px;top:60px;right:6%;z-index:3;">
-          <video autoplay muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0,f_auto,q_auto,w_480/v1782600106/Video_1_OceanV4_1_k7v1wb.jpg"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/q_auto:eco,vc_auto,w_480/v1782600106/Video_1_OceanV4_1_k7v1wb.mp4" type="video/mp4"></video>
+          <video muted loop playsinline preload="none" data-o-video poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0,f_auto,q_auto,w_480/v1782600106/Video_1_OceanV4_1_k7v1wb.jpg"><source data-src="https://res.cloudinary.com/dpo9ohngt/video/upload/q_auto:eco,vc_auto,w_480/v1782600106/Video_1_OceanV4_1_k7v1wb.mp4" type="video/mp4"></video>
         </div>
         <!-- Teléfono secundario (izquierda) -->
         <div class="phone float1 absolute" style="width:180px;height:326px;top:36px;left:2%;z-index:2;">
-          <video autoplay muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0,f_auto,q_auto,w_480/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.jpg"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/q_auto:eco,vc_auto,w_480/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.mp4" type="video/mp4"></video>
+          <video muted loop playsinline preload="none" data-o-video poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0,f_auto,q_auto,w_480/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.jpg"><source data-src="https://res.cloudinary.com/dpo9ohngt/video/upload/q_auto:eco,vc_auto,w_480/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.mp4" type="video/mp4"></video>
         </div>
         <!-- Teléfono inferior (centro-abajo, más pequeño) -->
         <div class="phone float3 absolute" style="width:164px;height:298px;top:250px;left:34%;z-index:1;opacity:.9;">
-          <video autoplay muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0,f_auto,q_auto,w_480/v1782600109/Video_2_OceanV4_1_mx7qmz.jpg"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/q_auto:eco,vc_auto,w_480/v1782600109/Video_2_OceanV4_1_mx7qmz.mp4" type="video/mp4"></video>
+          <video muted loop playsinline preload="none" data-o-video poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0,f_auto,q_auto,w_480/v1782600109/Video_2_OceanV4_1_mx7qmz.jpg"><source data-src="https://res.cloudinary.com/dpo9ohngt/video/upload/q_auto:eco,vc_auto,w_480/v1782600109/Video_2_OceanV4_1_mx7qmz.mp4" type="video/mp4"></video>
         </div>
       </div>
       <!-- mobile: single video con marco realista -->
       <div class="sm:hidden flex justify-center mt-4">
         <div class="reel-phone" style="max-width:230px;">
           <div class="reel-screen">
-            <video autoplay muted loop playsinline preload="metadata" poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0,f_auto,q_auto,w_480/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.jpg"><source src="https://res.cloudinary.com/dpo9ohngt/video/upload/q_auto:eco,vc_auto,w_480/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.mp4" type="video/mp4"></video>
+            <video muted loop playsinline preload="none" data-o-video poster="https://res.cloudinary.com/dpo9ohngt/video/upload/so_0,f_auto,q_auto,w_480/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.jpg"><source data-src="https://res.cloudinary.com/dpo9ohngt/video/upload/q_auto:eco,vc_auto,w_480/v1782600101/SaveClip.App_AQMCrHQ6SwCj94c47kZU9ECYXO5BigKrVCqdeif74yN0ylYcHGb-MahMXX34eEpxo-KGPukG95xvkwy1HIaRvyiA3Y6Sd6v3BNxgCIY_pjjoft.mp4" type="video/mp4"></video>
             <div class="reel-notch"></div>
             <div class="reel-home"></div>
           </div>
@@ -1257,8 +1331,8 @@
         a.setAttribute('aria-label','Reel de Instagram: '+(reel.caption||'@oceanind.co'));
         a.innerHTML=
           '<div class="reel-screen">'+
-            '<video class="reel-vid" muted loop playsinline preload="metadata" '+poster+'>'+
-              '<source src="'+esc(reel.media_url)+'" type="video/mp4"></video>'+
+            '<video class="reel-vid" muted loop playsinline preload="none" data-o-video '+poster+'>'+
+              '<source data-src="'+esc(reel.media_url)+'" type="video/mp4"></video>'+
             '<div class="reel-grad"></div>'+
             '<div class="reel-notch"></div>'+
             '<div class="reel-tag"><img src="'+AVATAR+'" alt="Ocean"><span>@oceanind.co</span></div>'+
@@ -1414,6 +1488,200 @@
         });
       }
     });
+  </script>
+  <script>
+  /* ------------------------------------------------------------------
+     Carga diferida de video. Antes la página pedía 23,6 MB en móvil:
+     autoplay obliga al navegador a descargar el archivo completo aunque
+     el elemento esté a cinco pantallas de distancia. Ahora el <source>
+     no tiene src hasta que el video entra en el margen de precarga, y se
+     libera si el visitante se aleja mucho.
+     ------------------------------------------------------------------ */
+  (function(){
+    var pocos = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var ahorro = navigator.connection && (navigator.connection.saveData ||
+                 /2g/.test(navigator.connection.effectiveType||''));
+    function montar(v){
+      if (v.dataset.oMontado) return;
+      var s = v.querySelector('source[data-src]');
+      if (!s) return;
+      s.src = s.dataset.src;
+      v.dataset.oMontado = '1';
+      v.load();
+      if (!pocos) v.play().catch(function(){});
+    }
+    function soltar(v){
+      if (!v.dataset.oMontado) return;
+      v.pause();
+      var s = v.querySelector('source[data-src]');
+      if (s) s.removeAttribute('src');
+      v.removeAttribute('data-o-montado');
+      v.load();                       // libera el búfer descargado
+    }
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        var v = e.target;
+        if (e.isIntersecting) montar(v);
+        else if (e.intersectionRatio === 0) {
+          v.pause();
+          // solo se libera si quedó muy lejos: soltar y remontar en cada
+          // scroll corto sería peor que dejarlo en memoria
+          var r = v.getBoundingClientRect();
+          if (Math.abs(r.top) > innerHeight * 2.5) soltar(v);
+        }
+      });
+    }, { rootMargin: '300px 0px', threshold: [0, 0.01] });
+
+    function vigilar(raiz){
+      (raiz||document).querySelectorAll('video[data-o-video]').forEach(function(v){
+        if (v.dataset.oVigilado) return;
+        v.dataset.oVigilado = '1';
+        if (ahorro) return;           // con ahorro de datos, solo el póster
+        io.observe(v);
+      });
+    }
+    vigilar();
+    // Los reels se inyectan por JS después: se vigila lo que aparezca.
+    new MutationObserver(function(){ vigilar(); })
+      .observe(document.body, { childList:true, subtree:true });
+    window.OceanVideo = { vigilar: vigilar };
+  })();
+  </script>
+  <script>
+  /* ==================================================================
+     DETALLE E INTERACCIÓN  ·  auditoría del 3-sep
+     Todo va detrás de has-js y respeta prefers-reduced-motion. Nada de
+     esto es imprescindible para leer la página.
+     ================================================================== */
+  (function(){
+    var quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var fino   = matchMedia('(hover:hover) and (pointer:fine)').matches;
+
+    /* --- 1. Split por líneas del titular ---------------------------
+       No es split por palabras: se mide el offsetTop real de cada una
+       DESPUÉS de que carguen las fuentes y se agrupan por línea. Con la
+       fuente de respaldo las líneas caen en otro sitio. */
+    function partirLineas(el){
+      var txt = el.dataset.oiTexto || el.textContent.trim();
+      el.dataset.oiTexto = txt;
+      el.setAttribute('aria-label', txt);
+      el.innerHTML = txt.split(/\s+/).map(function(w){
+        return '<span class="oi-w">' + w + '</span>';
+      }).join(' ');
+      var lineas = [], act = null, top = null;
+      el.querySelectorAll('.oi-w').forEach(function(w){
+        var t = w.offsetTop;
+        if (top === null || Math.abs(t - top) > 2){ act = []; lineas.push(act); top = t; }
+        act.push(w.textContent);
+      });
+      el.innerHTML = lineas.map(function(ws,i){
+        return '<span class="oi-linea"><span aria-hidden="true" style="--oi-d:' +
+               (i*90) + 'ms">' + ws.join(' ') + '</span></span>';
+      }).join('');
+    }
+    var h1 = document.querySelector('.hero h1, #hero h1');
+    if (h1 && !quieto){
+      var correr = function(){ partirLineas(h1); };
+      (document.fonts && document.fonts.ready) ? document.fonts.ready.then(correr) : correr();
+      var tRe; addEventListener('resize', function(){
+        clearTimeout(tRe); tRe = setTimeout(correr, 180);
+      }, {passive:true});
+    }
+
+    /* --- 2. Cortina al saltar por un ancla del menú ------------------
+       Un salto instantáneo de 4.000 px desorienta. La cortina cubre el
+       viaje y lo convierte en una transición deliberada. */
+    var cortina = document.createElement('div');
+    cortina.className = 'oi-cortina'; cortina.setAttribute('aria-hidden','true');
+    document.body.appendChild(cortina);
+    function viajar(destino){
+      if (quieto){ destino.scrollIntoView(); return; }
+      cortina.classList.remove('abriendo');
+      cortina.classList.add('cerrando');
+      setTimeout(function(){
+        destino.scrollIntoView({behavior:'auto', block:'start'});
+        cortina.classList.remove('cerrando');
+        cortina.classList.add('abriendo');
+        setTimeout(function(){ cortina.classList.remove('abriendo'); }, 560);
+      }, 430);
+    }
+    document.querySelectorAll('a[href^="#"]').forEach(function(a){
+      var id = a.getAttribute('href');
+      if (!id || id === '#') return;
+      a.addEventListener('click', function(e){
+        var d = document.querySelector(id);
+        if (!d) return;
+        e.preventDefault();
+        history.pushState(null, '', id);
+        viajar(d);
+      });
+    });
+
+    /* --- 3. Barra de progreso de lectura ----------------------------- */
+    var barra = document.createElement('div');
+    barra.className = 'oi-progreso'; barra.setAttribute('aria-hidden','true');
+    document.body.appendChild(barra);
+
+    /* --- 4. Enlace del menú activo según la sección visible ---------- */
+    var enlaces = [].slice.call(document.querySelectorAll('nav a[href^="#"]'));
+    enlaces.forEach(function(a){ a.classList.add('nav-link'); });
+    var secciones = enlaces.map(function(a){
+      return document.querySelector(a.getAttribute('href'));
+    });
+
+    /* --- 5. Un solo listener de scroll para las dos cosas ------------ */
+    var pend = false;
+    function alScroll(){
+      if (pend) return; pend = true;
+      requestAnimationFrame(function(){
+        var alto = document.documentElement.scrollHeight - innerHeight;
+        barra.style.setProperty('--oi-p', alto > 0 ? (scrollY/alto).toFixed(4) : 0);
+        var y = innerHeight * 0.35, activo = -1;
+        for (var i=0;i<secciones.length;i++){
+          var sec = secciones[i]; if (!sec) continue;
+          var r = sec.getBoundingClientRect();
+          if (r.top <= y && r.bottom > y) activo = i;
+        }
+        enlaces.forEach(function(a,i){
+          a.setAttribute('aria-current', i === activo ? 'true' : 'false');
+        });
+        pend = false;
+      });
+    }
+    addEventListener('scroll', alScroll, {passive:true});
+    alScroll();
+
+    /* --- 6. Luz especular en las tarjetas de vidrio ------------------ */
+    if (fino){
+      document.querySelectorAll('.glass, .card-svc').forEach(function(c){
+        c.addEventListener('pointermove', function(e){
+          var r = c.getBoundingClientRect();
+          c.style.setProperty('--oi-mx', ((e.clientX-r.left)/r.width*100).toFixed(1)+'%');
+          c.style.setProperty('--oi-my', ((e.clientY-r.top)/r.height*100).toFixed(1)+'%');
+        }, {passive:true});
+      });
+      /* Brillo que barre en los botones principales */
+      document.querySelectorAll('.btn-blue, .btn-green, a[href*="wa.me"]').forEach(function(b){
+        b.classList.add('btn-shine');
+      });
+    }
+
+    /* --- 7. El cambio de idioma con View Transitions ------------------
+       Sin esto, cambiar de idioma reescribe 200 nodos de texto de golpe
+       y se ve como un parpadeo. */
+    if (document.startViewTransition && !quieto && typeof setLang === 'function'){
+      var original = setLang;
+      window.setLang = function(l){
+        document.startViewTransition(function(){ original(l); });
+      };
+      document.querySelectorAll('.lang-btn').forEach(function(b){
+        b.addEventListener('click', function(ev){
+          ev.stopImmediatePropagation();
+          window.setLang(b.getAttribute('data-lang'));
+        }, true);
+      });
+    }
+  })();
   </script>
 </body>
 </html>
