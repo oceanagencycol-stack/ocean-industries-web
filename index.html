@@ -12,17 +12,18 @@
   <meta name="theme-color" content="#101820" />
 
   <!-- ── Google Analytics 4 ──────────────────────────────────────────────
-       Sustituir GA4_MEASUREMENT_ID por el identificador real. Es lo único
-       que hay que cambiar: la capa OceanAnalytics (al final del body) ya
-       queda conectada a los CTA, secciones, contacto y agenda.
+       Propiedad de Ocean Industries. La capa OceanAnalytics (al final del
+       body) es el único punto que llama a gtag: no se mide desde otro sitio.
+       anonymize_ip activo. Eventos: page_view, section_view, cta_click,
+       contact_interaction y booking_interaction.
        ─────────────────────────────────────────────────────────────────── -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=GA4_MEASUREMENT_ID"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X204J5B0PQ"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     // send_page_view por defecto: un solo page_view por carga.
-    gtag('config', 'GA4_MEASUREMENT_ID', { anonymize_ip: true });
+    gtag('config', 'G-X204J5B0PQ', { anonymize_ip: true });
   </script>
 
   <!-- Open Graph -->
