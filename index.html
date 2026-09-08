@@ -11,6 +11,20 @@
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
   <meta name="theme-color" content="#101820" />
 
+  <!-- ── Google Analytics 4 ──────────────────────────────────────────────
+       Sustituir GA4_MEASUREMENT_ID por el identificador real. Es lo único
+       que hay que cambiar: la capa OceanAnalytics (al final del body) ya
+       queda conectada a los CTA, secciones, contacto y agenda.
+       ─────────────────────────────────────────────────────────────────── -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=GA4_MEASUREMENT_ID"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    // send_page_view por defecto: un solo page_view por carga.
+    gtag('config', 'GA4_MEASUREMENT_ID', { anonymize_ip: true });
+  </script>
+
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Ocean Industries" />
@@ -355,6 +369,65 @@
     .oi-logo:hover{transform:scale(1.06);filter:drop-shadow(0 0 26px rgba(0,255,127,.4))}
     nav.pegada .oi-logo,.nav-scrolled .oi-logo{height:52px}
     @media(max-width:768px){.oi-logo{height:52px}}
+
+    /* ===== OI_IMPACT_STORYTELLING (#about) ==========================
+       La sección deja de ser "quiénes somos" y pasa a explicar un
+       recorrido: problema → oportunidad → solución → impacto.
+       Reutiliza los tokens y el sistema .reveal existentes; no
+       introduce color ni tipografía nueva.
+       ================================================================ */
+    .oi-impact{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);
+      gap:clamp(32px,5vw,72px);align-items:start}
+    @media(max-width:900px){.oi-impact{grid-template-columns:1fr;gap:36px}}
+    .oi-impact__cab{position:sticky;top:120px}
+    @media(max-width:900px){.oi-impact__cab{position:static}}
+
+    .oi-impact__ruta{list-style:none;margin:0;padding:0;position:relative}
+    /* La línea vertical conecta las cuatro etapas: es el hilo que hace
+       legible que son un recorrido y no cuatro bloques sueltos. */
+    .oi-impact__ruta::before{content:"";position:absolute;left:15px;top:14px;bottom:14px;
+      width:1px;background:linear-gradient(180deg,
+        color-mix(in srgb,var(--oc-acento) 45%,transparent),
+        var(--oc-l-08) 55%,
+        color-mix(in srgb,var(--oc-acento) 45%,transparent))}
+    @media(max-width:520px){.oi-impact__ruta::before{left:11px}}
+
+    .oi-impact__paso{position:relative;padding:0 0 30px 52px}
+    .oi-impact__paso:last-child{padding-bottom:0}
+    @media(max-width:520px){.oi-impact__paso{padding-left:40px}}
+
+    /* El número es el nodo sobre la línea. Marcado como aria-hidden:
+       el orden ya lo comunica el <ol>. */
+    .oi-impact__num{position:absolute;left:0;top:0;width:31px;height:31px;
+      border-radius:50%;display:grid;place-items:center;
+      font-family:'Archivo','Inter',sans-serif;font-weight:900;font-size:11px;
+      letter-spacing:-.02em;color:var(--oc-acento-tx);
+      background:var(--oc-l-05);border:1px solid var(--oc-l-12);
+      transition:background var(--oi-t-hover) var(--oi-ease),
+                 border-color var(--oi-t-hover) var(--oi-ease)}
+    @media(max-width:520px){.oi-impact__num{width:23px;height:23px;font-size:9px}}
+    .oi-impact__paso.active .oi-impact__num{
+      border-color:color-mix(in srgb,var(--oc-acento) 55%,transparent);
+      background:color-mix(in srgb,var(--oc-acento) 12%,transparent)}
+
+    .oi-impact__eti{font-size:11px;font-weight:700;letter-spacing:.22em;
+      text-transform:uppercase;color:var(--oc-l-45);margin-bottom:8px}
+    .oi-impact__paso--impacto .oi-impact__eti{color:var(--oc-acento-tx)}
+    .oi-impact__tx{font-size:1rem;line-height:1.65;font-weight:300;
+      color:rgba(244,245,240,.72);max-width:56ch;margin:0}
+    @media(min-width:768px){.oi-impact__tx{font-size:1.05rem}}
+    /* El problema se enuncia con más peso: es la entrada del recorrido. */
+    .oi-impact__paso--problema .oi-impact__tx{color:rgba(244,245,240,.85)}
+
+    /* Escalonado de la revelación: las etapas entran en orden, que es
+       justamente lo que se quiere comunicar. */
+    .has-js .oi-impact__paso:nth-child(1){transition-delay:0ms}
+    .has-js .oi-impact__paso:nth-child(2){transition-delay:90ms}
+    .has-js .oi-impact__paso:nth-child(3){transition-delay:180ms}
+    .has-js .oi-impact__paso:nth-child(4){transition-delay:270ms}
+    @media(prefers-reduced-motion:reduce){
+      .has-js .oi-impact__paso{transition-delay:0ms!important}
+    }
 
     /* ================= BENTO DEL AGENTE EN VIVO =================
        Tres columnas de alturas independientes: la conversación manda y
@@ -892,8 +965,10 @@
   <!-- ===== ABOUT ===== -->
   <section id="about" class="py-24 md:py-36 px-5 md:px-10 relative oi-clip">
     <div class="oi-halo" aria-hidden="true"></div>
-    <div class="max-w-[1440px] mx-auto grid md:grid-cols-12 gap-12 items-center">
-      <div class="md:col-span-6 reveal-l">
+    <div class="max-w-[1440px] mx-auto oi-impact">
+
+      <!-- Cabecera: el titular existente se conserva íntegro -->
+      <div class="oi-impact__cab reveal">
         <p class="text-xs font-bold tracking-[0.3em] uppercase text-ocean-green mb-5" data-es="Sobre nosotros" data-en="About us" data-pt="Sobre nós">Sobre nosotros</p>
         <h2 class="font-display font-900 uppercase leading-[0.9] tracking-tight text-4xl md:text-6xl">
           <span data-es="No vendemos" data-en="We don't sell" data-pt="Não vendemos">No vendemos</span><br/>
@@ -902,15 +977,42 @@
           <span data-es="tu futuro." data-en="your future." data-pt="seu futuro.">tu futuro.</span>
         </h2>
       </div>
-      <div class="md:col-span-6 reveal-r">
-        <p class="text-base md:text-lg font-light text-white/70 leading-relaxed mb-6" data-es="El modelo tradicional de agencia digital caducó. Hoy el éxito no se mide por cuántos empleados copian y pegan datos, sino por tu capacidad de automatizar operaciones y escalar sin fricción." data-en="The traditional digital agency model is obsolete. Today, success isn't measured by how many employees copy and paste data, but by your ability to automate operations and scale without friction." data-pt="O modelo tradicional de agência digital expirou. Hoje o sucesso não se mede por quantos funcionários copiam e colam dados, mas pela sua capacidade de automatizar operações e escalar sem atrito.">El modelo tradicional de agencia digital caducó. Hoy el éxito no se mide por cuántos empleados copian y pegan datos, sino por tu capacidad de automatizar operaciones y escalar sin fricción.</p>
-        <p class="text-base md:text-lg font-light text-white/70 leading-relaxed" data-es="Democratizamos la tecnología corporativa de élite para las pymes. Integramos sistemas que piensan, analizan y venden por ti 24/7." data-en="We democratize elite corporate technology for SMBs. We integrate systems that think, analyze and sell for you 24/7." data-pt="Democratizamos a tecnologia corporativa de elite para PMEs. Integramos sistemas que pensam, analisam e vendem por você 24/7.">Democratizamos la tecnología corporativa de élite para las pymes. Integramos sistemas que piensan, analizan y venden por ti 24/7.</p>
-        <div class="grid grid-cols-3 gap-6 mt-10 stagger" id="stats">
-          <div><p class="font-display font-900 text-4xl md:text-5xl text-ocean-green"><span class="count" data-target="48">0</span>h</p><p class="text-xs text-white/50 mt-1" data-es="Prototipo funcional" data-en="Working prototype" data-pt="Protótipo funcional">Prototipo funcional</p></div>
-          <div><p class="font-display font-900 text-4xl md:text-5xl text-ocean-green"><span class="count" data-target="24">0</span>/7</p><p class="text-xs text-white/50 mt-1" data-es="Agentes vendiendo" data-en="Agents selling" data-pt="Agentes vendendo">Agentes vendiendo</p></div>
-          <div><p class="font-display font-900 text-4xl md:text-5xl text-ocean-green"><span class="count" data-target="3">0</span></p><p class="text-xs text-white/50 mt-1" data-es="Idiomas / mercados" data-en="Languages / markets" data-pt="Idiomas / mercados">Idiomas / mercados</p></div>
-        </div>
-      </div>
+
+      <!-- Cuatro etapas. El copy es el existente, redistribuido:
+           el primer párrafo se parte en su problema y su oportunidad
+           (la frase ya estaba construida con ese "sino que"), el segundo
+           queda como solución, y los contadores existentes como impacto.
+           No se introduce ninguna afirmación nueva. -->
+      <ol class="oi-impact__ruta" role="list">
+
+        <li class="oi-impact__paso oi-impact__paso--problema reveal">
+          <span class="oi-impact__num" aria-hidden="true">01</span>
+          <p class="oi-impact__eti" data-es="El problema" data-en="The problem" data-pt="O problema">El problema</p>
+          <p class="oi-impact__tx" data-es="El modelo tradicional de agencia digital caducó. El éxito ya no se mide por cuántos empleados copian y pegan datos." data-en="The traditional digital agency model is obsolete. Success is no longer measured by how many employees copy and paste data." data-pt="O modelo tradicional de agência digital expirou. O sucesso já não se mede por quantos funcionários copiam e colam dados.">El modelo tradicional de agencia digital caducó. El éxito ya no se mide por cuántos empleados copian y pegan datos.</p>
+        </li>
+
+        <li class="oi-impact__paso oi-impact__paso--oportunidad reveal">
+          <span class="oi-impact__num" aria-hidden="true">02</span>
+          <p class="oi-impact__eti" data-es="La oportunidad" data-en="The opportunity" data-pt="A oportunidade">La oportunidad</p>
+          <p class="oi-impact__tx" data-es="Se mide por tu capacidad de automatizar operaciones y escalar sin fricción." data-en="It is measured by your ability to automate operations and scale without friction." data-pt="Mede-se pela sua capacidade de automatizar operações e escalar sem atrito.">Se mide por tu capacidad de automatizar operaciones y escalar sin fricción.</p>
+        </li>
+
+        <li class="oi-impact__paso oi-impact__paso--solucion reveal">
+          <span class="oi-impact__num" aria-hidden="true">03</span>
+          <p class="oi-impact__eti" data-es="Lo que hacemos" data-en="What we do" data-pt="O que fazemos">Lo que hacemos</p>
+          <p class="oi-impact__tx" data-es="Democratizamos la tecnología corporativa de élite para las pymes. Integramos sistemas que piensan, analizan y venden por ti 24/7." data-en="We democratize elite corporate technology for SMBs. We integrate systems that think, analyze and sell for you 24/7." data-pt="Democratizamos a tecnologia corporativa de elite para PMEs. Integramos sistemas que pensam, analisam e vendem por você 24/7.">Democratizamos la tecnología corporativa de élite para las pymes. Integramos sistemas que piensan, analizan y venden por ti 24/7.</p>
+        </li>
+
+        <li class="oi-impact__paso oi-impact__paso--impacto reveal">
+          <span class="oi-impact__num" aria-hidden="true">04</span>
+          <p class="oi-impact__eti" data-es="El impacto" data-en="The impact" data-pt="O impacto">El impacto</p>
+          <div class="grid grid-cols-3 gap-6 stagger" id="stats">
+            <div><p class="font-display font-900 text-3xl md:text-4xl text-ocean-green"><span class="count" data-target="48">0</span>h</p><p class="text-xs text-white/50 mt-1" data-es="Prototipo funcional" data-en="Working prototype" data-pt="Protótipo funcional">Prototipo funcional</p></div>
+            <div><p class="font-display font-900 text-3xl md:text-4xl text-ocean-green"><span class="count" data-target="24">0</span>/7</p><p class="text-xs text-white/50 mt-1" data-es="Agentes vendiendo" data-en="Agents selling" data-pt="Agentes vendendo">Agentes vendiendo</p></div>
+            <div><p class="font-display font-900 text-3xl md:text-4xl text-ocean-green"><span class="count" data-target="3">0</span></p><p class="text-xs text-white/50 mt-1" data-es="Idiomas / mercados" data-en="Languages / markets" data-pt="Idiomas / mercados">Idiomas / mercados</p></div>
+          </div>
+        </li>
+      </ol>
     </div>
   </section>
 
@@ -2228,6 +2330,93 @@
       if (ruta.getAttribute('actual') === '3') OceanSound.reproducir('aviso');
     }).observe(ruta, {attributes:true, attributeFilter:['actual']});
   });
+  </script>
+  <script>
+  /* ==================================================================
+     OceanAnalytics — capa única de medición
+     Regla: mide COMPORTAMIENTO. Nunca alimenta cifras visibles del sitio.
+     Todos los eventos pasan por aquí; no se llama a gtag desde otro sitio.
+     ================================================================== */
+  window.OceanAnalytics = (function () {
+    var listo = function () { return typeof window.gtag === 'function'; };
+    var vistas = new Set();          // section_view se dispara una sola vez
+
+    function event(name, params) {
+      if (!listo()) return;
+      window.gtag('event', name, params || {});
+    }
+
+    function iniciar() {
+      /* --- section_view: una vez por sección, al cruzar el 40 % --- */
+      var secciones = document.querySelectorAll('section[id]');
+      if (secciones.length && 'IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (es) {
+          es.forEach(function (e) {
+            if (!e.isIntersecting || vistas.has(e.target.id)) return;
+            vistas.add(e.target.id);
+            io.unobserve(e.target);
+            event('section_view', { section: e.target.id });
+          });
+        }, { threshold: 0.4 });
+        secciones.forEach(function (sec) { io.observe(sec); });
+      }
+
+      /* --- Delegación única para clics. Evita un listener por elemento
+             y cubre el contenido que se inyecta después (reels). --- */
+      document.addEventListener('click', function (ev) {
+        var a = ev.target.closest('a, button');
+        if (!a) return;
+
+        var seccion = a.closest('section[id]');
+        var donde = seccion ? seccion.id : (a.closest('nav') ? 'nav' : 'flotante');
+        var texto = (a.getAttribute('aria-label') || a.textContent || '')
+                      .trim().replace(/\s+/g, ' ').slice(0, 40);
+        var href = a.getAttribute('href') || '';
+
+        // contacto: WhatsApp, teléfono, correo
+        if (/wa\.me|api\.whatsapp/.test(href)) {
+          event('contact_interaction', { channel: 'whatsapp', location: donde });
+          return;
+        }
+        if (href.indexOf('tel:') === 0) {
+          event('contact_interaction', { channel: 'phone', location: donde });
+          return;
+        }
+        if (href.indexOf('mailto:') === 0) {
+          event('contact_interaction', { channel: 'email', location: donde });
+          return;
+        }
+        // agenda
+        if (donde === 'book' || /calendly|cal\.com|agenda/i.test(href)) {
+          event('booking_interaction', { source: donde });
+          return;
+        }
+        // CTA con peso visual
+        if (a.className && /btn-green|btn-blue|oi-cta|fab-btn/.test(a.className)) {
+          event('cta_click', { location: donde, label: texto });
+        }
+      }, { passive: true });
+
+      /* --- La agenda es un iframe: el clic no llega al documento.
+             Se detecta el cambio de foco hacia el iframe, que es la señal
+             disponible sin acceso al contenido de terceros. --- */
+      var book = document.getElementById('book');
+      if (book) {
+        window.addEventListener('blur', function () {
+          if (document.activeElement && document.activeElement.tagName === 'IFRAME'
+              && book.contains(document.activeElement)) {
+            event('booking_interaction', { source: 'book_iframe' });
+          }
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', iniciar);
+    } else { iniciar(); }
+
+    return { event: event };
+  })();
   </script>
 </body>
 </html>
