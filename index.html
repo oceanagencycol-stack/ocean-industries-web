@@ -331,6 +331,80 @@
     @media(prefers-reduced-motion:reduce){
       .has-js .oi-entra{opacity:1;transform:none;animation:none}}
 
+    /* =================================================================
+       FASE G · OI_CASE_FLOW  (#work)
+       Los reels se conservan como prueba de producción. Encima se añade
+       una capa de caso con la estructura contexto → intervención →
+       sistema → resultado. Los campos de RESULTADO quedan marcados como
+       pendientes: Ocean no tiene hoy métricas verificadas de cliente y
+       una cifra inventada valdría menos que su ausencia.
+       Reutiliza: .glass, --oc-acento, .reveal, .stagger
+       ================================================================= */
+    .oi-case{display:grid;gap:14px;margin:0 0 3rem;
+      grid-template-columns:repeat(auto-fit,minmax(15rem,1fr))}
+    .oi-case__item{border:1px solid var(--oc-l-12);border-radius:1.25rem;
+      padding:1.5rem;background:var(--oc-l-05);display:flex;
+      flex-direction:column;gap:.75rem;
+      transition:border-color var(--oi-t-hover) var(--oi-ease),
+                 transform var(--oi-t-hover) var(--oi-ease)}
+    .oi-case__item:hover{border-color:color-mix(in srgb,var(--oc-acento) 40%,transparent);
+      transform:translateY(-3px)}
+    .oi-case__cliente{font-family:var(--oi-mono,ui-monospace,monospace);
+      font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+      color:var(--oc-acento-tx)}
+    .oi-case__paso{display:flex;gap:.7rem;align-items:flex-start}
+    .oi-case__k{font-family:var(--oi-mono,ui-monospace,monospace);
+      font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;
+      color:var(--oc-l-45);flex:none;width:5.6rem;padding-top:.15rem}
+    .oi-case__v{font-size:.82rem;line-height:1.5;color:rgba(244,245,240,.8)}
+    /* Campo cuyo dato real todavía no existe. Se marca, no se rellena. */
+    .oi-case__v--pendiente{color:var(--oc-l-45);font-style:italic}
+    @media(max-width:520px){
+      .oi-case__paso{flex-direction:column;gap:.2rem}
+      .oi-case__k{width:auto}
+    }
+
+    /* =================================================================
+       FASE D · OI_VALUE_PIPELINE  (#services)
+       No sustituye las tarjetas: las envuelve en una narrativa de cuatro
+       pasos y antepone a cada una el problema que resuelve. El copy del
+       problema está derivado del texto que ya existía en cada servicio,
+       no es contenido nuevo.
+       Reutiliza: .card-svc, .glass, --oc-acento, --oi-ease, .stagger
+       ================================================================= */
+    .oi-pipeline{display:flex;align-items:center;gap:0;margin:0 0 2.5rem;
+      flex-wrap:wrap;justify-content:center}
+    .oi-pipeline__paso{display:flex;align-items:center;gap:.6rem;
+      padding:.55rem .95rem;border-radius:999px;border:1px solid var(--oc-l-12);
+      background:var(--oc-l-05);white-space:nowrap}
+    .oi-pipeline__n{font-family:var(--oi-mono,ui-monospace,monospace);
+      font-size:.62rem;letter-spacing:.1em;color:var(--oc-acento-tx);
+      font-weight:600}
+    .oi-pipeline__tx{font-size:.72rem;font-weight:600;letter-spacing:.14em;
+      text-transform:uppercase;color:rgba(244,245,240,.72)}
+    .oi-pipeline__flecha{width:26px;height:1px;background:var(--oc-l-20);
+      position:relative;flex:none}
+    .oi-pipeline__flecha::after{content:"";position:absolute;right:0;top:-2px;
+      width:5px;height:5px;border-top:1px solid var(--oc-l-20);
+      border-right:1px solid var(--oc-l-20);transform:rotate(45deg)}
+    @media(max-width:768px){
+      .oi-pipeline{gap:.4rem}
+      .oi-pipeline__flecha{display:none}
+      .oi-pipeline__paso{padding:.45rem .7rem}
+      .oi-pipeline__tx{font-size:.62rem;letter-spacing:.1em}
+    }
+
+    /* El problema, antes del nombre del servicio: invierte la lectura de
+       "qué hacemos" a "qué te pasa". */
+    .oi-dolor{display:block;font-size:.74rem;line-height:1.45;font-weight:500;
+      color:var(--oc-acento-tx);margin-bottom:.6rem;
+      padding-left:.7rem;border-left:2px solid var(--oc-acento);
+      opacity:.92}
+    /* La etapa del pipeline a la que pertenece cada tarjeta. */
+    .oi-etapa{position:absolute;top:1rem;right:1.25rem;
+      font-family:var(--oi-mono,ui-monospace,monospace);font-size:.58rem;
+      letter-spacing:.12em;text-transform:uppercase;color:var(--oc-l-45)}
+
     /* --- Interruptor de sonido de interfaz ---------------------------
        Apagado de fábrica si el sistema pide movimiento reducido, y siempre
        visible: un sitio que suena sin control es un sitio del que se huye. */
@@ -1022,38 +1096,53 @@
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] aurora" style="background:#0000FF;opacity:.15;"></div>
     <div class="max-w-[1440px] mx-auto relative z-10">
       <div class="text-center mb-16 reveal">
-        <p class="text-xs font-bold tracking-[0.3em] uppercase text-ocean-green mb-4" data-es="Servicios core" data-en="Core services" data-pt="Serviços core">Servicios core</p>
-        <h2 class="font-display font-900 uppercase leading-[0.9] tracking-tight text-4xl md:text-6xl" data-es="Lo que construimos" data-en="What we build" data-pt="O que construímos">Lo que construimos</h2>
+        <p class="text-xs font-bold tracking-[0.3em] uppercase text-ocean-green mb-4" data-es="De la necesidad al resultado" data-en="From need to outcome" data-pt="Da necessidade ao resultado">De la necesidad al resultado</p>
+        <h2 class="font-display font-900 uppercase leading-[0.9] tracking-tight text-4xl md:text-6xl" data-es="Qué problema tienes y qué construimos" data-en="Your problem, and what we build" data-pt="Seu problema e o que construímos">Qué problema tienes y qué construimos</h2>
       </div>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5 stagger">
+      <div class="oi-pipeline reveal" role="list" aria-label="Cómo trabajamos">
+          <span class="oi-pipeline__paso" role="listitem"><span class="oi-pipeline__n">01</span><span class="oi-pipeline__tx" data-es="Necesidad" data-en="Need" data-pt="Necesidad">Necesidad</span></span>
+          <span class="oi-pipeline__flecha" aria-hidden="true"></span>
+          <span class="oi-pipeline__paso" role="listitem"><span class="oi-pipeline__n">02</span><span class="oi-pipeline__tx" data-es="Sistema" data-en="System" data-pt="Sistema">Sistema</span></span>
+          <span class="oi-pipeline__flecha" aria-hidden="true"></span>
+          <span class="oi-pipeline__paso" role="listitem"><span class="oi-pipeline__n">03</span><span class="oi-pipeline__tx" data-es="Implementación" data-en="Build" data-pt="Implementación">Implementación</span></span>
+          <span class="oi-pipeline__flecha" aria-hidden="true"></span>
+          <span class="oi-pipeline__paso" role="listitem"><span class="oi-pipeline__n">04</span><span class="oi-pipeline__tx" data-es="Resultado" data-en="Outcome" data-pt="Resultado">Resultado</span></span>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5 stagger">
         <div class="card-svc glass p-8 rounded-2xl">
           <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-ocean-blue/20 border border-ocean-blue/40 mb-6"><i data-lucide="bot" class="w-6 h-6 text-ocean-green"></i></div>
+          <span class="oi-dolor" data-es="Tu equipo copia y pega datos entre sistemas todo el día." data-en="Your team copies and pastes data between systems all day." data-pt="Sua equipe copia e cola dados entre sistemas o dia todo.">Tu equipo copia y pega datos entre sistemas todo el día.</span>
           <h3 class="font-display font-700 text-xl uppercase mb-3" data-es="Software agéntico" data-en="Agentic software" data-pt="Software agêntico">Software agéntico</h3>
           <p class="text-sm text-white/60 font-light leading-relaxed" data-es="Paneles y software a la medida con IA. Conectamos agentes a tu base de datos, CRM y hojas de cálculo vía MCP. El fin del Excel interminable." data-en="Custom dashboards and software with AI. We connect agents to your database, CRM and spreadsheets via MCP. The end of endless Excel." data-pt="Painéis e software sob medida com IA. Conectamos agentes ao seu banco de dados, CRM e planilhas via MCP. O fim do Excel interminável.">Paneles y software a la medida con IA. Conectamos agentes a tu base de datos, CRM y hojas de cálculo vía MCP. El fin del Excel interminable.</p>
         </div>
         <div class="card-svc glass p-8 rounded-2xl">
           <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-ocean-blue/20 border border-ocean-blue/40 mb-6"><i data-lucide="globe" class="w-6 h-6 text-ocean-green"></i></div>
+          <span class="oi-dolor" data-es="Tu web tarda en cargar y no convierte en móvil." data-en="Your site is slow and doesn't convert on mobile." data-pt="Seu site é lento e não converte no celular.">Tu web tarda en cargar y no convierte en móvil.</span>
           <h3 class="font-display font-700 text-xl uppercase mb-3" data-es="Web & e-commerce" data-en="Web & e-commerce" data-pt="Web & e-commerce">Web & e-commerce</h3>
           <p class="text-sm text-white/60 font-light leading-relaxed" data-es="Plataformas web y tiendas online ultrarrápidas, optimizadas para móvil y SEO. Prototipo navegable en 48 horas. Si te impresiona, lo lanzamos." data-en="Ultra-fast web platforms and online stores, mobile and SEO optimized. Navigable prototype in 48 hours. If it impresses you, we launch it." data-pt="Plataformas web e lojas online ultrarrápidas, otimizadas para mobile e SEO. Protótipo navegável em 48 horas. Se te impressionar, lançamos.">Plataformas web y tiendas online ultrarrápidas, optimizadas para móvil y SEO. Prototipo navegable en 48 horas. Si te impresiona, lo lanzamos.</p>
         </div>
         <div class="card-svc glass p-8 rounded-2xl">
           <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-ocean-blue/20 border border-ocean-blue/40 mb-6"><i data-lucide="message-circle" class="w-6 h-6 text-ocean-green"></i></div>
+          <span class="oi-dolor" data-es="Pierdes ventas fuera del horario de oficina." data-en="You lose sales outside business hours." data-pt="Você perde vendas fora do horário comercial.">Pierdes ventas fuera del horario de oficina.</span>
           <h3 class="font-display font-700 text-xl uppercase mb-3" data-es="Asistentes omnicanal" data-en="Omnichannel assistants" data-pt="Assistentes omnicanal">Asistentes omnicanal</h3>
           <p class="text-sm text-white/60 font-light leading-relaxed mb-4" data-es="Agentes de IA conversacionales en WhatsApp y tu web. Entienden contexto, agendan citas y cierran ventas de madrugada. Tu mejor vendedor no duerme." data-en="Conversational AI agents on WhatsApp and your site. They understand context, book appointments and close sales overnight. Your best salesperson never sleeps." data-pt="Agentes de IA conversacionais no WhatsApp e seu site. Entendem contexto, agendam e fecham vendas de madrugada. Seu melhor vendedor não dorme.">Agentes de IA conversacionales en WhatsApp y tu web. Entienden contexto, agendan citas y cierran ventas de madrugada. Tu mejor vendedor no duerme.</p>
           <a href="#" data-wa="agents" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-sm font-bold text-ocean-green ul-hover" data-es="Quiero uno así →" data-en="I want one like this →" data-pt="Quero um assim →">Quiero uno así →</a>
         </div>
         <div class="card-svc glass p-8 rounded-2xl">
           <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-ocean-blue/20 border border-ocean-blue/40 mb-6"><i data-lucide="target" class="w-6 h-6 text-ocean-green"></i></div>
+          <span class="oi-dolor" data-es="Quemas presupuesto en pauta sin leads calificados." data-en="You burn ad budget without qualified leads." data-pt="Você queima verba de anúncios sem leads qualificados.">Quemas presupuesto en pauta sin leads calificados.</span>
           <h3 class="font-display font-700 text-xl uppercase mb-3" data-es="Performance B2B" data-en="Performance B2B" data-pt="Performance B2B">Performance B2B</h3>
           <p class="text-sm text-white/60 font-light leading-relaxed" data-es="Estrategias quirúrgicas en Meta Ads. Cada peso invertido se traduce en leads calificados listos para cerrar en tu WhatsApp. Deja de quemar presupuesto a ciegas." data-en="Surgical Meta Ads strategies. Every dollar becomes qualified leads ready to close on your WhatsApp. Stop burning budget blindly." data-pt="Estratégias cirúrgicas em Meta Ads. Cada peso vira leads qualificados prontos para fechar no seu WhatsApp. Pare de queimar orçamento às cegas.">Estrategias quirúrgicas en Meta Ads. Cada peso invertido se traduce en leads calificados listos para cerrar en tu WhatsApp. Deja de quemar presupuesto a ciegas.</p>
         </div>
         <div class="card-svc glass p-8 rounded-2xl">
           <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-ocean-blue/20 border border-ocean-blue/40 mb-6"><i data-lucide="clapperboard" class="w-6 h-6 text-ocean-green"></i></div>
+          <span class="oi-dolor" data-es="Tienes alcance pero no se traduce en ventas." data-en="You get reach, but it doesn't turn into sales." data-pt="Você tem alcance, mas não vira venda.">Tienes alcance pero no se traduce en ventas.</span>
           <h3 class="font-display font-700 text-xl uppercase mb-3" data-es="UGC & social" data-en="UGC & social" data-pt="UGC & social">UGC & social</h3>
           <p class="text-sm text-white/60 font-light leading-relaxed" data-es="Contenido vertical disruptivo para TikTok, Reels y Facebook. Ritmo frenético y retención visual que capta la atención en 3 segundos. Likes no pagan nóminas; las ventas sí." data-en="Disruptive vertical content for TikTok, Reels and Facebook. Frantic pace and visual retention that grabs attention in 3 seconds. Likes don't pay payroll; sales do." data-pt="Conteúdo vertical disruptivo para TikTok, Reels e Facebook. Ritmo frenético e retenção visual que captura a atenção em 3 segundos. Likes não pagam salários; vendas sim.">Contenido vertical disruptivo para TikTok, Reels y Facebook. Ritmo frenético y retención visual que capta la atención en 3 segundos. Likes no pagan nóminas; las ventas sí.</p>
         </div>
         <div class="card-svc glass lq-ring p-8 rounded-2xl border-ocean-green/30">
           <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-ocean-green/20 border border-ocean-green/40 mb-6"><i data-lucide="sparkles" class="w-6 h-6 text-ocean-green"></i></div>
+          <span class="oi-dolor" data-es="Tus herramientas no se hablan entre sí." data-en="Your tools don't talk to each other." data-pt="Suas ferramentas não conversam entre si.">Tus herramientas no se hablan entre sí.</span>
           <h3 class="font-display font-700 text-xl uppercase mb-3" data-es="Automatización total" data-en="Full automation" data-pt="Automação total">Automatización total</h3>
           <p class="text-sm text-white/60 font-light leading-relaxed mb-4" data-es="Conectamos todo tu negocio: CRM, pagos, WhatsApp, calendario e IA en un solo ecosistema que trabaja solo." data-en="We connect your whole business: CRM, payments, WhatsApp, calendar and AI into one ecosystem that runs itself." data-pt="Conectamos todo o seu negócio: CRM, pagamentos, WhatsApp, calendário e IA em um único ecossistema autônomo.">Conectamos todo tu negocio: CRM, pagos, WhatsApp, calendario e IA en un solo ecosistema que trabaja solo.</p>
           <a href="#" data-wa="automation" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-sm font-bold text-ocean-green ul-hover" data-es="Hablemos por WhatsApp →" data-en="Let's talk on WhatsApp →" data-pt="Vamos ao WhatsApp →">Hablemos por WhatsApp →</a>
@@ -1153,7 +1242,7 @@
           <h2 class="font-display font-900 uppercase leading-[0.9] tracking-tight text-4xl md:text-6xl" data-es="Así nace una estrategia" data-en="How a strategy is born" data-pt="Como nasce uma estratégia">Así nace una estrategia</h2>
         </div>
         <div class="md:text-right md:max-w-sm">
-          <p class="text-sm text-white/55 font-light mb-4" data-es="Nuestros últimos reels, en vivo desde Instagram. Contenido real, resultados reales." data-en="Our latest reels, live from Instagram. Real content, real results." data-pt="Nossos últimos reels, ao vivo do Instagram. Conteúdo real, resultados reais.">Nuestros últimos reels, en vivo desde Instagram. Contenido real, resultados reales.</p>
+          <p class="text-sm text-white/55 font-light mb-4" data-es="Producción propia, en vivo desde Instagram. Abajo, lo que construimos para cada cliente." data-en="Our own production, live from Instagram. Below, what we built for each client." data-pt="Produção própria, ao vivo do Instagram. Abaixo, o que construímos para cada cliente.">Producción propia, en vivo desde Instagram. Abajo, lo que construimos para cada cliente.</p>
           <a href="https://www.instagram.com/oceanind.co/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 text-sm font-bold text-ocean-green ul-hover">
             <i data-lucide="instagram" class="w-4 h-4"></i><span>@oceanind.co</span>
           </a>
@@ -1161,6 +1250,31 @@
       </div>
 
       <!-- Los reels se inyectan aquí desde /api/reels (con fallback si aún no hay token de IG) -->
+        <div class="oi-case stagger">
+          <article class="oi-case__item reveal">
+            <span class="oi-case__cliente">Outstanding Garage Doors · Miami, FL</span>
+            <div class="oi-case__paso"><span class="oi-case__k" data-es="Contexto" data-en="Context" data-pt="Contexto">Contexto</span><span class="oi-case__v">Negocio de servicio local en el sur de Florida.</span></div>
+            <div class="oi-case__paso"><span class="oi-case__k" data-es="Intervención" data-en="Intervention" data-pt="Intervenção">Intervención</span><span class="oi-case__v">Agente de WhatsApp en operación y sitio en inglés.</span></div>
+            <div class="oi-case__paso"><span class="oi-case__k" data-es="Sistema" data-en="System" data-pt="Sistema">Sistema</span><span class="oi-case__v">Evolution API · n8n · agente conversacional</span></div>
+            <div class="oi-case__paso"><span class="oi-case__k" data-es="Resultado" data-en="Outcome" data-pt="Resultado">Resultado</span><span class="oi-case__v oi-case__v--pendiente">[CASE RESULT REQUIRED]</span></div>
+          </article>
+          <article class="oi-case__item reveal">
+            <span class="oi-case__cliente">Naidikó · Pacífico colombiano</span>
+            <div class="oi-case__paso"><span class="oi-case__k" data-es="Contexto" data-en="Context" data-pt="Contexto">Contexto</span><span class="oi-case__v">Marca de naidí con tres modelos de venta en un mismo sitio.</span></div>
+            <div class="oi-case__paso"><span class="oi-case__k" data-es="Intervención" data-en="Intervention" data-pt="Intervenção">Intervención</span><span class="oi-case__v">Sitio con catálogo, mayoreo y captación de inversión.</span></div>
+            <div class="oi-case__paso"><span class="oi-case__k" data-es="Sistema" data-en="System" data-pt="Sistema">Sistema</span><span class="oi-case__v">Web propia · formularios · WhatsApp · catálogo</span></div>
+            <div class="oi-case__paso"><span class="oi-case__k" data-es="Resultado" data-en="Outcome" data-pt="Resultado">Resultado</span><span class="oi-case__v oi-case__v--pendiente">[CASE RESULT REQUIRED]</span></div>
+          </article>
+          <article class="oi-case__item reveal">
+            <span class="oi-case__cliente">Álvaro Arroyo · Colombia</span>
+            <div class="oi-case__paso"><span class="oi-case__k" data-es="Contexto" data-en="Context" data-pt="Contexto">Contexto</span><span class="oi-case__v">Perfil público sin activo editorial propio.</span></div>
+            <div class="oi-case__paso"><span class="oi-case__k" data-es="Intervención" data-en="Intervention" data-pt="Intervenção">Intervención</span><span class="oi-case__v">Sitio de autoridad con arquitectura de contenido.</span></div>
+            <div class="oi-case__paso"><span class="oi-case__k" data-es="Sistema" data-en="System" data-pt="Sistema">Sistema</span><span class="oi-case__v">20 páginas indexadas · datos estructurados</span></div>
+            <div class="oi-case__paso"><span class="oi-case__k" data-es="Resultado" data-en="Outcome" data-pt="Resultado">Resultado</span><span class="oi-case__v oi-case__v--pendiente">[CASE RESULT REQUIRED]</span></div>
+          </article>
+        </div>
+
+
       <div id="reelsGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 stagger">
         <!-- Esqueletos mientras carga -->
         <div class="reel-phone oi-entra"><div class="reel-screen"><div class="reel-skel"></div><div class="reel-notch"></div><div class="reel-home"></div></div></div>
