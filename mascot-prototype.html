@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ocean Mascot — Prototype</title>
+<style>
+:root{--bg:#101820;--ink:#101820;--paper:#f4f5f0;--cyan:#59c3e6;--green:#00ff7f;--ease:cubic-bezier(.19,1,.22,1)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(900px 600px at 50% 0,#142c3b 0,#101820 55%,#091017 100%);color:var(--paper);font-family:Inter,system-ui,sans-serif;min-height:100vh}
+main{width:min(1100px,100% - 32px);margin:auto;padding:48px 0 100px}.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--green);font-weight:700}.title{font-size:clamp(38px,7vw,84px);line-height:.9;letter-spacing:-.06em;margin:16px 0}.intro{max-width:560px;color:#b8c2c5;line-height:1.6}.layout{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;margin-top:40px}.panel{border:1px solid #ffffff1c;background:#ffffff08;border-radius:24px;padding:24px;backdrop-filter:blur(16px)}
+.stage{min-height:560px;display:grid;place-items:center;position:relative;overflow:hidden;background:radial-gradient(400px 300px at 50% 45%,#59c3e61c,transparent 70%)}.stage:after{content:"";position:absolute;inset:auto 8% 7%;height:1px;background:linear-gradient(90deg,transparent,#ffffff22,transparent)}
+.mascot{--s:1;position:relative;width:280px;height:390px;transform:scale(var(--s));transform-origin:center bottom;filter:drop-shadow(0 22px 24px #0005);transition:transform .5s var(--ease)}.part{position:absolute;display:block;user-select:none;pointer-events:none}.head{z-index:5;width:270px;height:auto;left:5px;top:20px}.body{z-index:3;width:150px;height:auto;left:65px;top:218px}.arm{z-index:4;width:72px;height:auto;top:235px;transform-origin:80% 18%;transition:transform .55s var(--ease)}.arm.left{left:26px}.arm.right{right:25px;transform:scaleX(-1)}.shadow{z-index:1;width:220px;left:30px;bottom:0;opacity:.45}.accent{position:absolute;z-index:8;width:10px;height:44px;border-radius:99px;background:var(--green);right:7px;top:182px;transform:rotate(28deg);opacity:0;transition:opacity .2s}.mascot.idle{animation:float 4.6s ease-in-out infinite}.mascot.idle .head{animation:headBreath 4.6s ease-in-out infinite}.mascot.wave .arm.right{transform:scaleX(-1) rotate(-35deg) translateY(-18px);animation:wave 1.1s ease-in-out 2}.mascot.wave .accent{opacity:1;animation:blinkAccent 1.1s ease-in-out 2}.mascot.think .head{transform:rotate(-3deg);transition:transform .5s}.mascot.think .arm.right{transform:scaleX(-1) rotate(-52deg) translate(-5px,-18px)}.mascot.think .accent{opacity:1;background:var(--cyan);right:0;top:170px}.mascot.happy{animation:happy .75s var(--ease)}.mascot.happy .arm.left{transform:rotate(28deg) translateY(-12px)}.mascot.happy .arm.right{transform:scaleX(-1) rotate(-28deg) translateY(-12px)}.mascot.point .arm.right{transform:scaleX(-1) rotate(-72deg) translate(-22px,-25px)}.mascot.point .accent{opacity:1}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}@keyframes headBreath{0%,100%{transform:scale(1)}50%{transform:scale(1.012)}}@keyframes wave{0%,100%{rotate:0deg}50%{rotate:18deg}}@keyframes blinkAccent{0%,100%{opacity:0}30%,70%{opacity:1}}@keyframes happy{0%{transform:translateY(0) scale(1)}45%{transform:translateY(-18px) scale(1.04)}100%{transform:translateY(0) scale(1)}}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.controls button{appearance:none;border:1px solid #ffffff24;background:#ffffff0d;color:var(--paper);border-radius:999px;padding:11px 15px;font-weight:700;cursor:pointer;transition:background .2s,transform .2s,border-color .2s}.controls button:hover,.controls button:focus-visible{background:#00ff7f1c;border-color:#00ff7f88;transform:translateY(-2px);outline:none}.controls button.active{background:var(--green);border-color:var(--green);color:#07150e}.meta{font-size:12px;color:#8fa0a6;line-height:1.5;margin-top:18px}.specs{display:grid;gap:12px}.spec{padding:15px;border-radius:16px;background:#ffffff08;border:1px solid #ffffff12}.spec b{display:block;font-size:12px;color:var(--green);letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px}.spec span{font-size:14px;color:#c4ced0}
+.demo-card{margin-top:24px;display:flex;align-items:center;gap:18px;padding:18px;border-radius:20px;background:#f4f5f00a;border:1px solid #ffffff15}.mini{width:74px;height:92px;position:relative;flex:none;transform:scale(.25);transform-origin:left top;margin-right:-54px}.mini .head{width:270px;top:20px;left:5px}.mini .body{width:150px;top:218px;left:65px}.mini .arm{width:72px;top:235px}.mini .arm.left{left:26px}.mini .arm.right{right:25px}.mini .shadow{width:220px;left:30px;bottom:0}
+@media(max-width:760px){main{padding-top:28px}.layout{grid-template-columns:1fr}.stage{min-height:480px}.mascot{transform:scale(.82)}.title{max-width:8ch}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}}
+</style>
+</head>
+<body>
+<main>
+<div class="eyebrow">Ocean Industries / Character Lab</div>
+<h1 class="title">Ocean<br>Mascot.</h1>
+<p class="intro">Prototipo inicial de una mascota digital construida con piezas del personaje original. La composición usa capas independientes, estados de pose y animaciones CSS de bajo coste para validar la dirección visual antes de crear el rig definitivo.</p>
+<div class="layout">
+<section class="panel stage" aria-label="Vista previa de la mascota Ocean">
+<div class="mascot idle" id="mascot" aria-hidden="true">
+<img class="part shadow" src="assets/ocean-ui/mascot/shadow.png" alt="">
+<img class="part body" src="assets/ocean-ui/mascot/body.png" alt="">
+<img class="part arm left" src="assets/ocean-ui/mascot/arm.png" alt="">
+<img class="part arm right" src="assets/ocean-ui/mascot/arm.png" alt="">
+<img class="part head" src="assets/ocean-ui/mascot/head-face.png" alt="">
+<span class="accent"></span>
+</div>
+</section>
+<section class="panel">
+<div class="eyebrow">Estados del prototipo</div>
+<h2 style="font-size:30px;letter-spacing:-.04em;margin:12px 0 8px">Haz que reaccione</h2>
+<p class="intro" style="font-size:14px">Estos estados son deliberadamente pequeños y controlados. El siguiente paso es reemplazar los recortes preliminares por assets limpios de producción y ajustar los puntos de anclaje.</p>
+<div class="controls" role="group" aria-label="Estados de la mascota">
+<button data-state="idle" class="active">Idle</button><button data-state="wave">Saludar</button><button data-state="think">Pensar</button><button data-state="happy">Celebrar</button><button data-state="point">Señalar</button>
+</div>
+<div class="specs" style="margin-top:28px">
+<div class="spec"><b>Composición</b><span>Cabeza, cuerpo, brazos y sombra como capas independientes.</span></div>
+<div class="spec"><b>Motor</b><span>CSS transforms + keyframes; sin dependencia adicional ni canvas.</span></div>
+<div class="spec"><b>Interacción</b><span>Estados activados por botones; listo para conectarse a eventos de scroll, chat y CTA.</span></div>
+<div class="spec"><b>Accesibilidad</b><span>Decorativo por defecto, respeta prefers-reduced-motion y no bloquea la navegación.</span></div>
+</div>
+<div class="demo-card"><div class="mini"><img class="part shadow" src="assets/ocean-ui/mascot/shadow.png" alt=""><img class="part body" src="assets/ocean-ui/mascot/body.png" alt=""><img class="part arm left" src="assets/ocean-ui/mascot/arm.png" alt=""><img class="part arm right" src="assets/ocean-ui/mascot/arm.png" alt=""><img class="part head" src="assets/ocean-ui/mascot/head-face.png" alt=""></div><div><strong>Dirección visual inicial</strong><div class="meta">Minimalista, orgánica, reconocible y preparada para evolucionar hacia un sistema de personaje más completo.</div></div></div>
+</section>
+</div>
+</main>
+<script>
+const mascot=document.querySelector('#mascot');
+const buttons=[...document.querySelectorAll('[data-state]')];
+function setState(state){mascot.className='mascot '+state;buttons.forEach(b=>b.classList.toggle('active',b.dataset.state===state));}
+buttons.forEach(b=>b.addEventListener('click',()=>setState(b.dataset.state)));
+</script>
+</body>
+</html>
