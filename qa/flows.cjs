@@ -84,6 +84,21 @@ const { chromium } = require('playwright')
   ok(step >= 1, `la escena avanza en vista (paso ${step})`)
   ok(await p.$eval('#omnicanal .demo', (el) => el.classList.contains('is-playing')), 'la escena dice que está corriendo')
 
+  // reels: el que entra en vista baja y suena en silencio; fuera de vista se pausa
+  await p.evaluate(() => {
+    const el = document.querySelector('#reelsGrid .reel__video')
+    window.__ocean.to(el.getBoundingClientRect().top + window.scrollY - 120)
+  })
+  await p.waitForFunction(() => {
+    const v = document.querySelector('#reelsGrid .reel__video')
+    return v && v.readyState >= 2 && !v.paused
+  }, null, { timeout: 15000 }).catch(() => {})
+  const reel = await p.$eval('#reelsGrid .reel__video', (v) => ({ ready: v.readyState, paused: v.paused, muted: v.muted, src: (v.currentSrc || '').split('/').pop() }))
+  ok(reel.ready >= 2 && !reel.paused && reel.muted, `el reel en vista corre en silencio (${reel.src}, readyState ${reel.ready})`)
+  await p.evaluate(() => window.__ocean.to(0))
+  await p.waitForTimeout(600)
+  ok(await p.$eval('#reelsGrid .reel__video', (v) => v.paused), 'fuera de vista el reel se pausa')
+
   ok(errors.length === 0, `sin errores de consola${errors.length ? ': ' + errors.join(' | ') : ''}`)
   await ctx.close()
 

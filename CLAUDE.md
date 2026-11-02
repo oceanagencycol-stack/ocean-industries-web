@@ -26,6 +26,11 @@ defecto, EN y PT** (cada elemento lleva `data-es` / `data-en` / `data-pt`).
 - **Pagos**: la tarjeta nunca toca a Ocean (widget de Wompi); la firma sale de `/api/pago-wompi`; el regreso de Wompi
   no confirma nada (lo confirma el webhook). No se hacen pagos reales en pruebas.
 - **El agente de la web** (`/api/agente`, n8n) no se prueba con mensajes reales sin permiso: en QA se simula.
+- **Carga** (2-nov-2026): el trozo de three.js (`stage-*.js`, ~170 kB comprimido) **no** se precarga con
+  `modulepreload` (en el teléfono competía con la fuente y `main.js`: Lighthouse móvil pasó de 87 a 99); `main.ts` lo
+  pide cuando sabe que lo va a usar. En una visita de regreso sin ancla, la prueba de WebGL (crea un contexto) espera
+  al primer pintado (`markSea` en `bootDirect`); con ancla, en la primera visita o con la intro, se hace al arrancar.
+- **Analítica**: GA4 solo mide en `oceanindustries.com.co` (ni vistas previas, ni local, ni `?qa`).
 - Sin secretos en el repo. Commits con identidad `oceanagencycol-stack <oceanagencycol@gmail.com>`.
 
 ## Dónde está cada cosa
@@ -38,4 +43,7 @@ conversación, pagos, reels, agenda, analítica) · `src/styles/` · `api/` (age
 ## QA
 Con `npx vite` (o `npm run preview`): `node qa/shoot.cjs http://localhost:5175/ <carpeta> both` (sin el 3D, rápido)
 y `--glass` (con el mar; en el sandbox sin GPU va con SwiftShader y tarda). `node qa/stage_shot.cjs` posa el
-escenario solo (`dev-stage.html`). Termina en «sin problemas» o lista los fallos.
+escenario solo (`dev-stage.html`). Termina en «sin problemas» o lista los fallos. `node qa/flows.cjs <url>` prueba
+idioma, WhatsApp, chat (simulado), calculadora de pagos, escenas, reels, menú del teléfono y la 404 («todo en verde»).
+`node qa/intro.cjs <url> <carpeta>` congela la intro cuadro a cuadro. Lighthouse en teléfono contra `npm run preview`
+(2-nov-2026: rendimiento 99, accesibilidad, buenas prácticas y SEO 100; FCP/LCP 1,6 s, TBT 20 ms, CLS 0).

@@ -19,9 +19,9 @@ export function track(name: string, params: Record<string, unknown>): void {
 }
 
 export function initAnalytics(): void {
-  // not from QA runs, nor from local previews
+  // only the real site measures: previews, local runs and QA don't pollute Ocean's numbers
   const host = location.hostname
-  if (new URLSearchParams(location.search).has('qa') || host === 'localhost' || host === '127.0.0.1') return
+  if (new URLSearchParams(location.search).has('qa') || !/(^|\.)oceanindustries\.com\.co$/.test(host)) return
   window.dataLayer = window.dataLayer || []
   window.gtag = function gtag() {
     // eslint-disable-next-line prefer-rest-params

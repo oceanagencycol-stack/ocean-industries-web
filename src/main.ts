@@ -56,8 +56,9 @@ const deepLink = location.hash.length > 1
 const introEl = document.getElementById('intro')
 
 if (dev.reducedMotion) html.classList.add('no-motion')
-/** the real-time sea: WebGL2 on a real GPU, with motion allowed (otherwise the still) */
-const glassOK = () => dev.webgl2 && !dev.software && !noGlass && !dev.reducedMotion
+/** the real-time sea: WebGL2 on a real GPU, with motion allowed (otherwise the still). Asking creates a WebGL context
+ *  (it costs): it's asked at once only when the intro may play; otherwise after the first paint. */
+const glassOK = () => !noGlass && !dev.reducedMotion && dev.webgl2 && !dev.software
 const playIntro = !!introEl && !dev.reducedMotion && (!seen || replay) && !deepLink && glassOK()
 html.classList.remove('is-booting')
 
@@ -71,9 +72,15 @@ if (playIntro) {
   introEl?.remove()
 }
 
-// the wave scene keeps its length from the start (no jump when the sea arrives); without the sea it reads in order
-if (glassOK() && !dev.saveData) document.querySelector('.wave')?.classList.add('is-scene')
-else html.classList.add('no-webgl')
+// the wave scene takes its length as soon as we know the sea will come (it is below the first screen: nothing on
+// screen moves); without the sea it reads in order
+function markSea(): void {
+  if (glassOK() && !dev.saveData) document.querySelector('.wave')?.classList.add('is-scene')
+  else html.classList.add('no-webgl')
+}
+// at once when the question was already asked (a first visit asks it to decide the intro) or when a deep link needs
+// the final lengths before it lands; on a plain return visit it waits for the first paint (bootDirect)
+if (!seen || replay || deepLink || dev.reducedMotion || noGlass) markSea()
 
 const lenis = createSmoothScroll(!dev.reducedMotion && !dev.coarse)
 if (playIntro) lenis?.stop()
@@ -327,8 +334,12 @@ function armSound(): void {
 async function bootDirect(): Promise<void> {
   markRevealed(600)
   armSound()
+  // after the first paint: the WebGL question (it creates a context) and the wave scene's length
+  await new Promise<void>((r) => requestAnimationFrame(() => window.setTimeout(r, 0)))
+  markSea()
   if (!glassOK() || dev.saveData) return
   startScenes()
+  void import('./three/stage').catch(() => {})
   await whenCalm()
   const st = await ensureStage()
   if (st) fadeStageIn()

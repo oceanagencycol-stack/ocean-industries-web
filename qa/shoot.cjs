@@ -24,12 +24,22 @@ const SIZES = { desktop: { width: 1440, height: 900, isMobile: false }, mobile: 
     const p = await ctx.newPage()
     p.on('console', (m) => {
       const t = m.text()
+      // what a third party's frame logs (Cal.com's own Permissions-Policy, say) is theirs, not the page's
+      const from = (m.location() && m.location().url) || ''
+      if (/cal\.com|google|wompi/.test(from)) return
+      // Cal.com's frame sends a Permissions-Policy with 'bluetooth' (seen on cal.com and app.cal.com, 2-nov-2026);
+      // the page's own header is checked with curl (DEPLOY.md)
+      if (/Permissions-Policy header: Unrecognized feature: 'bluetooth'/.test(t)) return
       if ((m.type() === 'error' || m.type() === 'warning') && !/deprecated|GPU stall|WebGL/i.test(t)) problems.push(`[${name}] console ${m.type()}: ${t.slice(0, 240)}`)
     })
     p.on('pageerror', (e) => problems.push(`[${name}] pageerror: ${e.message}`))
     p.on('requestfailed', (r) => {
       const u = r.url()
-      if (!/google|wompi|cal\.com|er-api/.test(u)) problems.push(`[${name}] requestfailed: ${u} ${r.failure()?.errorText}`)
+      const why = r.failure()?.errorText || ''
+      // Chromium cancels a video's request when it pauses out of view or switches to range requests: that's
+      // buffering, not a failure (flows.cjs checks that the reels do play)
+      if (/\.(webm|mp4)(\?|$)/.test(u) && /ERR_ABORTED/.test(why)) return
+      if (!/google|wompi|cal\.com|er-api/.test(u)) problems.push(`[${name}] requestfailed: ${u} ${why}`)
     })
     const q = glass ? '?qa=1&q=mid&dpr=0.75' : '?qa=1&noglass'
     await p.goto(url + q, { waitUntil: 'load' })

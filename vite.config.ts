@@ -67,8 +67,9 @@ function preloadFonts(): Plugin {
 }
 
 /**
- * Precarga los trozos que la intro necesita y que, sin esto, el navegador descubre recién cuando main.js ya corrió:
- * el del mar y el cristal (three.js), el de las escenas por scroll y los de la intro. Bajan en paralelo con main.js.
+ * Precarga los trozos chicos que la página necesita pronto (las escenas por scroll y los de la intro): bajan en
+ * paralelo con main.js. El del mar (three.js, ~170 kB comprimido) NO se precarga: en el teléfono competía con la
+ * fuente del titular y retrasaba el primer pintado; main.ts lo pide en cuanto sabe que lo va a usar.
  */
 function preloadIntro(): Plugin {
   return {
@@ -77,7 +78,7 @@ function preloadIntro(): Plugin {
       order: 'post',
       handler(html, ctx) {
         if (!ctx.bundle || !/index\.html$/.test(ctx.filename)) return html
-        const chunks = Object.keys(ctx.bundle).filter((f) => /^assets\/(stage|scenes|splash|timeline)-[\w-]+\.js$/.test(f))
+        const chunks = Object.keys(ctx.bundle).filter((f) => /^assets\/(scenes|splash|timeline)-[\w-]+\.js$/.test(f))
         const links = chunks.map((f) => `<link rel="modulepreload" crossorigin href="/${f}">`)
         return links.length ? html.replace('</head>', `  ${links.join('\n    ')}\n  </head>`) : html
       },
