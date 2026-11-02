@@ -1,0 +1,43 @@
+/* The 404: the wordmark, one line, two ways back. */
+.lost {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(60% 45% at 50% 100%, rgba(0, 0, 255, 0.22), transparent 70%),
+    var(--night);
+}
+
+.lost__main {
+  max-width: 720px;
+  padding: 48px var(--gutter);
+}
+
+.lost__wm {
+  width: 140px;
+  height: auto;
+  color: var(--foam);
+  margin-bottom: 48px;
+}
+
+.lost__title {
+  margin: 0 0 18px;
+  font-size: clamp(34px, 5.4vw, 64px);
+  font-stretch: 121%;
+  font-weight: 720;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.lost__text {
+  margin: 0 0 30px;
+  color: var(--mist);
+  max-width: 52ch;
+}
+
+.lost__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+}
