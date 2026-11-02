@@ -25,7 +25,8 @@ defecto, EN y PT** (cada elemento lleva `data-es` / `data-en` / `data-pt`).
   y da el hash nuevo. Wompi necesita `https://checkout.wompi.co` en `script-src` (si falta, bloquea los pagos en
   silencio).
 - **Pagos**: la tarjeta nunca toca a Ocean (widget de Wompi); la firma sale de `/api/pago-wompi`; el regreso de Wompi
-  no confirma nada (lo confirma el webhook). No se hacen pagos reales en pruebas.
+  no confirma nada (lo confirma el webhook). No se hacen pagos reales en pruebas. `Permissions-Policy` no bloquea
+  `payment` (como la v1): el widget de Wompi podría necesitarlo para algún medio y fallaría en silencio.
 - **El agente de la web** (`/api/agente`, n8n) no se prueba con mensajes reales sin permiso: en QA se simula.
 - **Carga** (2-nov-2026): el trozo de three.js (`stage-*.js`, ~170 kB comprimido) **no** se precarga con
   `modulepreload` (en el teléfono competía con la fuente y `main.js`: Lighthouse móvil pasó de 87 a 99); `main.ts` lo
