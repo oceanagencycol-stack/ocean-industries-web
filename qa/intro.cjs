@@ -13,7 +13,7 @@ const TIMES = [0.3, 1.0, 1.8, 2.5, 2.85, 3.3, 3.9, 4.6, 5.4, 6.6, 7.6]
   await p.waitForFunction(() => !!window.__oceanTl, null, { timeout: 300000, polling: 1000 })
   console.log('intro ready')
   for (const t of TIMES) {
-    await p.evaluate((t) => window.__oceanTl.seek(t, false), t)
+    await p.evaluate((t) => { window.__oceanTl.seek(t, false) }, t)
     await p.waitForTimeout(1800)
     await p.screenshot({ path: `${out}/intro-${String(t).replace('.', '_')}-${w}x${h}.png`, timeout: 120000 })
     console.log('shot', t)

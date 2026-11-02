@@ -112,7 +112,8 @@ export function initScenes(getStage: () => Stage | null, opts: ScenesOptions): S
     if (P.cta > 0) {
       // the invitation: the glass back over a calm sea
       opacity = P.cta * (stage.portrait ? 1 - P.foot : 1)
-      s.away = 0
+      // on a phone the words fill the screen: only the sea comes back, the glass stays above
+      s.away = stage.portrait ? 1 : 0
       s.dive = 0
       s.swell = 0
       s.breaking = 0

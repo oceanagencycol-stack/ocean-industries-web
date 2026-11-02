@@ -7,6 +7,7 @@ void (async () => {
   const st = await createStage(canvas, dev.tier, { mobile: dev.mobile })
   await st.warmup()
   Object.assign(st.state, finalState())
+  st.setOpacity(1)
   st.start()
   ;(window as unknown as { __st: unknown }).__st = st
   ;(window as unknown as { __ready: boolean }).__ready = true

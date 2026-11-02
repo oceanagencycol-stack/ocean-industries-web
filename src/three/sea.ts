@@ -59,7 +59,7 @@ void main(){
   float w = dz > 0.0 ? 0.85 : 2.8;
   float ridge = exp(-dz * dz / (2.0 * w * w)) * (0.85 + 0.15 * sin(p.x * 0.35 + t * 0.4));
   float swellH = uSwell * 1.35 * ridge * (1.0 - 0.55 * uBreak);
-  float crestGlow = uSwell * (pow(ridge, 5.0) * 5.5 + ridge * 0.6) * (1.0 - uBreak);
+  float crestGlow = uSwell * (pow(ridge, 5.0) * 4.4 + ridge * 0.5) * (1.0 - uBreak);
   // white water: a band behind the crest that sparkles green once it breaks
   float foamBand = exp(-pow((dz + 0.9) / 1.4, 2.0)) * uBreak;
   float sparkle = 0.55 + 0.45 * sin(t * (4.0 + aSeed.y * 6.0) + aSeed.x * 40.0);

@@ -922,11 +922,12 @@ html.no-motion .hero__hint {
     padding-top: 40lvh;
     padding-bottom: 40px;
   }
+  /* the sea stays in sight behind the title; the shade deepens where the smaller words are */
   .hero::before {
     content: '';
     position: absolute;
     inset: 34lvh 0 0 0;
-    background: linear-gradient(180deg, transparent 0%, rgba(5, 10, 20, 0.78) 22%, rgba(5, 10, 20, 0.9) 100%);
+    background: linear-gradient(180deg, transparent 0%, rgba(5, 10, 20, 0.42) 16%, rgba(5, 10, 20, 0.8) 40%, rgba(5, 10, 20, 0.9) 100%);
     pointer-events: none;
   }
   .hero__copy {

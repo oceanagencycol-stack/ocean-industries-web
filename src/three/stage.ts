@@ -311,7 +311,8 @@ export class Stage {
   private raf = 0
   private running = false
   private visible = true
-  private opacity = 1
+  /** the canvas's CSS opacity as last written; -1 until the first setOpacity() (the CSS starts it at 0) */
+  private opacity = -1
   private q: Quality
   private tier: Tier
   private onTierChange?: (t: Tier) => void
@@ -746,12 +747,12 @@ export class Stage {
 
     // --- the glass's place: centred on the water (intro) → the hero's place → up and away (wave scene)
     const introFrac = portrait ? 0.86 : 0.5
-    const heroFrac = portrait ? 0.84 : 0.38
+    const heroFrac = portrait ? 0.84 : 0.36
     const visAtZero = 2 * Math.tan(MathUtils.degToRad(this.camera.fov / 2)) * camZ * this.aspect
     const introS = (introFrac * visAtZero) / WORD_W
     const introY = 0.12 + (introS * this.wordH) / 2 + s.wordShift * (portrait ? 0.35 : 0.42)
     const heroP = this.tmpV2
-    const heroW = this.placeAt(portrait ? 0 : 0.42, portrait ? 0.47 : 0.02, heroP)
+    const heroW = this.placeAt(portrait ? 0 : 0.46, portrait ? 0.47 : 0.02, heroP)
     const heroS = (heroFrac * heroW) / WORD_W
     const layout = smooth(s.layout)
     let gx = lerp(0, heroP.x, layout)
