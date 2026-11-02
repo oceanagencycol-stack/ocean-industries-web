@@ -70,6 +70,8 @@ function arm(v: HTMLVideoElement): void {
   }
   v.preload = 'metadata'
   v.load()
+  // load() cancels a play() that came first (a jump straight into view): play again if it's still wanted
+  if (v.dataset.want) void v.play().catch(() => {})
 }
 
 export function initReels(): void {
@@ -95,8 +97,12 @@ export function initReels(): void {
     (entries) =>
       entries.forEach((e) => {
         const v = e.target as HTMLVideoElement
-        if (e.isIntersecting && !reduced) void v.play().catch(() => {})
-        else if (!e.isIntersecting) {
+        if (e.isIntersecting && !reduced) {
+          v.dataset.want = '1'
+          arm(v)
+          void v.play().catch(() => {})
+        } else if (!e.isIntersecting) {
+          delete v.dataset.want
           v.pause()
           if (loud === v) setLoud(null)
         }

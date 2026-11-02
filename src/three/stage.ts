@@ -376,8 +376,14 @@ export class Stage {
     const q = this.q
     // the glass glows a little from inside, as if the plankton lit it: script letters in clear glass over a dark sea
     // read as nothing; this way the word reads first and the glass shows in its edges and refractions
-    this.matBig = glass(q, this.clip, { tint: new Color('#D3E0FF'), attenuation: 1.4, thickness: 0.9, roughness: 0.1 })
-    this.matBig.emissive = new Color('#8FA8FF')
+    // clear glass with a cold body: the sea shows through it and the studio draws its edges (2-nov-2026: the
+    // earlier, denser tint and brighter inner light read as lavender plastic)
+    this.matBig = glass(q, this.clip, { tint: new Color('#C2D2FF'), attenuation: 2.6, thickness: 0.75, roughness: 0.05 })
+    this.matBig.color.set('#E8EEFF')
+    this.matBig.clearcoat = 1
+    this.matBig.specularIntensity = 1.2
+    this.matBig.envMapIntensity = 2
+    this.matBig.emissive = new Color('#4558A8')
     this.matSmall = glass(q, this.clip, { tint: FOAM, attenuation: 5, thickness: 0.3, roughness: 0.12 })
     this.matSmall.emissive = FOAM.clone()
 
@@ -791,8 +797,8 @@ export class Stage {
     // --- glass: the flash, the agent's answer (blue), the result
     const flash = s.flash + this.impulse * 0.3
     const pulseGlow = this.pulseAge >= 0 ? Math.exp(-this.pulseAge * 2.2) : 0
-    const lit = 0.16 * rise
-    this.matBig.emissiveIntensity = lit + flash * 0.4 + pulseGlow * 0.45
+    const lit = 0.24 * rise
+    this.matBig.emissiveIntensity = lit + flash * 0.8 + pulseGlow * 0.9
     this.matSmall.emissiveIntensity = 0.3 * rise + flash * 0.1
 
     // --- the sea

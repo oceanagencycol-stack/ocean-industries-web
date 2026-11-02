@@ -410,9 +410,11 @@ class SoundEngine {
   }
 
   /**
-   * When the browser didn't let the page play at load, sound starts with the first click, tap or key anywhere. Listens
+   * When the browser didn't let the page play at load, sound starts with the first click or tap on the page. Listens
    * to `click`, not `pointerdown`: a touch pointerdown is not an activation (iOS and Chrome won't resume audio there)
-   * and a scroll makes no click. The sound button handles itself.
+   * and a scroll makes no click. Never a key: a keyboard or screen-reader visitor's first Tab must not start music
+   * over their speech. Never a form, the language switch or "skip intro": those taps mean something else. The sound
+   * button handles itself.
    */
   armFirstGesture(onUnlocked: () => void = () => {}): void {
     this.rearm = onUnlocked
@@ -421,19 +423,18 @@ class SoundEngine {
     const off = () => {
       this.armed = false
       window.removeEventListener('click', handler, true)
-      window.removeEventListener('keydown', handler, true)
     }
     const handler = (e: Event) => {
       if (this.unlocked || !this.wanted) return off()
       const t = e.target as Element | null
-      if (t?.closest?.('[data-sound-toggle]')) return
-      if (e instanceof KeyboardEvent && (e.key === 'Escape' || e.metaKey || e.ctrlKey || e.altKey)) return
+      if (t?.closest?.('[data-sound-toggle], .intro__skip, .lang, form, input, textarea, select, label, .chat')) return
+      // a click the keyboard made (Enter on a link) is not a tap on the page
+      if (e instanceof MouseEvent && e.detail === 0) return
       off()
       this.unlock(true)
       onUnlocked()
     }
     window.addEventListener('click', handler, true)
-    window.addEventListener('keydown', handler, true)
   }
 }
 

@@ -46,7 +46,7 @@ export function initScenes(getStage: () => Stage | null, opts: ScenesOptions): S
   }
   let disposed = false
   const offLenis = opts.lenis?.on('scroll', ScrollTrigger.update)
-  const P = { hero: 0, wave: 0, waveOut: 0, cta: 0, foot: 0 }
+  const P = { hero: 0, wave: 0, waveOut: 0, cta: 0, ctaOut: 0 }
 
   // ---- the wave scene: one step at a time ----
   const wave = document.querySelector<HTMLElement>('.wave')
@@ -75,7 +75,8 @@ export function initScenes(getStage: () => Stage | null, opts: ScenesOptions): S
     add({ trigger: wave, start: 'bottom bottom', end: 'bottom top', onUpdate: (s) => (P.waveOut = s.progress) })
   }
   add({ trigger: '.talk', start: 'top bottom', end: 'center center', onUpdate: (s) => (P.cta = s.progress) })
-  add({ trigger: '.footer', start: 'top bottom', end: 'bottom bottom', onUpdate: (s) => (P.foot = s.progress) })
+  // after the invitation the page reads on still night (calendar, payments): the sea goes and the renderer rests
+  add({ trigger: '.talk', start: 'bottom 70%', end: 'bottom top', onUpdate: (s) => (P.ctaOut = s.progress) })
 
   // ---- the music's depth by zone; the surf comes up over the water ----
   const zone = (sel: string, cutoff: number, vol: number) => {
@@ -111,7 +112,7 @@ export function initScenes(getStage: () => Stage | null, opts: ScenesOptions): S
     let opacity = 1
     if (P.cta > 0) {
       // the invitation: the glass back over a calm sea
-      opacity = P.cta * (stage.portrait ? 1 - P.foot : 1)
+      opacity = P.cta * (1 - ramp(0, 0.7, P.ctaOut))
       // on a phone the words fill the screen: only the sea comes back, the glass stays above
       s.away = stage.portrait ? 1 : 0
       s.dive = 0

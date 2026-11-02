@@ -67,6 +67,12 @@ function setStep(d: Demo, k: number): void {
       li.style.setProperty('--dur', `${d.durations[i] ?? 2400}ms`)
     } else li.removeAttribute('aria-current')
   })
+  // the step rail is one stop for the keyboard (the current step); the arrows move along it
+  const cur = Math.min(Math.max(k, 1), d.rail.length) - 1
+  d.rail.forEach((li, i) => {
+    const b = li.querySelector<HTMLButtonElement>('button')
+    if (b) b.tabIndex = i === cur ? 0 : -1
+  })
 }
 
 function playing(d: Demo): boolean {
@@ -170,13 +176,23 @@ function setup(el: HTMLElement): Demo {
   } else setStep(d, 0)
 
   // a step's button jumps there and pauses (to read at ease, or see one again)
+  const MOVE: Record<string, number> = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }
   rail.forEach((li, i) => {
-    li.querySelector<HTMLButtonElement>('button')?.addEventListener('click', () => {
+    const b = li.querySelector<HTMLButtonElement>('button')
+    b?.addEventListener('click', () => {
       stop(d)
       d.userPaused = true
       d.parked = false
       setStep(d, i + 1)
       paint(d)
+    })
+    b?.addEventListener('keydown', (e) => {
+      const j = e.key in MOVE ? i + MOVE[e.key] : e.key === 'Home' ? 0 : e.key === 'End' ? rail.length - 1 : -1
+      if (j < 0 || j >= rail.length || j === i) return
+      e.preventDefault()
+      const next = rail[j].querySelector<HTMLButtonElement>('button')
+      next?.click()
+      next?.focus()
     })
   })
 

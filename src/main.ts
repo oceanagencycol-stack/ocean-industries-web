@@ -22,7 +22,7 @@ import { store } from './core/storage'
 import { sound } from './core/audio'
 import { haptics, HAPTIC } from './core/haptics'
 import { SOUNDS, type SoundName } from './core/sounds'
-import { initUI, revealHero, showSoundTip } from './ui/page'
+import { initUI, revealHero, showReplay, showSoundTip } from './ui/page'
 import { initMenu } from './ui/menu'
 import { seekDemo } from './ui/demos'
 import { createSmoothScroll } from './ui/scroll'
@@ -75,8 +75,10 @@ if (playIntro) {
 // the wave scene takes its length as soon as we know the sea will come (it is below the first screen: nothing on
 // screen moves); without the sea it reads in order
 function markSea(): void {
-  if (glassOK() && !dev.saveData) document.querySelector('.wave')?.classList.add('is-scene')
-  else html.classList.add('no-webgl')
+  if (glassOK() && !dev.saveData) {
+    document.querySelector('.wave')?.classList.add('is-scene')
+    if (introEl || playIntro) showReplay()
+  } else html.classList.add('no-webgl')
 }
 // at once when the question was already asked (a first visit asks it to decide the intro) or when a deep link needs
 // the final lengths before it lands; on a plain return visit it waits for the first paint (bootDirect)
@@ -102,6 +104,8 @@ function startScenes(): void {
 }
 
 function fadeStageIn(): void {
+  // the still (the first frame) gives way as the sea comes in
+  html.classList.add('glass-in')
   gsap.to(env, { fade: 1, duration: 1.1, ease: 'sine.out', overwrite: true })
 }
 
@@ -346,9 +350,23 @@ async function bootDirect(): Promise<void> {
 }
 
 async function bootIntro(): Promise<void> {
+  // under the intro's veil the still has no job: the sea opens the film
+  html.classList.add('glass-in')
   void import('./three/stage').catch(() => {})
   const [{ Splash }, { runIntro }] = await Promise.all([import('./intro/splash'), import('./intro/timeline')])
   const splash = new Splash(introEl as HTMLElement, { quick: replay })
+  // "Skip" from the first second: whoever skips while the sea is still loading gets the page now; the sea fades in
+  // behind it when it's built
+  let skipped = false
+  const dropEarlySkip = splash.showSkip(() => {
+    skipped = true
+    splash.finish()
+    revealHero(true)
+    markRevealed(300)
+    unlockPage()
+    startScenes()
+    armSound()
+  })
   const pStage = splash.part('stage', 0.55)
   const pAudio = splash.part('audio', 0.3)
   const pFonts = splash.part('fonts', 0.15)
@@ -370,7 +388,19 @@ async function bootIntro(): Promise<void> {
 
   stage = await stageP
   if (stage) html.classList.add('has-glass')
+  /** skipped before the film began: the sea simply fades in behind the page, at rest */
+  const seaAfterSkip = () => {
+    if (!stage) return html.classList.remove('glass-in')
+    Object.assign(stage.state, finalState())
+    stage.setOpacity(0)
+    stage.start()
+    enableTilt(stage)
+    fadeStageIn()
+  }
+  if (skipped) return seaAfterSkip()
   await splash.ready
+  if (skipped) return seaAfterSkip()
+  dropEarlySkip()
 
   store.set('ocean-intro-seen', '1', 'session')
   store.set('ocean-intro-at', String(Date.now()))
@@ -384,6 +414,7 @@ async function bootIntro(): Promise<void> {
     startScenes()
   }
   if (!stage) {
+    html.classList.remove('glass-in')
     revealHero(false)
     splash.finish()
     done()

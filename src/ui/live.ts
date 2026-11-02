@@ -11,27 +11,27 @@ type Line = ['cli' | 'bot', string]
 const SCRIPT: Record<Lang, Line[]> = {
   es: [
     ['cli', 'Hola, ¿ustedes hacen agentes para WhatsApp?'],
-    ['bot', 'Sí. Montamos el agente sobre tu número actual y responde solo, 24/7.'],
+    ['bot', 'Sí. Lo montamos sobre tu número actual y responde solo, 24/7.'],
     ['cli', '¿Cuánto se demora?'],
-    ['bot', 'Demo funcionando en 48 horas. ¿Le agendo una llamada de 20 minutos?'],
+    ['bot', 'Tienes la demo funcionando en 48 horas. ¿Te agendo una videollamada para verla?'],
     ['cli', 'Dale, mañana en la mañana'],
-    ['bot', 'Listo: mañana 10:00 a. m. Le llega el enlace por aquí. ✅'],
+    ['bot', 'Listo: mañana a las 10:00 a. m. Te llega el enlace por aquí. ✅'],
   ],
   en: [
     ['cli', 'Hi, do you build WhatsApp agents?'],
     ['bot', 'We do. We set it up on your current number and it replies on its own, 24/7.'],
     ['cli', 'How long does it take?'],
-    ['bot', 'Working demo in 48 hours. Shall I book you a 20-minute call?'],
+    ['bot', 'You get a working demo in 48 hours. Want me to book a video call to walk you through it?'],
     ['cli', 'Sure, tomorrow morning'],
-    ['bot', 'Done: tomorrow 10:00 a.m. The link comes right here. ✅'],
+    ['bot', 'Done: tomorrow at 10:00 a.m. You’ll get the link right here. ✅'],
   ],
   pt: [
     ['cli', 'Oi, vocês fazem agentes para WhatsApp?'],
     ['bot', 'Fazemos. Montamos no seu número atual e ele responde sozinho, 24/7.'],
     ['cli', 'Quanto tempo leva?'],
-    ['bot', 'Demo funcionando em 48 horas. Posso agendar uma call de 20 minutos?'],
+    ['bot', 'Você tem a demo funcionando em 48 horas. Quer que eu agende uma videochamada para mostrar?'],
     ['cli', 'Pode ser, amanhã de manhã'],
-    ['bot', 'Pronto: amanhã 10:00. O link chega por aqui. ✅'],
+    ['bot', 'Pronto: amanhã às 10:00. O link chega por aqui. ✅'],
   ],
 }
 

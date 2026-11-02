@@ -14,9 +14,9 @@ import { track } from './analytics'
 const ENDPOINT = '/api/agente'
 
 const GREETING = {
-  es: 'Hola, soy OceanBot 👋 ¿En qué te puedo ayudar? Cuéntame un poco sobre tu negocio y vemos cómo podemos automatizarlo.',
-  en: "Hi, I'm OceanBot 👋 How can I help? Tell me a bit about your business and let's see how we can automate it.",
-  pt: 'Oi, sou o OceanBot 👋 Como posso ajudar? Conte um pouco sobre seu negócio e vemos como automatizá-lo.',
+  es: 'Hola 👋 Te escribe el asistente de Ocean. Cuéntame un poco sobre tu negocio y vemos qué podemos automatizar.',
+  en: "Hi 👋 This is Ocean's assistant. Tell me a bit about your business and let's see what we can automate.",
+  pt: 'Oi 👋 Aqui é o assistente da Ocean. Conte um pouco sobre seu negócio e vemos o que podemos automatizar.',
 }
 
 export interface ChatHooks {
@@ -69,7 +69,8 @@ export function initChat(hooks: ChatHooks = {}): void {
       greeted = true
       window.setTimeout(() => add(t(GREETING), 'bot'), 180)
     }
-    window.setTimeout(() => input!.focus(), 120)
+    // on a touch screen the keyboard would cover the greeting: the visitor taps the field when ready
+    if (!matchMedia('(pointer: coarse)').matches) window.setTimeout(() => input!.focus(), 120)
     track('chat_open', {})
   }
 
@@ -114,14 +115,16 @@ export function initChat(hooks: ChatHooks = {}): void {
       hooks.onAnswer?.()
     } catch {
       dots.remove()
-      add(
-        t({
-          es: `Tuve un problema de conexión. Escríbenos por WhatsApp y te ayudamos al instante: ${waLink('general')}`,
-          en: `I had a connection problem. Message us on WhatsApp and we'll help right away: ${waLink('general')}`,
-          pt: `Tive um problema de conexão. Fale conosco no WhatsApp e ajudamos na hora: ${waLink('general')}`,
-        }),
-        'bot',
-      )
+      add(t({ es: 'Tuve un problema de conexión. Sigamos por WhatsApp: allá te respondemos al instante.', en: "I had a connection problem. Let's continue on WhatsApp: we answer right away there.", pt: 'Tive um problema de conexão. Vamos seguir pelo WhatsApp: lá respondemos na hora.' }), 'bot')
+      // a real button, not a raw link: the conversation continues where it always works
+      const go = document.createElement('a')
+      go.className = 'btn btn--go btn--sm chat__wa'
+      go.href = waLink('general')
+      go.target = '_blank'
+      go.rel = 'noopener'
+      go.textContent = t({ es: 'Seguir por WhatsApp', en: 'Continue on WhatsApp', pt: 'Continuar no WhatsApp' })
+      log.appendChild(go)
+      log.scrollTop = log.scrollHeight
     } finally {
       busy = false
     }

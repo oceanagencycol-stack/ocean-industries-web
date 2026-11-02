@@ -119,17 +119,29 @@ export class Splash {
     if (this.soundBtn) gsap.to(this.soundBtn, { opacity: 0, duration: 0.3, onComplete: () => this.soundBtn && (this.soundBtn.hidden = true) })
   }
 
-  showSkip(onSkip: () => void): void {
-    this.skipBtn.hidden = false
-    this.skipBtn.removeAttribute('aria-hidden')
-    gsap.fromTo(this.skipBtn, { opacity: 0 }, { opacity: 1, duration: 0.6, delay: 0.8 })
-    this.skipBtn.addEventListener('click', onSkip, { once: true })
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return
-      window.removeEventListener('keydown', onKey)
-      if (!this.released) onSkip()
+  /** "Skip" for whoever doesn't want the film; returns how to take this handler back (the next stage brings its own). */
+  showSkip(onSkip: () => void): () => void {
+    if (this.skipBtn.hidden) {
+      this.skipBtn.hidden = false
+      this.skipBtn.removeAttribute('aria-hidden')
+      gsap.fromTo(this.skipBtn, { opacity: 0 }, { opacity: 1, duration: 0.6, delay: 0.4 })
     }
+    const onClick = () => {
+      off()
+      onSkip()
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || this.released) return
+      off()
+      onSkip()
+    }
+    const off = () => {
+      this.skipBtn.removeEventListener('click', onClick)
+      window.removeEventListener('keydown', onKey)
+    }
+    this.skipBtn.addEventListener('click', onClick)
     window.addEventListener('keydown', onKey)
+    return off
   }
 
   /** The line arrives word by word under the glass, with the motif. */

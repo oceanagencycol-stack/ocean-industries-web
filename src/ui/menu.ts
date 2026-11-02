@@ -52,7 +52,7 @@ export function initMenu(lenis: Lenis | null): Menu {
       close()
     }
   })
-  matchMedia('(min-width: 761px)').addEventListener('change', (e) => e.matches && close(false))
+  matchMedia('(min-width: 1081px)').addEventListener('change', (e) => e.matches && close(false))
 
   return { close }
 }

@@ -109,6 +109,14 @@ button {
   color: #fff;
 }
 
+/* the parts the browser draws carry the night too: the caret, native controls and the scrollbars */
+html {
+  caret-color: var(--blue-tx);
+  accent-color: var(--blue);
+  color-scheme: dark;
+  scrollbar-color: rgba(154, 175, 255, 0.28) var(--night);
+}
+
 .vh {
   position: absolute !important;
   width: 1px;
@@ -174,16 +182,15 @@ button {
   height: 100svh;
   z-index: 0;
   overflow: hidden;
-  display: none;
   pointer-events: none;
+  transition: opacity 1.2s var(--ease);
   background:
     radial-gradient(60% 40% at 72% 42%, rgba(0, 0, 255, 0.28), transparent 70%),
     linear-gradient(180deg, #03060d 0%, #071030 46%, var(--night) 47%, var(--night) 100%);
 }
 
-html.no-webgl .still,
-html.no-motion .still {
-  display: block;
+html.glass-in:not(.no-webgl):not(.no-motion) .still {
+  opacity: 0;
 }
 
 html.no-webgl .stage,
@@ -427,6 +434,19 @@ html.no-intro .intro {
   width: 100%;
 }
 
+/* the narrowest phones: a long button wraps instead of leaving the screen */
+@media (max-width: 400px) {
+  .btn {
+    white-space: normal;
+    text-align: center;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .btn--big {
+    font-size: 17px;
+  }
+}
+
 .btn[disabled] {
   opacity: 0.38;
   cursor: not-allowed;
@@ -452,21 +472,7 @@ html.no-intro .intro {
   height: 8px;
   border-radius: 50%;
   background: var(--green);
-  box-shadow: 0 0 0 0 rgba(0, 255, 127, 0.5);
-  animation: livepulse 2.4s ease-out infinite;
   flex: none;
-}
-
-@keyframes livepulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(0, 255, 127, 0.45);
-  }
-  70% {
-    box-shadow: 0 0 0 9px rgba(0, 255, 127, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(0, 255, 127, 0);
-  }
 }
 
 /* --------------------------------------------------------------------------
@@ -584,7 +590,7 @@ html.no-intro .intro {
 }
 
 .nav.is-scrolled {
-  background: rgba(5, 10, 20, 0.9);
+  background: rgba(5, 10, 20, 0.96);
   border-bottom-color: var(--line);
 }
 
@@ -740,18 +746,42 @@ html.no-intro .intro {
   .nav__tools {
     margin-left: auto;
   }
+  .nav__menu {
+    display: grid;
+  }
 }
 
 @media (max-width: 760px) {
   :root {
     --nav-h: 64px;
   }
-  .nav__tools .lang,
-  .nav__sound {
+  .nav {
+    gap: 14px;
+  }
+  .nav__tools {
+    gap: 8px;
+  }
+  .nav__tools .lang {
     display: none;
   }
+  /* on a phone the sound button is its bars: always in sight, so sound can always be turned off */
+  .nav__sound {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    justify-content: center;
+  }
+  .nav__sound .sound-toggle__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
   .nav__menu {
-    display: grid;
+    width: 40px;
+    height: 40px;
   }
   .nav__wm {
     width: 92px;
@@ -760,6 +790,23 @@ html.no-intro .intro {
     --h: 40px;
     padding: 0 14px;
     font-size: 14px;
+  }
+}
+
+/* the narrowest phones: the green button keeps WhatsApp's mark and its name for screen readers */
+@media (max-width: 388px) {
+  .nav__cta {
+    width: 40px;
+    padding: 0;
+    justify-content: center;
+  }
+  .nav__cta span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 
@@ -774,6 +821,58 @@ main {
 section {
   position: relative;
   scroll-margin-top: var(--nav-h);
+}
+
+/* what takes the keyboard's focus never lands under the fixed bar (WCAG 2.4.11) nor under the screen's foot */
+a,
+button,
+input,
+select,
+textarea {
+  scroll-margin-top: calc(var(--nav-h) + 16px);
+  scroll-margin-bottom: 24px;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* how to read every example: who does what */
+.key {
+  list-style: none;
+  margin: 22px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--foam);
+}
+
+.key__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.key__item::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.key__item--person::before {
+  background: var(--foam);
+}
+
+.key__item--machine::before {
+  background: var(--blue);
+}
+
+.key__item--result::before {
+  background: var(--green);
 }
 
 .sec-head {
@@ -823,6 +922,7 @@ section {
 .hero__copy {
   position: relative;
   max-width: min(720px, 54vw);
+  min-width: 0;
 }
 
 /* the words sit on dark water: a soft shade on the left keeps them clear of the plankton */
@@ -836,11 +936,15 @@ section {
 
 .hero__title {
   margin: 0 0 26px;
-  font-size: clamp(44px, 6.1vw, 96px);
+  font-size: calc(clamp(44px, 6.1vw, 96px) * var(--fit, 1));
   font-stretch: 125%;
   font-weight: 760;
   line-height: 0.95;
   letter-spacing: -0.035em;
+}
+
+html[lang='pt'] .hero__title {
+  --fit: 0.84;
 }
 
 .hero__title .ln {
@@ -935,7 +1039,7 @@ html.no-motion .hero__hint {
     max-width: none;
   }
   .hero__title {
-    font-size: clamp(40px, 11.4vw, 62px);
+    font-size: calc(clamp(34px, 11.4vw, 62px) * var(--fit, 1));
     margin-bottom: 18px;
   }
   .hero__lead {
@@ -1019,8 +1123,9 @@ html.no-motion .hero__hint {
 }
 
 .phase__text {
-  margin: 0 0 12px;
-  color: var(--mist);
+  margin: 0 0 14px;
+  color: var(--foam-80);
+  font-size: clamp(17px, 1.3vw, 19px);
   max-width: 46ch;
 }
 
@@ -1032,18 +1137,21 @@ html.no-motion .hero__hint {
 }
 
 .phase__svc a {
-  font-size: 14px;
-  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  font-size: 14.5px;
+  padding: 6px 14px;
   border-radius: 999px;
-  border: 1px solid var(--line-2);
-  color: var(--blue-tx);
+  border: 1px solid rgba(244, 245, 240, 0.24);
+  background: rgba(5, 10, 20, 0.5);
+  color: var(--foam);
   text-decoration: none;
 }
 
 @media (hover: hover) {
   .phase__svc a:hover {
-    color: var(--foam);
-    border-color: var(--blue);
+    border-color: var(--foam);
   }
 }
 
@@ -1062,7 +1170,7 @@ html.no-motion .hero__hint {
 /* con la escena armada (JS, movimiento y WebGL): un paso a la vez sobre el mar; hasta que llega el director
    (scenes.ts), el primer paso se ve */
 .wave.is-scene {
-  height: 460vh;
+  height: 380vh;
   padding: 0;
 }
 
@@ -1108,6 +1216,34 @@ html.no-motion .hero__hint {
   transform: translateY(22px);
 }
 
+/* while a phase is on, the night settles under its words: the break can run bright behind them and they still read
+   (on a phone the foam crosses the text band) */
+.wave.is-scene .wave__frame {
+  z-index: 1;
+}
+
+.wave.is-scene .wave__sticky::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 64%;
+  background: linear-gradient(to bottom, rgba(5, 10, 20, 0), rgba(5, 10, 20, 0.5) 42%, rgba(5, 10, 20, 0.84));
+  opacity: 0;
+  transition: opacity 0.8s var(--ease);
+  pointer-events: none;
+}
+
+.wave.is-scene:has(.phase.is-on) .wave__sticky::after {
+  opacity: 1;
+}
+
+.wave.is-scene .phase__name,
+.wave.is-scene .phase__text {
+  text-shadow: 0 1px 14px rgba(5, 10, 20, 0.9);
+}
+
 .wave.is-scene .phase.is-on {
   transform: none;
 }
@@ -1123,6 +1259,7 @@ html.no-motion .hero__hint {
   display: grid;
   gap: 10px;
   position: absolute;
+  z-index: 1;
   right: var(--gutter);
   top: 50%;
   transform: translateY(-50%);
@@ -1177,7 +1314,7 @@ html.no-motion .hero__hint {
   font-stretch: 70%;
   font-weight: 800;
   font-size: 15px;
-  color: var(--blue-tx);
+  color: var(--mist);
 }
 
 .svc__row {
@@ -1207,14 +1344,14 @@ html.no-motion .hero__hint {
   margin: 0 0 12px;
   font-size: 16px;
   font-weight: 650;
-  color: var(--blue-tx);
+  color: var(--foam);
 }
 
 .svc__name::before {
   content: '';
   width: 18px;
   height: 2px;
-  background: var(--blue);
+  background: var(--mist-2);
   border-radius: 1px;
 }
 
@@ -1227,13 +1364,17 @@ html.no-motion .hero__hint {
 .svc__link {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
   font-weight: 600;
   font-size: 15.5px;
   text-decoration: none;
   color: var(--foam);
   padding: 10px 0;
   border-bottom: 1px solid rgba(0, 255, 127, 0.45);
+}
+
+.svc__link .ico {
+  color: var(--green);
 }
 
 @media (hover: hover) {
@@ -1311,6 +1452,19 @@ html.no-motion .hero__hint {
   color: var(--mist-2);
 }
 
+/* we're on the customer's phone (the header is Valeria): their words go right, Valeria's left */
+.live__msgs .msg--in {
+  align-self: flex-end;
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 6px;
+}
+
+.live__msgs .msg--out {
+  align-self: flex-start;
+  border-bottom-right-radius: 18px;
+  border-bottom-left-radius: 6px;
+}
+
 .live__msgs {
   display: flex;
   flex-direction: column;
@@ -1330,29 +1484,6 @@ html.no-motion .hero__hint {
   border-top: 1px solid var(--line);
   font-size: 13px;
   color: var(--mist);
-}
-
-.wavebars {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  height: 16px;
-}
-
-.wavebars i {
-  width: 3px;
-  height: 16px;
-  border-radius: 2px;
-  background: var(--blue);
-  transform: scaleY(0.3);
-  animation: bar 1.4s ease-in-out infinite;
-}
-
-.wavebars i:nth-child(2n) {
-  animation-delay: -0.4s;
-}
-.wavebars i:nth-child(3n) {
-  animation-delay: -0.8s;
 }
 
 .live__states {
@@ -1385,12 +1516,10 @@ html.no-motion .hero__hint {
 
 .state--machine::before {
   background: var(--blue);
-  box-shadow: 0 0 12px rgba(61, 99, 255, 0.8);
 }
 
 .state--result::before {
   background: var(--green);
-  box-shadow: 0 0 12px rgba(0, 255, 127, 0.7);
 }
 
 .state--person::before {
@@ -1418,76 +1547,51 @@ html.no-motion .hero__hint {
   margin: 0 0 30px;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  font-size: 13px;
-  color: var(--mist-2);
+  font-size: 15.5px;
+  color: var(--foam-80);
 }
 
 .route li {
   position: relative;
-  padding-top: 22px;
+  padding: 0 0 16px 26px;
 }
 
+.route li:last-child {
+  padding-bottom: 0;
+}
+
+/* who moves each step: you (white), us and the machine (blue), the result (green) */
 .route li::before {
   content: '';
   position: absolute;
-  top: 4px;
   left: 0;
-  width: 11px;
-  height: 11px;
+  top: 0.55em;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  border: 1.5px solid var(--mist-2);
-  background: var(--night);
-  z-index: 1;
+  background: var(--blue);
+}
+
+.route li:first-child::before {
+  background: var(--foam);
+}
+
+.route li:last-child::before {
+  background: var(--green);
 }
 
 .route li::after {
   content: '';
   position: absolute;
-  top: 9px;
-  left: 0;
-  right: 0;
-  height: 1.5px;
-  background: rgba(244, 245, 240, 0.12);
+  left: 4.5px;
+  top: calc(0.55em + 13px);
+  bottom: 3px;
+  width: 1px;
+  background: rgba(244, 245, 240, 0.18);
 }
 
-.route li.is-done {
-  color: var(--foam);
-}
-
-.route li.is-done::before {
-  border-color: var(--blue);
-  background: var(--blue);
-}
-
-.route li.is-done::after {
-  background: var(--blue);
-}
-
-.nums {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 22px 18px;
-  margin: 0 0 30px;
-}
-
-.nums div {
-  margin: 0;
-}
-
-.nums dt {
-  font-stretch: 64%;
-  font-weight: 820;
-  font-size: clamp(56px, 5.2vw, 84px);
-  line-height: 0.86;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
-}
-
-.nums dd {
-  margin: 6px 0 0;
-  font-size: 14px;
-  color: var(--mist);
+.route li:last-child::after {
+  display: none;
 }
 
 @media (max-width: 1080px) {
@@ -1534,6 +1638,23 @@ html.no-motion .hero__hint {
   margin: 4px 0 22px;
   color: var(--mist-2);
   font-size: 14px;
+}
+
+.case__link {
+  display: inline-block;
+  margin-top: 20px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--foam);
+  text-decoration: underline;
+  text-decoration-color: rgba(244, 245, 240, 0.35);
+  text-underline-offset: 4px;
+}
+
+@media (hover: hover) {
+  .case__link:hover {
+    text-decoration-color: var(--foam);
+  }
 }
 
 .case__rows {
@@ -1686,6 +1807,7 @@ html.no-motion .hero__hint {
     scroll-snap-type: x mandatory;
     margin: 0 calc(-1 * var(--gutter));
     padding: 0 var(--gutter) 8px;
+    scroll-padding-inline: var(--gutter);
     scrollbar-width: none;
   }
   .reels__grid::-webkit-scrollbar {
@@ -1811,6 +1933,35 @@ html.no-motion .hero__hint {
   display: none;
 }
 
+/* while the calendar loads it says so; if it never does, the way out shows; on a phone, the calendar opens on its
+   own page (an embed there cuts the month and scrolls inside the page) */
+.book__wait,
+.book__phone {
+  display: none;
+}
+
+.book__frame.is-waiting .book__wait,
+.book__frame.is-phone .book__phone {
+  display: block;
+}
+
+.book__frame.is-waiting .book__note,
+.book__frame.is-phone .book__note {
+  display: none;
+}
+
+.book__wait {
+  color: var(--foam-80);
+}
+
+.book__frame.is-phone {
+  min-height: 0;
+}
+
+.book__frame.is-phone .book__fallback {
+  padding: 28px 16px;
+}
+
 /* --------------------------------------------------------------------------
    Pagos
    -------------------------------------------------------------------------- */
@@ -1885,6 +2036,18 @@ html.no-motion .hero__hint {
   color: var(--mist-2);
 }
 
+.field__err {
+  grid-column: span 2;
+  margin: -6px 0 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #ff9a8f;
+}
+
+.field input[aria-invalid='true'] {
+  border-color: #ff9a8f;
+}
+
 .payform__sum {
   padding: clamp(22px, 2.4vw, 32px);
   border-radius: var(--r-l);
@@ -1952,7 +2115,8 @@ html.no-motion .hero__hint {
     grid-template-columns: 1fr;
   }
   .cur,
-  .field__note {
+  .field__note,
+  .field__err {
     grid-column: auto;
   }
 }
@@ -2057,6 +2221,12 @@ html.no-motion .hero__hint {
 /* --------------------------------------------------------------------------
    Habla con Ocean (botón flotante y conversación)
    -------------------------------------------------------------------------- */
+@media (max-width: 760px) {
+  .fab {
+    display: none !important;
+  }
+}
+
 .fab {
   position: fixed;
   right: max(16px, env(safe-area-inset-right));
@@ -2390,4 +2560,21 @@ html.no-motion .hero__hint {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+.field input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.field input[type='number']::-webkit-inner-spin-button,
+.field input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* the chat's way out when the connection fails */
+.chat__wa {
+  align-self: flex-start;
+  margin-top: 2px;
 }

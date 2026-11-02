@@ -34,17 +34,28 @@ Una sola familia, **Archivo Variable** (la de Ocean), con su eje de ancho como h
 
 ## Composición
 Alineado a la izquierda sobre el mar; el lienzo fijo detrás (`100lvh`). Recorrido:
-hero (la firma a la derecha, el texto a la izquierda sobre sombra) → **la ola** (escena pegajosa de 460vh: la frase
-del Pacífico, mar de fondo, la cresta azul, la rompiente verde y el cierre) → servicios en filas, agrupados en las
-tres fases, cada uno con su escena de cuatro pasos → el agente en vivo (Valeria) → trabajo (casos y reels) →
-hablemos (el cristal vuelve) → agenda → pagos → pie. En el teléfono el cristal vive en el tercio de arriba y el texto
-abajo sobre una sombra.
+hero (la firma a la derecha, el texto a la izquierda sobre sombra) → **la ola** (escena pegajosa de 380vh: la frase
+del Pacífico, mar de fondo, la cresta azul, la rompiente verde y el cierre; mientras habla una fase, la noche se asienta
+bajo sus palabras para que se lean sobre la espuma) → servicios en filas, agrupados en las tres fases, cada uno con su
+escena de cuatro pasos y una clave de color arriba («Una persona · La IA · El resultado») → el agente en vivo
+(Valeria) → trabajo (casos con enlace al sitio y reels) → hablemos (el cristal vuelve) → agenda → pagos → pie. Después
+de «hablemos» el mar se apaga: agenda y pagos se leen sobre la noche quieta y el render descansa. En el teléfono el
+cristal vive en el tercio de arriba y el texto abajo sobre una sombra; mientras el mar carga, la imagen quieta es el
+primer cuadro y se funde con él.
+- La barra: escritorio con enlaces (Servicios, Agente, Trabajo, Agenda; Pagos va en el menú y el pie), idioma, sonido
+  y «Escríbenos». Desde 1080 px hacia abajo, el menú. En el teléfono el sonido queda en la barra como sus barras (siempre
+  se puede apagar) y «Escríbenos» se vuelve el ícono de WhatsApp por debajo de 389 px.
+- «Habla con Ocean» (el chat de la web) es del computador; en el teléfono WhatsApp ya está en la barra.
+- La agenda: en el computador, Cal.com incrustado (con «Cargando…» y, si tarda, la salida); en el teléfono se abre en
+  su propia página (incrustado cortaba el mes y hacía scroll dentro de la página).
 
 ## Movimiento
 - Una intro orquestada (7,6 s, una vez cada 7 días, sin puerta): una gota despierta el agua, una ola crece y rompe en
   verde, la firma sale del agua pieza por pieza, la luz pasa por el cristal, «Convertimos marcas en olas.» llega con
   las tres notas (La, Mi, Do♯) y el cristal se va a su lugar.
 - La escena de la ola, atada al scroll.
+- «Saltar intro» está desde el primer segundo: quien salta mientras carga el mar ve la página ya y el mar llega detrás.
+- Nada late solo: el punto verde de «en línea» es una luz fija; sin barras de onda, sin halos.
 - Las escenas de cuatro pasos (en vista, tres vueltas, pausa y repetir; WCAG 2.2.2).
 - Movimiento reducido, sin WebGL2 o con WebGL por software: la imagen quieta (la firma sobre líneas de puntos), la
   ola se lee en orden y las escenas muestran su cuadro final.
@@ -52,13 +63,31 @@ abajo sobre una sombra.
 ## Sonido
 Todo sintetizado en el navegador (`src/core/sounds.ts`, cero archivos): el oleaje, la gota, la ola que crece y rompe,
 el cristal, el destello del plancton, el motivo, el colchón de la noche, gotas para la conversación y clics suaves.
-Suena si el navegador deja; si no, con el primer toque. Se baja mientras hay una conversación o un reel con sonido.
+Suena si el navegador deja; si no, con el primer clic o toque en la página: nunca con una tecla (el primer Tab de quien
+usa teclado o lector de pantalla no pone música encima de su voz) ni al tocar un formulario, el idioma o «Saltar
+intro». Se baja mientras hay una conversación o un reel con sonido.
 
 ## Escenas que explican
 Cada servicio se explica trabajando, siempre con la misma gramática: alguien pide (blanco) → la máquina ejecuta (azul)
 → una persona decide (blanco) → el resultado llega (verde, solo el resultado). Nombres, montos y fechas de las escenas
 son de ejemplo y lo dicen («Campaña de ejemplo», «Proveedor de ejemplo»).
+- La clave va arriba de los servicios como tres puntos con nombre, nunca como frase («the person is white» se leía
+  como un comentario de raza en inglés).
+- Cada chat se ve desde un teléfono real: la conversación de Valeria es el teléfono del cliente (sus mensajes a la
+  derecha); la escena del agente es el teléfono del negocio (la cabecera es «Ana · cliente», ella a la izquierda).
+- En la pauta, las barras son la medición (conversaciones) y llegan con ella: el anuncio que gana tiene la barra larga.
+
+## Palabras
+- Los servicios se nombran por lo que son: Contenido para redes (UGC), Pauta en Meta, Agentes de IA para WhatsApp y
+  web, Webs y tiendas en línea, Software a la medida con IA, Automatización de procesos.
+- «Demo» es el prototipo en 48 horas; la reunión es una «llamada» (45 minutos por Google Meet).
+- Los enlaces de los servicios llevan el ícono de WhatsApp: dicen adónde llevan.
 
 ## Honestidad del copy
 Nada de cifras ni clientes sin verificar. Las cifras (48 h, 24/7, 11 s, 0 respuestas inventadas) y los tres casos son
 los que la web anterior ya publicaba con aprobación de Juan. Un caso nuevo entra solo con su visto bueno.
+- La conversación de Valeria es **de ejemplo** y lo dice; los tiempos son los medidos en la línea propia de Ocean.
+- La agenda dice lo que de verdad reserva Cal.com: 45 minutos por Google Meet, gratis (revisado el 2-nov-2026). Si
+  cambia el evento en Cal.com, cambia el texto de `#book` y `public/llms.txt`.
+- Los datos de las escenas se leen locales en cada idioma (EN: `yourbrand.com`, dólares, Apple Pay; PT: reais, Pix):
+  son ejemplos, no clientes ni montos reales.

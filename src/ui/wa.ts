@@ -14,9 +14,9 @@ const MESSAGES: Record<string, Record<Lang, string>> = {
     pt: 'Olá Ocean 👋 Vim do site e quero saber como podem automatizar meu negócio.',
   },
   demo: {
-    es: 'Hola Ocean 👋 Quiero mi demo. ¿Me cuentan cómo empezamos?',
-    en: 'Hi Ocean 👋 I want my demo. How do we get started?',
-    pt: 'Olá Ocean 👋 Quero minha demo. Como começamos?',
+    es: 'Hola Ocean 👋 Quiero agendar una llamada para ver qué pueden automatizar en mi negocio. ¿Qué horarios tienen?',
+    en: "Hi Ocean 👋 I'd like to book a call to see what you can automate in my business. What times do you have?",
+    pt: 'Olá Ocean 👋 Quero agendar uma chamada para ver o que vocês podem automatizar no meu negócio. Quais horários vocês têm?',
   },
   agents: {
     es: 'Hola Ocean 👋 Me interesan los agentes de WhatsApp con IA. ¿Cómo funcionarían para mi negocio?',

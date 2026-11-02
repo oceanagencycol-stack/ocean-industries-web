@@ -11,14 +11,31 @@ export function initBooking(): void {
   if (!frame || !url) return
   let iframe: HTMLIFrameElement | null = null
 
+  // on a phone the embed cuts the month and scrolls inside the page: Cal.com opens on its own page instead
+  if (matchMedia('(max-width: 760px)').matches) {
+    frame.classList.add('is-phone')
+    return
+  }
+
   const load = () => {
     if (iframe) return
+    frame.classList.add('is-waiting')
+    // if it hasn't shown in a while, the way out (open Cal.com, WhatsApp) takes the place of "loading"
+    const giveUp = window.setTimeout(() => frame.classList.remove('is-waiting'), 9000)
     iframe = document.createElement('iframe')
     iframe.src = `${url}${url.includes('?') ? '&' : '?'}theme=dark`
     iframe.title = 'Cal.com'
     iframe.loading = 'lazy'
     iframe.allow = 'fullscreen'
-    iframe.addEventListener('load', () => frame.classList.add('is-loaded'), { once: true })
+    iframe.addEventListener(
+      'load',
+      () => {
+        window.clearTimeout(giveUp)
+        frame.classList.remove('is-waiting')
+        frame.classList.add('is-loaded')
+      },
+      { once: true },
+    )
     frame.appendChild(iframe)
   }
 

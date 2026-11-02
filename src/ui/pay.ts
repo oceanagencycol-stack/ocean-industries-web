@@ -92,12 +92,18 @@ export function initPay(hooks: PayHooks = {}): void {
 
   function setCur(c: Cur): void {
     cur = c
-    curBtns.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.cur === c)))
+    curBtns.forEach((b) => {
+      b.setAttribute('aria-checked', String(b.dataset.cur === c))
+      b.tabIndex = b.dataset.cur === c ? 0 : -1
+    })
     const label = $('amountLabel')
     label.textContent = c === 'USD'
       ? t({ es: 'Monto a pagar (USD)', en: 'Amount (USD)', pt: 'Valor (USD)' })
       : t({ es: 'Monto a pagar (COP)', en: 'Amount (COP)', pt: 'Valor (COP)' })
     $('usdNote').hidden = c !== 'USD'
+    $('minNote').textContent = c === 'USD'
+      ? t({ es: 'Monto mínimo: 1 USD.', en: 'Minimum: 1 USD.', pt: 'Valor mínimo: 1 USD.' })
+      : t({ es: 'Monto mínimo: $1.500 COP.', en: 'Minimum: COP 1,500.', pt: 'Valor mínimo: COP 1.500.' })
     amount.min = c === 'USD' ? '1' : String(MIN_COP)
     amount.step = c === 'USD' ? '1' : '1000'
     if (c === 'USD') void loadTRM().then(update)
@@ -105,6 +111,24 @@ export function initPay(hooks: PayHooks = {}): void {
   }
 
   curBtns.forEach((b) => b.addEventListener('click', () => setCur(b.dataset.cur as Cur)))
+  // a radio group: one tab stop, the arrows choose (WAI-ARIA)
+  curBtns.forEach((b) =>
+    b.addEventListener('keydown', (e) => {
+      if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return
+      e.preventDefault()
+      const next = cur === 'COP' ? 'USD' : 'COP'
+      setCur(next)
+      curBtns.find((x) => x.dataset.cur === next)?.focus()
+    }),
+  )
+  // the email's own message, next to the field (a toast alone is easy to miss)
+  const email = $<HTMLInputElement>('payEmail')
+  const emailErr = $('emailErr')
+  const clearEmail = () => {
+    email.removeAttribute('aria-invalid')
+    emailErr.hidden = true
+  }
+  email.addEventListener('input', clearEmail)
   amount.addEventListener('input', update)
   onLang(() => setCur(cur))
 
@@ -118,7 +142,10 @@ export function initPay(hooks: PayHooks = {}): void {
       return
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast(t({ es: 'Escribe tu correo para enviarte el comprobante.', en: 'Enter your email so we can send the receipt.', pt: 'Digite seu email para enviarmos o comprovante.' }), 'err')
+      const msg = t({ es: 'Escribe tu correo para enviarte el comprobante.', en: 'Enter your email so we can send the receipt.', pt: 'Digite seu email para enviarmos o comprovante.' })
+      $<HTMLInputElement>('payEmail').setAttribute('aria-invalid', 'true')
+      emailErr.textContent = msg
+      emailErr.hidden = false
       $<HTMLInputElement>('payEmail').focus()
       return
     }

@@ -83,10 +83,9 @@ export function initUI(): void {
     }
   }
 
-  // ---- replay the intro ----
+  // ---- replay the intro (main.ts shows the button only where the intro can play: WebGL on a real GPU) ----
   const replay = document.querySelector<HTMLButtonElement>('[data-replay]')
   if (replay && !reduced()) {
-    replay.hidden = false
     replay.addEventListener('click', () => {
       store.set('ocean-replay', '1', 'session')
       history.replaceState(null, '', location.pathname)
@@ -194,4 +193,10 @@ export function revealHero(fast: boolean): void {
   gsap.to(lines, { yPercent: 0, duration: 1.15, ease: 'power4.out', stagger: 0.1, clearProps: 'transform' })
   gsap.to(fades, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', stagger: 0.08, delay: 0.4, clearProps: 'opacity,transform' })
   if (nav) gsap.to(nav, { opacity: 1, duration: 0.9, ease: 'sine.out', delay: 0.55, clearProps: 'opacity' })
+}
+
+/** The intro can play here: the footer offers to replay it. */
+export function showReplay(): void {
+  const replay = document.querySelector<HTMLButtonElement>('[data-replay]')
+  if (replay) replay.hidden = false
 }

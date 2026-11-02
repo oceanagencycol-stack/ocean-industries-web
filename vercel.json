@@ -36,19 +36,22 @@
       ]
     },
     {
-      "source": "/assets/(.*)",
+      "source": "/assets/:file",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
     },
     {
-      "source": "/assets/(reels|hero)/(.*)",
-      "headers": [{ "key": "Accept-Ranges", "value": "bytes" }]
+      "source": "/assets/(reels|hero|marca)/(.*)",
+      "headers": [
+        { "key": "Accept-Ranges", "value": "bytes" },
+        { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }
+      ]
     },
     {
       "source": "/(favicon.svg|favicon-32.png|apple-touch-icon.png|og.jpg)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }]
     },
     {
-      "source": "/(robots.txt|sitemap.xml)",
+      "source": "/(robots.txt|sitemap.xml|llms.txt)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }]
     }
   ]

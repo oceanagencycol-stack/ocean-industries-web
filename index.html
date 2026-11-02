@@ -54,6 +54,9 @@
         .demo [data-on] { opacity: 1 !important; transform: none !important; }
         .demo [data-off] { visibility: hidden !important; }
         .demo [data-demo-toggle] { display: none !important; }
+        .nav { background: rgba(5, 10, 20, 0.96); border-bottom-color: rgba(125, 147, 255, 0.16); }
+        .fab, .sound-toggle, [data-replay] { display: none !important; }
+        .live__msgs noscript { display: contents; }
       </style>
     </noscript>
     <script type="application/ld+json">
@@ -92,12 +95,12 @@
               "@type": "OfferCatalog",
               "name": "Servicios",
               "itemListElement": [
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "UGC y social", "description": "Contenido vertical para TikTok, Reels y Facebook hecho para retener y llevar la conversación a WhatsApp." } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Performance B2B", "description": "Campañas en Meta Ads pensadas para conversaciones: leads calificados listos para cerrar en WhatsApp." } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Asistentes omnicanal", "description": "Agentes de IA en WhatsApp y en la web que entienden el contexto, agendan citas y cierran ventas a cualquier hora." } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Web y e-commerce", "description": "Webs y tiendas que cargan al instante en el celular, con catálogo, pagos y SEO. Prototipo navegable en 48 horas." } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Software agéntico", "description": "Paneles y software a la medida con IA, conectados a bases de datos, CRM y hojas de cálculo." } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Automatización total", "description": "CRM, pagos, WhatsApp, calendario e IA conectados en un solo sistema que trabaja solo." } }
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Contenido para redes (UGC)", "description": "Contenido vertical para TikTok, Reels y Facebook hecho para retener y llevar la conversación a WhatsApp." } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Pauta en Meta", "description": "Campañas en Meta Ads pensadas para conversaciones: leads calificados listos para cerrar en WhatsApp." } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Agentes de IA para WhatsApp y web", "description": "Agentes de IA en WhatsApp y en la web que entienden el contexto, agendan citas y cierran ventas a cualquier hora." } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Webs y tiendas en línea", "description": "Webs y tiendas que cargan al instante en el celular, con catálogo, pagos y SEO. Prototipo navegable en 48 horas." } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Software a la medida con IA", "description": "Paneles y software a la medida con IA, conectados a bases de datos, CRM y hojas de cálculo." } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Automatización de procesos", "description": "CRM, pagos, WhatsApp, calendario e IA conectados en un solo sistema que trabaja solo." } }
               ]
             }
           }
@@ -108,6 +111,7 @@
   <body>
     <svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0">
       <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.2s-6.6-6-6.6-11A6.6 6.6 0 0 1 12 3.6a6.6 6.6 0 0 1 6.6 6.6c0 5-6.6 11-6.6 11Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" /><circle cx="12" cy="10.2" r="2.3" fill="none" stroke="currentColor" stroke-width="1.7" /></symbol>
       <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.1" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.4" cy="6.6" r="1.15" fill="currentColor"/></symbol>
       <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
       <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4.5 18.6V6.8A2.3 2.3 0 0 1 6.8 4.5h10.4a2.3 2.3 0 0 1 2.3 2.3v6.9a2.3 2.3 0 0 1-2.3 2.3H8.6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.5 9.4h7M8.5 12.4h4.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
@@ -153,10 +157,9 @@
       <a class="nav__brand" href="#hero" data-es-aria="Ocean Industries, al inicio" data-en-aria="Ocean Industries, back to top" data-pt-aria="Ocean Industries, ao início" aria-label="Ocean Industries, al inicio"><!--WORDMARK:nav__wm--></a>
       <nav class="nav__links" data-es-aria="Principal" data-en-aria="Main" data-pt-aria="Principal" aria-label="Principal">
         <a href="#services" data-sfx data-es="Servicios" data-en="Services" data-pt="Serviços">Servicios</a>
-        <a href="#agente-vivo" data-sfx data-es="Agente" data-en="Agent" data-pt="Agente">Agente</a>
+        <a href="#agente-vivo" data-sfx data-es="Agente" data-en="AI agent" data-pt="Agente">Agente</a>
         <a href="#work" data-sfx data-es="Trabajo" data-en="Work" data-pt="Trabalho">Trabajo</a>
-        <a href="#book" data-sfx data-es="Agenda" data-en="Book" data-pt="Agende">Agenda</a>
-        <a href="#pay" data-sfx data-es="Pagos" data-en="Payments" data-pt="Pagamentos">Pagos</a>
+        <a href="#book" data-sfx data-es="Agenda" data-en="Book a call" data-pt="Agenda">Agenda</a>
       </nav>
       <div class="nav__tools">
         <div class="lang" role="group" data-es-aria="Idioma" data-en-aria="Language" data-pt-aria="Idioma" aria-label="Idioma">
@@ -185,7 +188,7 @@
         <li><a href="#services" data-es="Servicios" data-en="Services" data-pt="Serviços">Servicios</a></li>
         <li><a href="#agente-vivo" data-es="El agente, en vivo" data-en="The agent, live" data-pt="O agente, ao vivo">El agente, en vivo</a></li>
         <li><a href="#work" data-es="Trabajo" data-en="Work" data-pt="Trabalho">Trabajo</a></li>
-        <li><a href="#book" data-es="Agenda tu demo" data-en="Book your demo" data-pt="Agende sua demo">Agenda tu demo</a></li>
+        <li><a href="#book" data-es="Agenda una llamada" data-en="Book a call" data-pt="Agende uma chamada">Agenda una llamada</a></li>
         <li><a href="#pay" data-es="Pagos" data-en="Payments" data-pt="Pagamentos">Pagos</a></li>
       </ul>
       <div class="menu__tools">
@@ -226,11 +229,11 @@
               <svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg>
               <span data-es="Escríbenos por WhatsApp" data-en="Message us on WhatsApp" data-pt="Fale no WhatsApp">Escríbenos por WhatsApp</span>
             </a>
-            <a class="btn btn--glass" href="#book" data-sfx data-es="Quiero mi demo" data-en="I want my demo" data-pt="Quero minha demo">Quiero mi demo</a>
+            <a class="btn btn--glass" href="#book" data-sfx data-es="Agendar una llamada" data-en="Book a call" data-pt="Agendar uma chamada">Agendar una llamada</a>
           </div>
           <p class="hero__live" data-hero-fade>
             <span class="live-dot" aria-hidden="true"></span>
-            <span data-es="Los agentes están respondiendo ahora mismo" data-en="The agents are replying right now" data-pt="Os agentes estão respondendo agora mesmo">Los agentes están respondiendo ahora mismo</span>
+            <span data-es="Nuestro agente responde las 24 horas" data-en="Our AI agent answers 24/7" data-pt="Nosso agente responde 24 horas">Nuestro agente responde las 24 horas</span>
           </p>
         </div>
         <p class="hero__hint" data-hero-fade aria-hidden="true">
@@ -252,19 +255,19 @@
                 <span class="phase__n" aria-hidden="true">1</span>
                 <h3 class="phase__name" data-es="Mar de fondo" data-en="The swell" data-pt="Mar de fundo">Mar de fondo</h3>
                 <p class="phase__text" data-es="Alguien ve tu marca. Contenido que detiene el scroll y pauta que encuentra a quien sí compra." data-en="Someone sees your brand. Content that stops the scroll and ads that find the people who actually buy." data-pt="Alguém vê sua marca. Conteúdo que para o scroll e anúncios que encontram quem realmente compra.">Alguien ve tu marca. Contenido que detiene el scroll y pauta que encuentra a quien sí compra.</p>
-                <p class="phase__svc"><a href="#ugc" data-es="UGC y social" data-en="UGC & social" data-pt="UGC e social">UGC y social</a><a href="#performance">Performance B2B</a></p>
+                <p class="phase__svc"><a href="#ugc" data-es="Contenido para redes (UGC)" data-en="Social content (UGC)" data-pt="Conteúdo para redes (UGC)">Contenido para redes (UGC)</a><a href="#performance" data-es="Pauta en Meta" data-en="Meta ads" data-pt="Anúncios no Meta">Pauta en Meta</a></p>
               </li>
               <li class="wave__step phase" data-step="2">
                 <span class="phase__n" aria-hidden="true">2</span>
                 <h3 class="phase__name" data-es="La cresta" data-en="The crest" data-pt="A crista">La cresta</h3>
                 <p class="phase__text" data-es="La atención se vuelve conversación. Tu agente responde en segundos, de día y de noche, en WhatsApp y en tu web." data-en="Attention turns into conversation. Your agent replies in seconds, day and night, on WhatsApp and on your site." data-pt="A atenção vira conversa. Seu agente responde em segundos, de dia e de noite, no WhatsApp e no seu site.">La atención se vuelve conversación. Tu agente responde en segundos, de día y de noche, en WhatsApp y en tu web.</p>
-                <p class="phase__svc"><a href="#omnicanal" data-es="Asistentes omnicanal" data-en="Omnichannel assistants" data-pt="Assistentes omnicanal">Asistentes omnicanal</a><a href="#web" data-es="Web y e-commerce" data-en="Web & e-commerce" data-pt="Web e e-commerce">Web y e-commerce</a></p>
+                <p class="phase__svc"><a href="#omnicanal" data-es="Agentes de IA para WhatsApp y web" data-en="AI agents for WhatsApp and web" data-pt="Agentes de IA para WhatsApp e web">Agentes de IA para WhatsApp y web</a><a href="#web" data-es="Webs y tiendas en línea" data-en="Websites and online stores" data-pt="Sites e lojas online">Webs y tiendas en línea</a></p>
               </li>
               <li class="wave__step phase" data-step="3">
                 <span class="phase__n" aria-hidden="true">3</span>
                 <h3 class="phase__name" data-es="La rompiente" data-en="The break" data-pt="A arrebentação">La rompiente</h3>
                 <p class="phase__text" data-es="La conversación llega a la orilla: la cita agendada, la venta cerrada, el pago recibido. Y tu operación corre sola detrás." data-en="The conversation reaches the shore: the appointment booked, the sale closed, the payment received. And your operation runs on its own behind it." data-pt="A conversa chega à praia: a consulta agendada, a venda fechada, o pagamento recebido. E sua operação roda sozinha por trás.">La conversación llega a la orilla: la cita agendada, la venta cerrada, el pago recibido. Y tu operación corre sola detrás.</p>
-                <p class="phase__svc"><a href="#software" data-es="Software agéntico" data-en="Agentic software" data-pt="Software agêntico">Software agéntico</a><a href="#automatizacion" data-es="Automatización total" data-en="Full automation" data-pt="Automação total">Automatización total</a></p>
+                <p class="phase__svc"><a href="#software" data-es="Software a la medida con IA" data-en="Custom AI software" data-pt="Software sob medida com IA">Software a la medida con IA</a><a href="#automatizacion" data-es="Automatización de procesos" data-en="Process automation" data-pt="Automação de processos">Automatización de procesos</a></p>
               </li>
             </ol>
             <p class="wave__step wave__close" data-step="4" data-es="Eso es convertir una marca en ola." data-en="That's turning a brand into a wave." data-pt="Isso é transformar uma marca em onda.">Eso es convertir una marca en ola.</p>
@@ -276,8 +279,13 @@
       <!-- ============================================================ SERVICIOS -->
       <section id="services" class="svc" aria-labelledby="svc-title">
         <header class="sec-head">
-          <h2 id="svc-title" data-es="Qué problema tienes y qué construimos" data-en="Your problem, and what we build" data-pt="Seu problema e o que construímos">Qué problema tienes y qué construimos</h2>
-          <p data-es="Seis servicios, una sola idea: que cada movimiento de tus clientes termine en un resultado. En cada ejemplo, la persona va en blanco, la máquina en azul y el resultado en verde." data-en="Six services, one idea: every move your customers make should end in a result. In each example, the person is white, the machine is blue and the result is green." data-pt="Seis serviços, uma só ideia: que cada movimento dos seus clientes termine em um resultado. Em cada exemplo, a pessoa vai em branco, a máquina em azul e o resultado em verde.">Seis servicios, una sola idea: que cada movimiento de tus clientes termine en un resultado. En cada ejemplo, la persona va en blanco, la máquina en azul y el resultado en verde.</p>
+          <h2 id="svc-title" data-es="Tu problema y lo que construimos para resolverlo" data-en="Your problem, and what we build to solve it" data-pt="Seu problema e o que construímos para resolvê-lo">Tu problema y lo que construimos para resolverlo</h2>
+          <p data-es="Seis servicios, una sola idea: que cada movimiento de tus clientes termine en un resultado. Cada ejemplo muestra quién hace qué:" data-en="Six services, one idea: every move your customers make should end in a result. Each example shows who does what:" data-pt="Seis serviços, uma só ideia: que cada movimento dos seus clientes termine em um resultado. Cada exemplo mostra quem faz o quê:">Seis servicios, una sola idea: que cada movimiento de tus clientes termine en un resultado. Cada ejemplo muestra quién hace qué:</p>
+          <ul class="key">
+            <li class="key__item key__item--person" data-es="Una persona" data-en="A person" data-pt="Uma pessoa">Una persona</li>
+            <li class="key__item key__item--machine" data-es="La IA" data-en="The AI" data-pt="A IA">La IA</li>
+            <li class="key__item key__item--result" data-es="El resultado" data-en="The result" data-pt="O resultado">El resultado</li>
+          </ul>
         </header>
 
         <!-- 1 · Mar de fondo -->
@@ -287,11 +295,12 @@
           <article class="svc__row" id="ugc">
             <div class="svc__text">
               <p class="svc__problem" data-es="Tienes alcance pero no se traduce en ventas." data-en="You get reach, but it doesn't turn into sales." data-pt="Você tem alcance, mas não vira venda.">Tienes alcance pero no se traduce en ventas.</p>
-              <h3 class="svc__name" data-es="UGC y social" data-en="UGC & social" data-pt="UGC e social">UGC y social</h3>
+              <h3 class="svc__name" data-es="Contenido para redes (UGC)" data-en="Social content (UGC)" data-pt="Conteúdo para redes (UGC)">Contenido para redes (UGC)</h3>
               <p class="svc__desc" data-es="Contenido vertical para TikTok, Reels y Facebook, hecho para retener en los primeros segundos y llevar la conversación a tu WhatsApp. Los likes no pagan nóminas; las ventas sí." data-en="Vertical content for TikTok, Reels and Facebook, made to hold attention in the first seconds and bring the conversation to your WhatsApp. Likes don't pay payroll; sales do." data-pt="Conteúdo vertical para TikTok, Reels e Facebook, feito para reter nos primeiros segundos e levar a conversa para o seu WhatsApp. Likes não pagam salários; vendas sim.">Contenido vertical para TikTok, Reels y Facebook, hecho para retener en los primeros segundos y llevar la conversación a tu WhatsApp. Los likes no pagan nóminas; las ventas sí.</p>
-              <a class="svc__link" data-wa="ugc" href="https://wa.me/573138721665" target="_blank" rel="noopener" data-es="Quiero contenido que venda" data-en="I want content that sells" data-pt="Quero conteúdo que venda">Quiero contenido que venda</a>
+              <a class="svc__link" data-wa="ugc" href="https://wa.me/573138721665" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg><span data-es="Quiero contenido que venda" data-en="I want content that sells" data-pt="Quero conteúdo que venda">Quiero contenido que venda</span></a>
             </div>
             <div class="demo" data-demo data-steps-ms="2100,2600,2200,3000">
+              <!--DEMO_TOGGLE-->
               <div class="demo__stage" aria-hidden="true">
                 <div class="phone phone--reel">
                   <img class="phone__media" src="/assets/hero/hero-1.jpg" alt="" loading="lazy" decoding="async" width="270" height="480" />
@@ -310,25 +319,25 @@
                 <li data-who="person"><button type="button" data-es="Pregunta por disponibilidad." data-en="They ask about availability." data-pt="Pergunta pela disponibilidade.">Pregunta por disponibilidad.</button></li>
                 <li data-who="result"><button type="button" data-es="Llega a tu WhatsApp como lead." data-en="They land in your WhatsApp as a lead." data-pt="Chega ao seu WhatsApp como lead.">Llega a tu WhatsApp como lead.</button></li>
               </ol>
-              <!--DEMO_TOGGLE-->
             </div>
           </article>
 
           <article class="svc__row" id="performance">
             <div class="svc__text">
               <p class="svc__problem" data-es="Quemas presupuesto en pauta sin leads calificados." data-en="You burn ad budget without qualified leads." data-pt="Você queima verba de anúncios sem leads qualificados.">Quemas presupuesto en pauta sin leads calificados.</p>
-              <h3 class="svc__name">Performance B2B</h3>
+              <h3 class="svc__name" data-es="Pauta en Meta" data-en="Meta ads" data-pt="Anúncios no Meta">Pauta en Meta</h3>
               <p class="svc__desc" data-es="Campañas en Meta Ads pensadas para conversaciones, no para clics: cada peso apunta a leads listos para cerrar en tu WhatsApp. Deja de quemar presupuesto a ciegas." data-en="Meta Ads campaigns built for conversations, not clicks: every dollar aims at leads ready to close on your WhatsApp. Stop burning budget blindly." data-pt="Campanhas no Meta Ads pensadas para conversas, não para cliques: cada real mira leads prontos para fechar no seu WhatsApp. Pare de queimar orçamento às cegas.">Campañas en Meta Ads pensadas para conversaciones, no para clics: cada peso apunta a leads listos para cerrar en tu WhatsApp. Deja de quemar presupuesto a ciegas.</p>
-              <a class="svc__link" data-wa="ads" href="https://wa.me/573138721665" target="_blank" rel="noopener" data-es="Quiero leads calificados" data-en="I want qualified leads" data-pt="Quero leads qualificados">Quiero leads calificados</a>
+              <a class="svc__link" data-wa="ads" href="https://wa.me/573138721665" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg><span data-es="Quiero leads calificados" data-en="I want qualified leads" data-pt="Quero leads qualificados">Quiero leads calificados</span></a>
             </div>
             <div class="demo" data-demo data-steps-ms="2200,2800,2300,3000">
+              <!--DEMO_TOGGLE-->
               <div class="demo__stage" aria-hidden="true">
                 <div class="screen">
                   <p class="screen__bar"><span class="screen__dots"><i></i><i></i><i></i></span><span data-es="Campaña de ejemplo" data-en="Sample campaign" data-pt="Campanha de exemplo">Campaña de ejemplo</span></p>
                   <div class="ads">
-                    <div class="ad"><span class="ad__thumb"></span><span class="ad__name" data-es="Anuncio A" data-en="Ad A" data-pt="Anúncio A">Anuncio A</span><span class="ad__meter"><i style="--v: 0.62"></i></span><span class="ad__tag" data-on="2" data-es="clics" data-en="clicks" data-pt="cliques">clics</span></div>
-                    <div class="ad ad--win"><span class="ad__thumb"></span><span class="ad__name" data-es="Anuncio B" data-en="Ad B" data-pt="Anúncio B">Anuncio B</span><span class="ad__meter"><i style="--v: 0.4"></i></span><span class="ad__tag ad__tag--talk" data-on="2" data-es="conversaciones" data-en="conversations" data-pt="conversas">conversaciones</span></div>
-                    <div class="ad"><span class="ad__thumb"></span><span class="ad__name" data-es="Anuncio C" data-en="Ad C" data-pt="Anúncio C">Anuncio C</span><span class="ad__meter"><i style="--v: 0.5"></i></span><span class="ad__tag" data-on="2" data-es="clics" data-en="clicks" data-pt="cliques">clics</span></div>
+                    <div class="ad"><span class="ad__thumb"></span><span class="ad__name" data-es="Anuncio A" data-en="Ad A" data-pt="Anúncio A">Anuncio A</span><span class="ad__meter" data-on="2"><i style="--v: 0.14"></i></span><span class="ad__tag" data-on="2" data-es="solo clics" data-en="clicks only" data-pt="só cliques">solo clics</span></div>
+                    <div class="ad ad--win"><span class="ad__thumb"></span><span class="ad__name" data-es="Anuncio B" data-en="Ad B" data-pt="Anúncio B">Anuncio B</span><span class="ad__meter" data-on="2"><i style="--v: 0.84"></i></span><span class="ad__tag ad__tag--talk" data-on="2" data-es="conversaciones" data-en="conversations" data-pt="conversas">conversaciones</span></div>
+                    <div class="ad"><span class="ad__thumb"></span><span class="ad__name" data-es="Anuncio C" data-en="Ad C" data-pt="Anúncio C">Anuncio C</span><span class="ad__meter" data-on="2"><i style="--v: 0.2"></i></span><span class="ad__tag" data-on="2" data-es="solo clics" data-en="clicks only" data-pt="só cliques">solo clics</span></div>
                   </div>
                   <p class="card card--machine" data-on="2" data-es="B trae conversaciones; A y C, solo clics." data-en="B brings conversations; A and C, only clicks." data-pt="B traz conversas; A e C, só cliques.">B trae conversaciones; A y C, solo clics.</p>
                   <p class="decide" data-on="3"><span class="switch" aria-hidden="true"></span><span data-es="Mover el presupuesto a B" data-en="Move the budget to B" data-pt="Mover o orçamento para B">Mover el presupuesto a B</span></p>
@@ -341,7 +350,6 @@
                 <li data-who="person"><button type="button" data-es="Decides mover el presupuesto." data-en="You decide to move the budget." data-pt="Você decide mover o orçamento.">Decides mover el presupuesto.</button></li>
                 <li data-who="result"><button type="button" data-es="El lead calificado llega a tu WhatsApp." data-en="The qualified lead lands in your WhatsApp." data-pt="O lead qualificado chega ao seu WhatsApp.">El lead calificado llega a tu WhatsApp.</button></li>
               </ol>
-              <!--DEMO_TOGGLE-->
             </div>
           </article>
         </div>
@@ -353,14 +361,15 @@
           <article class="svc__row" id="omnicanal">
             <div class="svc__text">
               <p class="svc__problem" data-es="Pierdes ventas fuera del horario de oficina." data-en="You lose sales outside business hours." data-pt="Você perde vendas fora do horário comercial.">Pierdes ventas fuera del horario de oficina.</p>
-              <h3 class="svc__name" data-es="Asistentes omnicanal" data-en="Omnichannel assistants" data-pt="Assistentes omnicanal">Asistentes omnicanal</h3>
+              <h3 class="svc__name" data-es="Agentes de IA para WhatsApp y web" data-en="AI agents for WhatsApp and web" data-pt="Agentes de IA para WhatsApp e web">Agentes de IA para WhatsApp y web</h3>
               <p class="svc__desc" data-es="Agentes de IA en tu WhatsApp y tu web que entienden el contexto, agendan citas y cierran ventas de madrugada. Cuando no saben algo, pasan a una persona: no inventan." data-en="AI agents on your WhatsApp and your site that understand context, book appointments and close sales overnight. When they don't know something, they hand over to a person: they don't make things up." data-pt="Agentes de IA no seu WhatsApp e no seu site que entendem o contexto, agendam e fecham vendas de madrugada. Quando não sabem algo, passam para uma pessoa: não inventam.">Agentes de IA en tu WhatsApp y tu web que entienden el contexto, agendan citas y cierran ventas de madrugada. Cuando no saben algo, pasan a una persona: no inventan.</p>
-              <a class="svc__link" data-wa="agents" href="https://wa.me/573138721665" target="_blank" rel="noopener" data-es="Quiero un agente así" data-en="I want an agent like this" data-pt="Quero um agente assim">Quiero un agente así</a>
+              <a class="svc__link" data-wa="agents" href="https://wa.me/573138721665" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg><span data-es="Quiero un agente así" data-en="I want an agent like this" data-pt="Quero um agente assim">Quiero un agente así</span></a>
             </div>
             <div class="demo" data-demo data-steps-ms="2100,2700,2100,3100">
+              <!--DEMO_TOGGLE-->
               <div class="demo__stage" aria-hidden="true">
                 <div class="phone phone--chat">
-                  <p class="chat-top"><span class="chat-top__av"></span><span class="chat-top__name" data-es="Tu negocio" data-en="Your business" data-pt="Seu negócio">Tu negocio</span><span class="chat-top__time">11:48 p. m.</span></p>
+                  <p class="chat-top"><span class="chat-top__av"></span><span class="chat-top__name" data-es="Ana · cliente" data-en="Ana · customer" data-pt="Ana · cliente">Ana · cliente</span><span class="chat-top__time" data-es="11:48 p. m." data-en="11:48 PM" data-pt="23:48">11:48 p. m.</span></p>
                   <p class="msg msg--in" data-es="Hola, ¿tienen cita para mañana?" data-en="Hi, any appointments tomorrow?" data-pt="Oi, tem horário amanhã?">Hola, ¿tienen cita para mañana?</p>
                   <p class="msg msg--out" data-on="2" data-es="¡Claro! Mañana tengo 9:00, 10:00 o 4:30. ¿Cuál te sirve?" data-en="Sure! Tomorrow I have 9:00, 10:00 or 4:30. Which works?" data-pt="Claro! Amanhã tenho 9:00, 10:00 ou 16:30. Qual serve?">¡Claro! Mañana tengo 9:00, 10:00 o 4:30. ¿Cuál te sirve?</p>
                   <p class="msg msg--in" data-on="3" data-es="Las 10" data-en="10, please" data-pt="Às 10">Las 10</p>
@@ -368,26 +377,26 @@
                 </div>
               </div>
               <ol class="demo__steps" data-demo-steps>
-                <li data-who="person"><button type="button" data-es="Un cliente escribe a las 11:48 p. m." data-en="A customer writes at 11:48 p.m." data-pt="Um cliente escreve às 23:48.">Un cliente escribe a las 11:48 p. m.</button></li>
+                <li data-who="person"><button type="button" data-es="Un cliente escribe a las 11:48 p. m." data-en="A customer writes at 11:48 PM." data-pt="Um cliente escreve às 23:48.">Un cliente escribe a las 11:48 p. m.</button></li>
                 <li data-who="machine"><button type="button" data-es="El agente le ofrece tres horarios." data-en="The agent offers three time slots." data-pt="O agente oferece três horários.">El agente le ofrece tres horarios.</button></li>
                 <li data-who="person"><button type="button" data-es="Elige las 10:00." data-en="They pick 10:00." data-pt="Escolhe às 10:00.">Elige las 10:00.</button></li>
                 <li data-who="result"><button type="button" data-es="Cita agendada, sin nadie despierto." data-en="Booked, with nobody awake." data-pt="Agendado, sem ninguém acordado.">Cita agendada, sin nadie despierto.</button></li>
               </ol>
-              <!--DEMO_TOGGLE-->
             </div>
           </article>
 
           <article class="svc__row" id="web">
             <div class="svc__text">
               <p class="svc__problem" data-es="Tu web tarda en cargar y no convierte en móvil." data-en="Your site is slow and doesn't convert on mobile." data-pt="Seu site é lento e não converte no celular.">Tu web tarda en cargar y no convierte en móvil.</p>
-              <h3 class="svc__name" data-es="Web y e-commerce" data-en="Web & e-commerce" data-pt="Web e e-commerce">Web y e-commerce</h3>
+              <h3 class="svc__name" data-es="Webs y tiendas en línea" data-en="Websites and online stores" data-pt="Sites e lojas online">Webs y tiendas en línea</h3>
               <p class="svc__desc" data-es="Webs y tiendas que cargan al instante en el celular, con catálogo, pagos y SEO. Prototipo navegable en 48 horas: si te convence, lo lanzamos." data-en="Sites and stores that load instantly on a phone, with catalog, payments and SEO. A clickable prototype in 48 hours: if you like it, we launch it." data-pt="Sites e lojas que carregam na hora no celular, com catálogo, pagamentos e SEO. Protótipo navegável em 48 horas: se te convencer, lançamos.">Webs y tiendas que cargan al instante en el celular, con catálogo, pagos y SEO. Prototipo navegable en 48 horas: si te convence, lo lanzamos.</p>
-              <a class="svc__link" data-wa="web" href="https://wa.me/573138721665" target="_blank" rel="noopener" data-es="Quiero una web que venda" data-en="I want a site that sells" data-pt="Quero um site que venda">Quiero una web que venda</a>
+              <a class="svc__link" data-wa="web" href="https://wa.me/573138721665" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg><span data-es="Quiero una web que venda" data-en="I want a site that sells" data-pt="Quero um site que venda">Quiero una web que venda</span></a>
             </div>
             <div class="demo" data-demo data-steps-ms="2100,2400,2400,3000">
+              <!--DEMO_TOGGLE-->
               <div class="demo__stage" aria-hidden="true">
                 <div class="phone phone--shop">
-                  <p class="shop__url">tumarca.co</p>
+                  <p class="shop__url" data-es="tumarca.co" data-en="yourbrand.com" data-pt="suamarca.com.br">tumarca.co</p>
                   <p class="shop__from" data-off="2" data-es="Llegando desde Instagram…" data-en="Coming from Instagram…" data-pt="Chegando do Instagram…">Llegando desde Instagram…</p>
                   <div class="shop__page" data-on="2">
                     <span class="shop__hero"></span>
@@ -395,8 +404,8 @@
                     <span class="shop__grid"><i></i><i></i><i></i><i></i></span>
                   </div>
                   <div class="shop__pay" data-on="3">
-                    <span class="shop__total" data-es="Total $89.900" data-en="Total $89.900" data-pt="Total $89.900">Total $89.900</span>
-                    <span class="shop__methods"><b>PSE</b><b>Nequi</b><b data-es="Tarjeta" data-en="Card" data-pt="Cartão">Tarjeta</b></span>
+                    <span class="shop__total" data-es="Total $89.900" data-en="Total $89.90" data-pt="Total R$ 189,90">Total $89.900</span>
+                    <span class="shop__methods" data-off="4"><b data-es="PSE" data-en="Card" data-pt="Pix">PSE</b><b data-es="Nequi" data-en="Apple Pay" data-pt="Cartão">Nequi</b><b data-es="Tarjeta" data-en="PayPal" data-pt="Boleto">Tarjeta</b></span>
                   </div>
                   <p class="chip chip--ok" data-on="4" data-es="Pedido pagado" data-en="Order paid" data-pt="Pedido pago">Pedido pagado</p>
                 </div>
@@ -404,10 +413,9 @@
               <ol class="demo__steps" data-demo-steps>
                 <li data-who="person"><button type="button" data-es="Alguien llega desde Instagram." data-en="Someone arrives from Instagram." data-pt="Alguém chega do Instagram.">Alguien llega desde Instagram.</button></li>
                 <li data-who="machine"><button type="button" data-es="La tienda carga al instante en su celular." data-en="The store loads instantly on their phone." data-pt="A loja carrega na hora no celular.">La tienda carga al instante en su celular.</button></li>
-                <li data-who="person"><button type="button" data-es="Paga con PSE, Nequi o tarjeta." data-en="They pay by PSE, Nequi or card." data-pt="Paga com PSE, Nequi ou cartão.">Paga con PSE, Nequi o tarjeta.</button></li>
+                <li data-who="person"><button type="button" data-es="Paga con PSE, Nequi o tarjeta." data-en="They pay by card, Apple Pay or PayPal." data-pt="Paga com Pix, cartão ou boleto.">Paga con PSE, Nequi o tarjeta.</button></li>
                 <li data-who="result"><button type="button" data-es="Pedido pagado." data-en="Order paid." data-pt="Pedido pago.">Pedido pagado.</button></li>
               </ol>
-              <!--DEMO_TOGGLE-->
             </div>
           </article>
         </div>
@@ -419,18 +427,19 @@
           <article class="svc__row" id="software">
             <div class="svc__text">
               <p class="svc__problem" data-es="Tu equipo copia y pega datos entre sistemas todo el día." data-en="Your team copies and pastes data between systems all day." data-pt="Sua equipe copia e cola dados entre sistemas o dia todo.">Tu equipo copia y pega datos entre sistemas todo el día.</p>
-              <h3 class="svc__name" data-es="Software agéntico" data-en="Agentic software" data-pt="Software agêntico">Software agéntico</h3>
+              <h3 class="svc__name" data-es="Software a la medida con IA" data-en="Custom AI software" data-pt="Software sob medida com IA">Software a la medida con IA</h3>
               <p class="svc__desc" data-es="Paneles y software a la medida con IA, conectados a tu base de datos, tu CRM y tus hojas de cálculo. El fin del Excel interminable." data-en="Custom dashboards and software with AI, connected to your database, your CRM and your spreadsheets. The end of endless Excel." data-pt="Painéis e software sob medida com IA, conectados ao seu banco de dados, ao seu CRM e às suas planilhas. O fim do Excel interminável.">Paneles y software a la medida con IA, conectados a tu base de datos, tu CRM y tus hojas de cálculo. El fin del Excel interminable.</p>
-              <a class="svc__link" data-wa="software" href="https://wa.me/573138721665" target="_blank" rel="noopener" data-es="Quiero dejar de copiar y pegar" data-en="I want to stop copy-pasting" data-pt="Quero parar de copiar e colar">Quiero dejar de copiar y pegar</a>
+              <a class="svc__link" data-wa="software" href="https://wa.me/573138721665" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg><span data-es="Quiero dejar de copiar y pegar" data-en="I want to stop copy-pasting" data-pt="Quero parar de copiar e colar">Quiero dejar de copiar y pegar</span></a>
             </div>
             <div class="demo" data-demo data-steps-ms="2100,2700,2200,3000">
+              <!--DEMO_TOGGLE-->
               <div class="demo__stage" aria-hidden="true">
                 <div class="screen">
                   <p class="screen__bar"><span class="screen__dots"><i></i><i></i><i></i></span><span data-es="Bandeja de facturas" data-en="Invoice inbox" data-pt="Caixa de faturas">Bandeja de facturas</span></p>
-                  <p class="doc"><span class="doc__ico"></span><span>FV-2047.pdf</span></p>
+                  <p class="doc"><span class="doc__ico"></span><span data-es="FV-2047.pdf" data-en="INV-2047.pdf" data-pt="NF-2047.pdf">FV-2047.pdf</span></p>
                   <dl class="fields" data-on="2">
                     <div><dt data-es="Proveedor" data-en="Supplier" data-pt="Fornecedor">Proveedor</dt><dd data-es="Proveedor de ejemplo" data-en="Sample supplier" data-pt="Fornecedor de exemplo">Proveedor de ejemplo</dd></div>
-                    <div><dt data-es="Valor" data-en="Amount" data-pt="Valor">Valor</dt><dd>$2.450.000</dd></div>
+                    <div><dt data-es="Valor" data-en="Amount" data-pt="Valor">Valor</dt><dd data-es="$2.450.000" data-en="$4,850.00" data-pt="R$ 12.450,00">$2.450.000</dd></div>
                     <div><dt data-es="Vence" data-en="Due" data-pt="Vence">Vence</dt><dd data-es="15 de noviembre" data-en="November 15" data-pt="15 de novembro">15 de noviembre</dd></div>
                     <div><dt>CRM</dt><dd data-es="Proveedor encontrado" data-en="Supplier found" data-pt="Fornecedor encontrado">Proveedor encontrado</dd></div>
                   </dl>
@@ -444,18 +453,18 @@
                 <li data-who="person"><button type="button" data-es="Tu equipo revisa y aprueba." data-en="Your team reviews and approves." data-pt="Sua equipe revisa e aprova.">Tu equipo revisa y aprueba.</button></li>
                 <li data-who="result"><button type="button" data-es="Queda registrado, sin copiar ni pegar." data-en="It's recorded, with no copy-paste." data-pt="Fica registrado, sem copiar e colar.">Queda registrado, sin copiar ni pegar.</button></li>
               </ol>
-              <!--DEMO_TOGGLE-->
             </div>
           </article>
 
           <article class="svc__row" id="automatizacion">
             <div class="svc__text">
               <p class="svc__problem" data-es="Tus herramientas no se hablan entre sí." data-en="Your tools don't talk to each other." data-pt="Suas ferramentas não conversam entre si.">Tus herramientas no se hablan entre sí.</p>
-              <h3 class="svc__name" data-es="Automatización total" data-en="Full automation" data-pt="Automação total">Automatización total</h3>
+              <h3 class="svc__name" data-es="Automatización de procesos" data-en="Process automation" data-pt="Automação de processos">Automatización de procesos</h3>
               <p class="svc__desc" data-es="Conectamos CRM, pagos, WhatsApp, calendario e IA en un solo sistema que trabaja solo." data-en="We connect CRM, payments, WhatsApp, calendar and AI into one system that runs itself." data-pt="Conectamos CRM, pagamentos, WhatsApp, calendário e IA em um só sistema que trabalha sozinho.">Conectamos CRM, pagos, WhatsApp, calendario e IA en un solo sistema que trabaja solo.</p>
-              <a class="svc__link" data-wa="automation" href="https://wa.me/573138721665" target="_blank" rel="noopener" data-es="Quiero que todo se hable" data-en="I want it all connected" data-pt="Quero tudo conectado">Quiero que todo se hable</a>
+              <a class="svc__link" data-wa="automation" href="https://wa.me/573138721665" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg><span data-es="Quiero que todo se hable" data-en="I want it all connected" data-pt="Quero tudo conectado">Quiero que todo se hable</span></a>
             </div>
             <div class="demo" data-demo data-steps-ms="2000,2900,2300,3000">
+              <!--DEMO_TOGGLE-->
               <div class="demo__stage" aria-hidden="true">
                 <div class="screen screen--flow">
                   <p class="node node--person" data-es="Un cliente paga" data-en="A customer pays" data-pt="Um cliente paga">Un cliente paga</p>
@@ -472,7 +481,6 @@
                 <li data-who="person"><button type="button" data-es="Tu equipo recibe el resumen del día." data-en="Your team gets the day's summary." data-pt="Sua equipe recebe o resumo do dia.">Tu equipo recibe el resumen del día.</button></li>
                 <li data-who="result"><button type="button" data-es="Todo en su lugar, sin tocar nada." data-en="Everything in place, hands-free." data-pt="Tudo no lugar, sem tocar em nada.">Todo en su lugar, sin tocar nada.</button></li>
               </ol>
-              <!--DEMO_TOGGLE-->
             </div>
           </article>
         </div>
@@ -482,7 +490,7 @@
       <section id="agente-vivo" class="live" aria-labelledby="live-title">
         <header class="sec-head">
           <h2 id="live-title" data-es="Esto es lo que ve tu cliente" data-en="This is what your customer sees" data-pt="Isto é o que seu cliente vê">Esto es lo que ve tu cliente</h2>
-          <p data-es="No es una captura de pantalla: son los mismos componentes que corren en los agentes que operamos. Los tiempos son los que medimos en nuestra propia línea." data-en="Not a screenshot: these are the same components running in the agents we operate. The times are the ones we measure on our own line." data-pt="Não é uma captura de tela: são os mesmos componentes que rodam nos agentes que operamos. Os tempos são os que medimos na nossa própria linha.">No es una captura de pantalla: son los mismos componentes que corren en los agentes que operamos. Los tiempos son los que medimos en nuestra propia línea.</p>
+          <p data-es="Una conversación de ejemplo, al ritmo real: los tiempos son los que medimos en nuestra propia línea de WhatsApp, donde atiende un agente como este." data-en="A sample conversation at real speed: the timings are the ones we measure on our own WhatsApp line, where an agent like this one answers." data-pt="Uma conversa de exemplo, no ritmo real: os tempos são os que medimos na nossa própria linha de WhatsApp, onde atende um agente como este.">Una conversación de ejemplo, al ritmo real: los tiempos son los que medimos en nuestra propia línea de WhatsApp, donde atiende un agente como este.</p>
         </header>
         <div class="live__grid">
           <div class="live__chat" data-es-aria="Conversación de ejemplo con el agente" data-en-aria="Sample conversation with the agent" data-pt-aria="Conversa de exemplo com o agente" aria-label="Conversación de ejemplo con el agente" role="img">
@@ -491,29 +499,23 @@
               <span class="live__who"><b>Valeria</b><span><span class="live-dot" aria-hidden="true"></span><span data-es="en línea" data-en="online" data-pt="online">en línea</span></span></span>
               <span class="live__app">WhatsApp</span>
             </p>
-            <div class="live__msgs" id="liveChat"></div>
-            <p class="live__foot"><span class="wavebars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span data-es="Respuesta media: 11 s" data-en="Avg. reply: 11 s" data-pt="Resposta média: 11 s">Respuesta media: 11 s</span></p>
+            <div class="live__msgs" id="liveChat"><noscript><p class="msg msg--in">Hola, ¿ustedes hacen agentes para WhatsApp?</p><p class="msg msg--out">Sí. Lo montamos sobre tu número actual y responde solo, 24/7.</p></noscript></div>
+            <p class="live__foot"><span data-es="Respuesta media: 11 s" data-en="Avg. reply: 11 s" data-pt="Resposta média: 11 s">Respuesta media: 11 s</span></p>
           </div>
-          <ul class="live__states" data-es-aria="Estados reales" data-en-aria="Real states" data-pt-aria="Estados reais" aria-label="Estados reales">
-            <li class="state state--machine"><b data-es="Agente activo" data-en="Agent active" data-pt="Agente ativo">Agente activo</b><span data-es="Respondiendo ahora mismo" data-en="Replying right now" data-pt="Respondendo agora mesmo">Respondiendo ahora mismo</span></li>
+          <ul class="live__states" data-es-aria="Lo que hace el agente" data-en-aria="What the agent does" data-pt-aria="O que o agente faz" aria-label="Lo que hace el agente">
+            <li class="state state--machine"><b data-es="Activo 24/7" data-en="On 24/7" data-pt="Ativo 24/7">Activo 24/7</b><span data-es="Responde de día y de madrugada" data-en="Replies day and night" data-pt="Responde de dia e de madrugada">Responde de día y de madrugada</span></li>
             <li class="state state--result"><b data-es="Cita agendada" data-en="Appointment booked" data-pt="Consulta agendada">Cita agendada</b><span data-es="Sin intervención humana" data-en="No human needed" data-pt="Sem intervenção humana">Sin intervención humana</span></li>
-            <li class="state state--person"><b data-es="Escalado a una persona" data-en="Handed to a person" data-pt="Escalado para uma pessoa">Escalado a una persona</b><span data-es="Cuando el agente no sabe, no inventa" data-en="When the agent doesn't know, it doesn't make things up" data-pt="Quando o agente não sabe, não inventa">Cuando el agente no sabe, no inventa</span></li>
-            <li class="state state--machine"><b data-es="Monitoreo 24/7" data-en="24/7 monitoring" data-pt="Monitoramento 24/7">Monitoreo 24/7</b><span data-es="Cada conversación queda registrada" data-en="Every conversation is logged" data-pt="Cada conversa fica registrada">Cada conversación queda registrada</span></li>
+            <li class="state state--person"><b data-es="Pasa a una persona" data-en="Hands off to a person" data-pt="Passa para uma pessoa">Pasa a una persona</b><span data-es="Cuando el agente no sabe, no inventa" data-en="When the agent doesn't know, it doesn't make things up" data-pt="Quando o agente não sabe, não inventa">Cuando el agente no sabe, no inventa</span></li>
+            <li class="state state--machine"><b data-es="Todo queda registrado" data-en="Everything is logged" data-pt="Tudo fica registrado">Todo queda registrado</b><span data-es="Revisas cada conversación cuando quieras" data-en="Review any conversation, any time" data-pt="Você revisa cada conversa quando quiser">Revisas cada conversación cuando quieras</span></li>
           </ul>
           <div class="live__side">
             <p class="live__label" data-es="Del primer mensaje a producción" data-en="From first message to production" data-pt="Da primeira mensagem à produção">Del primer mensaje a producción</p>
             <ol class="route">
-              <li class="is-done" data-es="Contacto" data-en="Contact" data-pt="Contato">Contacto</li>
-              <li class="is-done" data-es="Demo" data-en="Demo" data-pt="Demo">Demo</li>
-              <li data-es="Ajuste" data-en="Tuning" data-pt="Ajuste">Ajuste</li>
+              <li data-es="Nos escribes" data-en="You message us" data-pt="Você nos escreve">Nos escribes</li>
+              <li data-es="Demo en 48 horas" data-en="Demo in 48 hours" data-pt="Demo em 48 horas">Demo en 48 horas</li>
+              <li data-es="Lo ajustamos contigo" data-en="We tune it with you" data-pt="Ajustamos com você">Lo ajustamos contigo</li>
               <li data-es="En producción" data-en="Live" data-pt="Em produção">En producción</li>
             </ol>
-            <dl class="nums">
-              <div><dt><span data-count="48">48</span></dt><dd data-es="horas al demo" data-en="hours to demo" data-pt="horas até a demo">horas al demo</dd></div>
-              <div><dt><span data-count="24">24</span></dt><dd data-es="horas al día" data-en="hours a day" data-pt="horas por dia">horas al día</dd></div>
-              <div><dt><span data-count="11">11</span></dt><dd data-es="segundos de respuesta" data-en="seconds to reply" data-pt="segundos de resposta">segundos de respuesta</dd></div>
-              <div><dt><span data-count="0">0</span></dt><dd data-es="respuestas inventadas" data-en="made-up answers" data-pt="respostas inventadas">respuestas inventadas</dd></div>
-            </dl>
             <a class="btn btn--go" data-wa="agents" data-sfx href="https://wa.me/573138721665" target="_blank" rel="noopener">
               <svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg>
               <span data-es="Quiero uno para mi negocio" data-en="I want one for my business" data-pt="Quero um para meu negócio">Quiero uno para mi negocio</span>
@@ -535,36 +537,39 @@
             <dl class="case__rows">
               <div><dt data-es="Contexto" data-en="Context" data-pt="Contexto">Contexto</dt><dd data-es="Negocio de servicio local en el sur de Florida." data-en="A local service business in South Florida." data-pt="Negócio de serviço local no sul da Flórida.">Negocio de servicio local en el sur de Florida.</dd></div>
               <div><dt data-es="Intervención" data-en="What we did" data-pt="Intervenção">Intervención</dt><dd data-es="Agente de WhatsApp en operación y sitio en inglés." data-en="A WhatsApp agent in operation and an English site." data-pt="Agente de WhatsApp em operação e site em inglês.">Agente de WhatsApp en operación y sitio en inglés.</dd></div>
-              <div><dt data-es="Sistema" data-en="System" data-pt="Sistema">Sistema</dt><dd data-es="Evolution API, n8n y un agente conversacional." data-en="Evolution API, n8n and a conversational agent." data-pt="Evolution API, n8n e um agente conversacional.">Evolution API, n8n y un agente conversacional.</dd></div>
+              <div><dt data-es="Sistema" data-en="System" data-pt="Sistema">Sistema</dt><dd data-es="Su WhatsApp conectado a un agente de IA que responde y agenda." data-en="Their WhatsApp connected to an AI agent that answers and books." data-pt="O WhatsApp deles conectado a um agente de IA que responde e agenda.">Su WhatsApp conectado a un agente de IA que responde y agenda.</dd></div>
               <div class="case__state"><dt data-es="Estado" data-en="Status" data-pt="Estado">Estado</dt><dd data-es="Agente en operación y sitio en inglés publicado." data-en="Agent live and English site published." data-pt="Agente em operação e site em inglês publicado.">Agente en operación y sitio en inglés publicado.</dd></div>
             </dl>
+            <a class="case__link" href="https://www.outstandinggaragedoors.com/" target="_blank" rel="noopener"><span data-es="Ver el sitio" data-en="See the site" data-pt="Ver o site">Ver el sitio</span> outstandinggaragedoors.com</a>
           </article>
           <article class="case">
             <h3 class="case__name">Naidikó</h3>
             <p class="case__place" data-es="Pacífico colombiano" data-en="Colombian Pacific" data-pt="Pacífico colombiano">Pacífico colombiano</p>
             <dl class="case__rows">
-              <div><dt data-es="Contexto" data-en="Context" data-pt="Contexto">Contexto</dt><dd data-es="Marca de naidí con tres modelos de venta en un mismo sitio." data-en="A naidí brand with three sales models on one site." data-pt="Marca de naidí com três modelos de venda em um mesmo site.">Marca de naidí con tres modelos de venta en un mismo sitio.</dd></div>
+              <div><dt data-es="Contexto" data-en="Context" data-pt="Contexto">Contexto</dt><dd data-es="Marca de naidí (el açaí del Pacífico) con tres modelos de venta en un mismo sitio." data-en="A brand of naidí (the Pacific’s açaí) with three sales models on one site." data-pt="Marca de naidí (o açaí do Pacífico) com três modelos de venda em um mesmo site.">Marca de naidí (el açaí del Pacífico) con tres modelos de venta en un mismo sitio.</dd></div>
               <div><dt data-es="Intervención" data-en="What we did" data-pt="Intervenção">Intervención</dt><dd data-es="Sitio con catálogo, mayoreo y captación de inversión." data-en="A site with catalog, wholesale and investor intake." data-pt="Site com catálogo, atacado e captação de investimento.">Sitio con catálogo, mayoreo y captación de inversión.</dd></div>
-              <div><dt data-es="Sistema" data-en="System" data-pt="Sistema">Sistema</dt><dd data-es="Web propia, formularios, WhatsApp y catálogo." data-en="Own website, forms, WhatsApp and catalog." data-pt="Site próprio, formulários, WhatsApp e catálogo.">Web propia, formularios, WhatsApp y catálogo.</dd></div>
+              <div><dt data-es="Sistema" data-en="System" data-pt="Sistema">Sistema</dt><dd data-es="Una web propia con catálogo, formularios y pedidos por WhatsApp." data-en="Their own website with catalog, forms and WhatsApp orders." data-pt="Um site próprio com catálogo, formulários e pedidos pelo WhatsApp.">Una web propia con catálogo, formularios y pedidos por WhatsApp.</dd></div>
               <div class="case__state"><dt data-es="Estado" data-en="Status" data-pt="Estado">Estado</dt><dd data-es="En producción: catálogo, mayoreo e inversión activos." data-en="Live: catalog, wholesale and investment active." data-pt="No ar: catálogo, atacado e investimento ativos.">En producción: catálogo, mayoreo e inversión activos.</dd></div>
             </dl>
+            <a class="case__link" href="https://www.naidiko.co/" target="_blank" rel="noopener"><span data-es="Ver el sitio" data-en="See the site" data-pt="Ver o site">Ver el sitio</span> naidiko.co</a>
           </article>
           <article class="case">
             <h3 class="case__name">Álvaro Arroyo</h3>
             <p class="case__place">Colombia</p>
             <dl class="case__rows">
-              <div><dt data-es="Contexto" data-en="Context" data-pt="Contexto">Contexto</dt><dd data-es="Perfil público sin activo editorial propio." data-en="A public profile with no editorial home of its own." data-pt="Perfil público sem ativo editorial próprio.">Perfil público sin activo editorial propio.</dd></div>
+              <div><dt data-es="Contexto" data-en="Context" data-pt="Contexto">Contexto</dt><dd data-es="Figura pública sin un sitio propio donde publicar." data-en="A public figure with no website of his own." data-pt="Figura pública sem um site próprio para publicar.">Figura pública sin un sitio propio donde publicar.</dd></div>
               <div><dt data-es="Intervención" data-en="What we did" data-pt="Intervenção">Intervención</dt><dd data-es="Sitio de autoridad con arquitectura de contenido." data-en="An authority site with a content architecture." data-pt="Site de autoridade com arquitetura de conteúdo.">Sitio de autoridad con arquitectura de contenido.</dd></div>
-              <div><dt data-es="Sistema" data-en="System" data-pt="Sistema">Sistema</dt><dd data-es="20 páginas indexadas y datos estructurados." data-en="20 indexed pages and structured data." data-pt="20 páginas indexadas e dados estruturados.">20 páginas indexadas y datos estructurados.</dd></div>
+              <div><dt data-es="Sistema" data-en="System" data-pt="Sistema">Sistema</dt><dd data-es="Un sitio de 20 páginas pensado para buscadores." data-en="A 20-page site built for search engines." data-pt="Um site de 20 páginas pensado para buscadores.">Un sitio de 20 páginas pensado para buscadores.</dd></div>
               <div class="case__state"><dt data-es="Estado" data-en="Status" data-pt="Estado">Estado</dt><dd data-es="Publicado, con 20 páginas indexadas." data-en="Published, with 20 indexed pages." data-pt="Publicado, com 20 páginas indexadas.">Publicado, con 20 páginas indexadas.</dd></div>
             </dl>
+            <a class="case__link" href="https://www.alvaroarroyo.com/" target="_blank" rel="noopener"><span data-es="Ver el sitio" data-en="See the site" data-pt="Ver o site">Ver el sitio</span> alvaroarroyo.com</a>
           </article>
         </div>
 
         <div class="reels">
           <div class="reels__head">
             <h3 class="reels__title" data-es="En movimiento" data-en="In motion" data-pt="Em movimento">En movimiento</h3>
-            <p data-es="Producción propia, en vivo desde Instagram." data-en="Our own production, live from Instagram." data-pt="Produção própria, ao vivo do Instagram.">Producción propia, en vivo desde Instagram.</p>
+            <p data-es="Producción propia, publicada en Instagram." data-en="Our own production, published on Instagram (in Spanish)." data-pt="Produção própria, publicada no Instagram (em espanhol).">Producción propia, publicada en Instagram.</p>
             <a class="reels__ig" href="https://www.instagram.com/oceanind.co/" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-ig" /></svg>@oceanind.co</a>
           </div>
           <div class="reels__grid" id="reelsGrid">
@@ -573,21 +578,21 @@
                 <video class="reel__video" muted playsinline loop preload="none" poster="/assets/reels/reel-1.jpg" data-src-mp4="/assets/reels/reel-1.mp4" data-src-webm="/assets/reels/reel-1.webm"></video>
                 <button class="reel__sound" type="button" aria-pressed="false" data-es-aria="Activar el sonido del reel" data-en-aria="Turn on the reel's sound" data-pt-aria="Ativar o som do reel" aria-label="Activar el sonido del reel"><svg class="ico i-off" aria-hidden="true"><use href="#i-muted" /></svg><svg class="ico i-on" aria-hidden="true"><use href="#i-loud" /></svg></button>
               </div>
-              <figcaption><span class="reel__cap">La prueba más útil: pregúntale a una IA antes de contratar</span><a href="https://www.instagram.com/oceanind.co/" target="_blank" rel="noopener" data-es="Ver en Instagram" data-en="See on Instagram" data-pt="Ver no Instagram">Ver en Instagram</a></figcaption>
+              <figcaption><span class="reel__cap" data-es="La prueba más útil: pregúntale a una IA antes de contratar" data-en="The most useful test: ask an AI before you hire (in Spanish)" data-pt="O teste mais útil: pergunte a uma IA antes de contratar (em espanhol)">La prueba más útil: pregúntale a una IA antes de contratar</span><a href="https://www.instagram.com/oceanind.co/" target="_blank" rel="noopener" data-es="Ver en Instagram" data-en="See on Instagram" data-pt="Ver no Instagram">Ver en Instagram</a></figcaption>
             </figure>
             <figure class="reel">
               <div class="reel__phone">
                 <video class="reel__video" muted playsinline loop preload="none" poster="/assets/reels/reel-2.jpg" data-src-mp4="/assets/reels/reel-2.mp4" data-src-webm="/assets/reels/reel-2.webm"></video>
                 <button class="reel__sound" type="button" aria-pressed="false" data-es-aria="Activar el sonido del reel" data-en-aria="Turn on the reel's sound" data-pt-aria="Ativar o som do reel" aria-label="Activar el sonido del reel"><svg class="ico i-off" aria-hidden="true"><use href="#i-muted" /></svg><svg class="ico i-on" aria-hidden="true"><use href="#i-loud" /></svg></button>
               </div>
-              <figcaption><span class="reel__cap">Te doy el consejo que nadie te da sobre automatizar</span><a href="https://www.instagram.com/oceanind.co/" target="_blank" rel="noopener" data-es="Ver en Instagram" data-en="See on Instagram" data-pt="Ver no Instagram">Ver en Instagram</a></figcaption>
+              <figcaption><span class="reel__cap" data-es="Te doy el consejo que nadie te da sobre automatizar" data-en="The automation advice nobody gives you (in Spanish)" data-pt="O conselho sobre automação que ninguém te dá (em espanhol)">Te doy el consejo que nadie te da sobre automatizar</span><a href="https://www.instagram.com/oceanind.co/" target="_blank" rel="noopener" data-es="Ver en Instagram" data-en="See on Instagram" data-pt="Ver no Instagram">Ver en Instagram</a></figcaption>
             </figure>
             <figure class="reel">
               <div class="reel__phone">
                 <video class="reel__video" muted playsinline loop preload="none" poster="/assets/reels/reel-3.jpg" data-src-mp4="/assets/reels/reel-3.mp4" data-src-webm="/assets/reels/reel-3.webm"></video>
                 <button class="reel__sound" type="button" aria-pressed="false" data-es-aria="Activar el sonido del reel" data-en-aria="Turn on the reel's sound" data-pt-aria="Ativar o som do reel" aria-label="Activar el sonido del reel"><svg class="ico i-off" aria-hidden="true"><use href="#i-muted" /></svg><svg class="ico i-on" aria-hidden="true"><use href="#i-loud" /></svg></button>
               </div>
-              <figcaption><span class="reel__cap">Cuatro mensajes y el cliente ya está agendado</span><a href="https://www.instagram.com/oceanind.co/" target="_blank" rel="noopener" data-es="Ver en Instagram" data-en="See on Instagram" data-pt="Ver no Instagram">Ver en Instagram</a></figcaption>
+              <figcaption><span class="reel__cap" data-es="Cuatro mensajes y el cliente ya está agendado" data-en="Four messages and the customer is booked (in Spanish)" data-pt="Quatro mensagens e o cliente já está agendado (em espanhol)">Cuatro mensajes y el cliente ya está agendado</span><a href="https://www.instagram.com/oceanind.co/" target="_blank" rel="noopener" data-es="Ver en Instagram" data-en="See on Instagram" data-pt="Ver no Instagram">Ver en Instagram</a></figcaption>
             </figure>
           </div>
         </div>
@@ -596,17 +601,16 @@
       <!-- ============================================================ HABLEMOS (el cristal vuelve) -->
       <section id="talk" class="talk" data-glass-zone data-fab-hide aria-labelledby="talk-title">
         <div class="talk__inner">
-          <p class="talk__live"><span class="live-dot" aria-hidden="true"></span><span data-es="Estamos en línea ahora" data-en="We're online now" data-pt="Estamos online agora">Estamos en línea ahora</span></p>
           <h2 class="talk__title" id="talk-title" data-es="¿Cuántas ventas se te escapan mientras no respondes?" data-en="How many sales slip away while you're not replying?" data-pt="Quantas vendas escapam enquanto você não responde?">¿Cuántas ventas se te escapan mientras no respondes?</h2>
-          <p class="talk__text" data-es="Cuéntanos qué hace tu negocio y en la misma conversación te mostramos exactamente qué podemos automatizar. Sin formularios eternos. Sin llamadas incómodas." data-en="Tell us what your business does and in the same chat we'll show you exactly what we can automate. No endless forms. No awkward calls." data-pt="Conte o que seu negócio faz e na mesma conversa mostramos exatamente o que podemos automatizar. Sem formulários intermináveis. Sem ligações incômodas.">Cuéntanos qué hace tu negocio y en la misma conversación te mostramos exactamente qué podemos automatizar. Sin formularios eternos. Sin llamadas incómodas.</p>
+          <p class="talk__text" data-es="Cuéntanos qué hace tu negocio y en la misma conversación te mostramos exactamente qué podemos automatizar. Sin formularios eternos." data-en="Tell us what your business does and in the same chat we'll show you exactly what we can automate. No endless forms." data-pt="Conte o que seu negócio faz e na mesma conversa mostramos exatamente o que podemos automatizar. Sem formulários intermináveis.">Cuéntanos qué hace tu negocio y en la misma conversación te mostramos exactamente qué podemos automatizar. Sin formularios eternos.</p>
           <a class="btn btn--go btn--big" data-wa="general" data-sfx data-haptic href="https://wa.me/573138721665" target="_blank" rel="noopener">
             <svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg>
-            <span data-es="Iniciar conversación" data-en="Start the conversation" data-pt="Iniciar conversa">Iniciar conversación</span>
+            <span data-es="Escríbenos por WhatsApp" data-en="Message us on WhatsApp" data-pt="Fale no WhatsApp">Escríbenos por WhatsApp</span>
           </a>
           <ul class="talk__assure">
             <li data-es="Respondemos en minutos" data-en="We reply in minutes" data-pt="Respondemos em minutos">Respondemos en minutos</li>
-            <li data-es="Demo en 24 a 48 horas" data-en="Demo in 24 to 48 hours" data-pt="Demo em 24 a 48 horas">Demo en 24 a 48 horas</li>
-            <li data-es="La decisión es 100 % tuya" data-en="The choice is 100% yours" data-pt="A decisão é 100% sua">La decisión es 100 % tuya</li>
+            <li data-es="Demo funcionando en 48 horas" data-en="Working demo in 48 hours" data-pt="Demo funcionando em 48 horas">Demo funcionando en 48 horas</li>
+            <li data-es="En español, inglés o portugués" data-en="In English, Spanish or Portuguese" data-pt="Em português, espanhol ou inglês">En español, inglés o portugués</li>
           </ul>
         </div>
       </section>
@@ -614,14 +618,16 @@
       <!-- ============================================================ AGENDA -->
       <section id="book" class="book" data-fab-hide aria-labelledby="book-title">
         <header class="sec-head">
-          <h2 id="book-title" data-es="Agenda tu demo" data-en="Book your demo" data-pt="Agende sua demo">Agenda tu demo</h2>
-          <p data-es="30 minutos, gratis. Te mostramos cómo automatizar, escalar y transformar tu negocio. Sin compromiso." data-en="30 minutes, free. We'll show you how to automate, scale and transform your business. No commitment." data-pt="30 minutos, grátis. Mostramos como automatizar, escalar e transformar seu negócio. Sem compromisso.">30 minutos, gratis. Te mostramos cómo automatizar, escalar y transformar tu negocio. Sin compromiso.</p>
+          <h2 id="book-title" data-es="Agenda una llamada" data-en="Book a call" data-pt="Agende uma chamada">Agenda una llamada</h2>
+          <p data-es="45 minutos por Google Meet, gratis y sin compromiso. Revisamos cómo atiendes hoy a tus clientes, encontramos dónde se te escapan ventas y te decimos qué automatizaríamos primero." data-en="45 minutes on Google Meet, free and with no commitment. We look at how you handle customers today, find where sales slip away and tell you what we'd automate first." data-pt="45 minutos pelo Google Meet, grátis e sem compromisso. Vemos como você atende seus clientes hoje, achamos onde as vendas escapam e dizemos o que automatizaríamos primeiro.">45 minutos por Google Meet, gratis y sin compromiso. Revisamos cómo atiendes hoy a tus clientes, encontramos dónde se te escapan ventas y te decimos qué automatizaríamos primero.</p>
         </header>
         <div class="book__frame" id="calFrame" data-cal="https://cal.com/ocean-industries-2e5al7/agenda-demo-gratuita">
           <div class="book__fallback">
-            <p data-es="El calendario se carga aquí. Si no aparece, ábrelo en Cal.com o escríbenos por WhatsApp y coordinamos al instante." data-en="The calendar loads here. If it doesn't show, open it on Cal.com or message us on WhatsApp and we'll set it up right away." data-pt="O calendário carrega aqui. Se não aparecer, abra no Cal.com ou fale conosco no WhatsApp e combinamos na hora.">El calendario se carga aquí. Si no aparece, ábrelo en Cal.com o escríbenos por WhatsApp y coordinamos al instante.</p>
+            <p class="book__wait" data-es="Cargando el calendario…" data-en="Loading the calendar…" data-pt="Carregando o calendário…">Cargando el calendario…</p>
+            <p class="book__note" data-es="El calendario se carga aquí. Si no aparece, ábrelo en Cal.com o escríbenos por WhatsApp y coordinamos al instante." data-en="The calendar loads here. If it doesn't show, open it on Cal.com or message us on WhatsApp and we'll set it up right away." data-pt="O calendário carrega aqui. Se não aparecer, abra no Cal.com ou fale conosco no WhatsApp e combinamos na hora.">El calendario se carga aquí. Si no aparece, ábrelo en Cal.com o escríbenos por WhatsApp y coordinamos al instante.</p>
+            <p class="book__phone" data-es="Elige el día y la hora en Cal.com: una videollamada de 45 minutos por Google Meet. O escríbenos y la agendamos por WhatsApp." data-en="Pick a day and time on Cal.com: a 45-minute video call on Google Meet. Or message us and we’ll book it on WhatsApp." data-pt="Escolha o dia e a hora no Cal.com: uma videochamada de 45 minutos pelo Google Meet. Ou fale conosco e agendamos pelo WhatsApp.">Elige el día y la hora en Cal.com: una videollamada de 45 minutos por Google Meet. O escríbenos y la agendamos por WhatsApp.</p>
             <p class="book__links">
-              <a class="btn btn--glass" href="https://cal.com/ocean-industries-2e5al7/agenda-demo-gratuita" target="_blank" rel="noopener" data-es="Abrir el calendario" data-en="Open the calendar" data-pt="Abrir o calendário">Abrir el calendario</a>
+              <a class="btn btn--glass" href="https://cal.com/ocean-industries-2e5al7/agenda-demo-gratuita" target="_blank" rel="noopener" data-es="Ver horarios y agendar" data-en="See times and book" data-pt="Ver horários e agendar">Ver horarios y agendar</a>
               <a class="btn btn--go" data-wa="demo" href="https://wa.me/573138721665" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg><span data-es="Agendar por WhatsApp" data-en="Book on WhatsApp" data-pt="Agendar pelo WhatsApp">Agendar por WhatsApp</span></a>
             </p>
           </div>
@@ -631,25 +637,27 @@
       <!-- ============================================================ PAGOS -->
       <section id="pay" class="pay" data-fab-hide aria-labelledby="pay-title">
         <header class="sec-head">
-          <h2 id="pay-title" data-es="Paga o abona tu servicio" data-en="Pay or deposit for your service" data-pt="Pague ou deposite seu serviço">Paga o abona tu servicio</h2>
+          <h2 id="pay-title" data-es="Paga o abona tu servicio" data-en="Pay an invoice or a deposit" data-pt="Pague uma fatura ou dê um sinal">Paga o abona tu servicio</h2>
           <p data-es="Pago seguro con tarjeta, PSE, Nequi o Bancolombia a través de Wompi. Escribe el monto y te mostramos el total con la comisión incluida." data-en="Secure payment by card, PSE, Nequi or Bancolombia through Wompi. Enter the amount and we'll show the total with the fee included." data-pt="Pagamento seguro por cartão, PSE, Nequi ou Bancolombia via Wompi. Digite o valor e mostramos o total com a taxa incluída.">Pago seguro con tarjeta, PSE, Nequi o Bancolombia a través de Wompi. Escribe el monto y te mostramos el total con la comisión incluida.</p>
         </header>
         <form class="payform" id="payForm" novalidate>
           <div class="payform__fields">
             <div class="cur" role="radiogroup" data-es-aria="Moneda" data-en-aria="Currency" data-pt-aria="Moeda" aria-label="Moneda">
               <button type="button" role="radio" aria-checked="true" data-cur="COP">COP</button>
-              <button type="button" role="radio" aria-checked="false" data-cur="USD">USD</button>
+              <button type="button" role="radio" aria-checked="false" tabindex="-1" data-cur="USD">USD</button>
             </div>
             <label class="field"><span data-es="Tu nombre" data-en="Your name" data-pt="Seu nome">Tu nombre</span><input id="payName" name="name" type="text" autocomplete="name" data-es-ph="Nombre completo" data-en-ph="Full name" data-pt-ph="Nome completo" placeholder="Nombre completo" /></label>
-            <label class="field"><span data-es="Correo" data-en="Email" data-pt="Email">Correo</span><input id="payEmail" name="email" type="email" autocomplete="email" required data-es-ph="correo@ejemplo.com" data-en-ph="email@example.com" data-pt-ph="email@exemplo.com" placeholder="correo@ejemplo.com" /></label>
-            <label class="field"><span data-es="Concepto" data-en="What it's for" data-pt="Conceito">Concepto</span><input id="payConcept" name="concept" type="text" data-es-ph="Ej.: abono desarrollo web" data-en-ph="E.g. web project deposit" data-pt-ph="Ex.: depósito do site" placeholder="Ej.: abono desarrollo web" /></label>
-            <label class="field"><span id="amountLabel" data-es="Monto a pagar (COP)" data-en="Amount (COP)" data-pt="Valor (COP)">Monto a pagar (COP)</span><input id="payAmount" name="amount" type="number" inputmode="decimal" min="1500" step="1000" placeholder="$ 0" /></label>
+            <label class="field"><span data-es="Correo" data-en="Email" data-pt="Email">Correo</span><input id="payEmail" name="email" type="email" autocomplete="email" required aria-describedby="emailErr" data-es-ph="correo@ejemplo.com" data-en-ph="email@example.com" data-pt-ph="email@exemplo.com" placeholder="correo@ejemplo.com" /></label>
+            <p class="field__err" id="emailErr" hidden></p>
+            <label class="field"><span data-es="Concepto" data-en="What it's for" data-pt="Descrição">Concepto</span><input id="payConcept" name="concept" type="text" data-es-ph="Ej.: abono desarrollo web" data-en-ph="E.g. web project deposit" data-pt-ph="Ex.: depósito do site" placeholder="Ej.: abono desarrollo web" /></label>
+            <label class="field"><span id="amountLabel" data-es="Monto a pagar (COP)" data-en="Amount (COP)" data-pt="Valor (COP)">Monto a pagar (COP)</span><input id="payAmount" name="amount" type="number" aria-describedby="minNote" inputmode="decimal" min="1500" step="1000" placeholder="$ 0" /></label>
+            <p class="field__note" id="minNote"></p>
             <p class="field__note" id="usdNote" hidden data-es="Se cobra en pesos colombianos a la tasa del día." data-en="Charged in Colombian pesos at today's rate." data-pt="Cobrado em pesos colombianos à taxa do dia.">Se cobra en pesos colombianos a la tasa del día.</p>
           </div>
           <div class="payform__sum">
             <dl class="sum">
               <div><dt data-es="Monto base" data-en="Base amount" data-pt="Valor base">Monto base</dt><dd id="sumBase">$0</dd></div>
-              <div><dt data-es="Comisión (2,95 % + $700)" data-en="Fee (2.95% + $700)" data-pt="Taxa (2,95% + $700)">Comisión (2,95 % + $700)</dt><dd id="sumFee">$0</dd></div>
+              <div><dt data-es="Comisión de Wompi (2,95 % + COP 700)" data-en="Wompi fee (2.95% + COP 700)" data-pt="Taxa da Wompi (2,95% + COP 700)">Comisión de Wompi (2,95 % + COP 700)</dt><dd id="sumFee">$0</dd></div>
               <div><dt data-es="IVA (19 % sobre la comisión)" data-en="VAT (19% on the fee)" data-pt="IVA (19% sobre a taxa)">IVA (19 % sobre la comisión)</dt><dd id="sumIva">$0</dd></div>
               <div class="sum__total"><dt data-es="Total a pagar" data-en="Total" data-pt="Total">Total a pagar</dt><dd id="sumTotal">$0</dd></div>
             </dl>
@@ -674,12 +682,13 @@
           <a href="#services" data-es="Servicios" data-en="Services" data-pt="Serviços">Servicios</a>
           <a href="#agente-vivo" data-es="El agente, en vivo" data-en="The agent, live" data-pt="O agente, ao vivo">El agente, en vivo</a>
           <a href="#work" data-es="Trabajo" data-en="Work" data-pt="Trabalho">Trabajo</a>
-          <a href="#book" data-es="Agenda" data-en="Book" data-pt="Agende">Agenda</a>
+          <a href="#book" data-es="Agenda" data-en="Book a call" data-pt="Agenda">Agenda</a>
           <a href="#pay" data-es="Pagos" data-en="Payments" data-pt="Pagamentos">Pagos</a>
         </nav>
         <div class="footer__contact">
           <a data-wa="general" href="https://wa.me/573138721665" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg>+57 313 872 1665</a>
           <a href="https://www.instagram.com/oceanind.co/" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-ig" /></svg>@oceanind.co</a>
+          <a href="https://share.google/Vqaeb84X8b2NTu0QD" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-pin" /></svg><span data-es="Ocean en Google" data-en="Ocean on Google" data-pt="Ocean no Google">Ocean en Google</span></a>
           <p class="footer__cities" data-es="Cali, Bogotá y Miami" data-en="Cali, Bogotá and Miami" data-pt="Cali, Bogotá e Miami">Cali, Bogotá y Miami</p>
         </div>
         <div class="footer__tools">

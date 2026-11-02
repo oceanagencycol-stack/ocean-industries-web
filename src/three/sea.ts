@@ -100,6 +100,9 @@ void main(){
   float flick = step(0.9935, fract(aSeed.x * 91.7 + floor(t * (0.6 + aSeed.y)) * 0.137)) * 0.9 * awake;
   blue += flick;
 
+  // where the wave breaks the light turns green (the result), not teal: the blue steps back under the foam
+  float gk = clamp(green * 0.7, 0.0, 1.0);
+  blue *= 1.0 - 0.7 * gk;
   vColor = uBlue * blue + uCyan * pow(max(blue - 0.35, 0.0), 1.5) * 0.9 + uGreen * green;
   float energy = blue + green;
   // fog toward the horizon, and the points right under the camera fade (they would be huge)
