@@ -28,7 +28,7 @@ y dos veces la superficie del mar, en la que **las mismas partículas cambian de
 **La estrella de OCEAN guía la toma.** El centro del símbolo (la estrella de cuatro puntas que dejan las dos formas en S)
 es la única luz con forma propia (el resto de la luz es ambiente: el borde de la Tierra, los haces, el alba): en el espacio es una estrella; bajo el agua, la luz que baja con el buzo; en la cumbre,
 el primer destello del sol sobre el hielo. Todo lo demás es quieto: sin texto que entra letra por letra, sin cursor
-propio, sin marquee, sin grano, sin parallax decorativo de interfaz, sin fade-up por sección.
+propio, sin marquee, sin parallax decorativo de interfaz, sin fade-up por sección.
 
 **La E del logotipo son tres horizontes.** Sus tres barras (la de en medio más corta) son los tres tramos: el
 indicador de recorrido de la barra es esa E, con la barra del tramo actual encendida; en la cumbre se encienden las
@@ -38,33 +38,42 @@ diciendo dónde estás.
 
 ## La marca en la web (sustituye a «el logo no se redibuja»)
 **Regla nueva: la marca sale solo de `src/brand/`** (copiados de `marca/v3/` cuando Juan apruebe el trazo exacto):
-`logo.svg` (OCEAN®), `logo-sin-r.svg` y `simbolo.svg`. Nadie la redibuja a mano ni la reescribe con una fuente. Barra,
+`logo.svg` (OCEAN®), `logo-sin-r.svg` y `simbolo-simetrico.svg` (Juan eligió el símbolo simétrico exacto, 18-nov). Nadie la redibuja a mano ni la reescribe con una fuente. Barra,
 pie, favicon, íconos, og.jpg, intro y la forma de la estrella en el shader (campo de distancia horneado del SVG) salen
 de esos tres archivos por el build. Zona de respeto: la altura de la barra de en medio de la E alrededor; tamaño
 mínimo: logotipo ≥ 72 px de ancho, símbolo ≥ 16 px.
 | Lugar | Qué va |
 |---|---|
 | Barra (todas las anchuras) | logotipo sin ® (a tamaño de barra el ® no se lee) |
-| Pie, cumbre | logotipo grande, a lo ancho; con ® solo si la marca está registrada (pregunta 2 del plan) |
+| Pie, cumbre | logotipo grande, a lo ancho, con ® (Juan, 18-nov: «está registrada») |
 | Favicon, apple-touch, PWA | el símbolo en lienzo cuadrado (`simbolo-cuadrado.svg`), desde 32 px (a 16 px la estrella del centro se pierde); blanco nieve sobre azul abisal en los íconos con fondo |
 | Intro | el símbolo se dibuja (dos trazos en S) y su centro se enciende: esa estrella es la primera del espacio |
 | 3D | solo la estrella (SDF del símbolo); el logotipo no va en 3D (el cristal de la v2 se retira) |
 | og.jpg | logotipo sobre la cumbre, compuesto por código (`tools/og`) |
 
-## Color con significado (se conserva la gramática; cambia la paleta)
-La gramática de la v2 explica bien los servicios (una persona pide → la máquina ejecuta → una persona decide → llega el
-resultado) y se conserva. El azul Klein y el verde neón se retiran: no viven en un mundo de hielo.
-| Token | Hex | Significa |
+## Color: monocromo tipo Tesla (decisión de Juan, 18-nov 16:25)
+Sin colores de acento: autoridad por contención. La paleta es la helada de punta a punta y la acción principal
+(WhatsApp, agendar, pagar) es un botón **blanco sólido con texto abisal**: lo único blanco puro de la interfaz.
+| Token | Hex | Uso |
 |---|---|---|
 | `--space` | `#03060C` | el espacio: fondo del tramo 1 |
 | `--abyss` | `#06141D` | Abyssal Blue: fondo del tramo 2 y de la marca |
-| `--slate` / `--haze` / `--mist` | `#2B404F` / `#6E8193` / `#B2C0CC` | bordes, texto secundario y terciario |
-| `--snow` | `#E0E7ED` | **la persona**: texto principal, el buzo, el caminante, la nieve |
-| `--glow` | `#5CB2FF` (propuesta) | **la máquina**: la luz abisal, el agente, la automatización |
-| `--alba` | `#FFB26B` (propuesta) | **el resultado**: la luz del amanecer en la cumbre; la acción principal (WhatsApp), lo vivo, la cita, el pago. Es el único color cálido: se lee solo |
-En la cumbre el fondo pasa a nieve y el texto a abisal: el recorrido va de lo más oscuro a la luz. Cada color declara
-su par de contraste (≥ 4,5 en texto); sobre nieve, `--glow` y `--alba` tienen versión de tinta (`--glow-ink`,
-`--alba-ink`), medidas en la etapa 1.
+| `--slate` | `#2B404F` | bordes, superficies elevadas |
+| `--haze` / `--mist` | `#6E8193` / `#B2C0CC` | texto terciario y secundario (pares de contraste medidos en la etapa 1) |
+| `--snow` | `#E0E7ED` | texto principal; en la cumbre, el fondo (con texto abisal) |
+| `--white` | `#FFFFFF` | solo la acción principal y el resultado que se enciende |
+
+**La gramática de las escenas se conserva por tono y forma, no por color** (Juan, 18-nov): **la persona** = nieve
+sólida; **la IA** = línea fina de luz fría (contorno `--mist` a 1 px, sin relleno); **el resultado** = blanco pleno
+que se enciende (el único que pasa a `--white`). Se entiende en escala de grises y con daltonismo.
+
+## Grano (decisión de Juan, 18-nov: «granito degradado… crispi… de alta calidad»)
+**Degradados profundos con grano fino de película encima**, nítido y de alta frecuencia: es la textura de toda la web
+(el cine de 35 mm escaneado a 4K, no ruido sucio). En el mundo 3D va en la pasada final del shader (grano por píxel
+de pantalla, con su propia semilla por cuadro y amplitud que depende de la luminancia: más visible en medios tonos que
+en negros), y se congela cuando el render duerme. En la versión quieta y en el HTML, una tesela de grano de 256 px
+(PNG de ≈ 20 KB, generada por código) sobre los degradados CSS, con `mix-blend-mode: soft-light` y opacidad 0,06–0,10.
+Los degradados se tramean (dither) para que nunca haya bandas. El grano es parte de la luz, no un efecto aparte.
 
 ## Tipografía
 El logotipo es un dibujo propio (no una fuente). El texto usa **Outfit** variable (OFL): geométrica, O redonda, pariente
@@ -105,4 +114,4 @@ nuevo se aprueba con el copy; candidato: «De lo más profundo a lo más alto.»
 Nada de cifras ni clientes sin verificar: las cifras y los tres casos son los ya aprobados (48 h, 24/7, casos de la
 v2); uno nuevo entra solo con el visto bueno de Juan. Los paisajes son ilustraciones generadas con IA (lo dice el pie y
 `llms.txt`) y la montaña no es una montaña real con nombre. Nada del moodboard (fotos, logos de terceros como ICEBRG o
-Celestia Systems) entra a la web. El ® solo si OCEAN está registrada.
+Celestia Systems) entra a la web. OCEAN está registrada (Juan, 18-nov): el ® va en el logotipo grande; en la barra no se lee y va `logo-sin-r.svg`.

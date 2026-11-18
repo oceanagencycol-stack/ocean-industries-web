@@ -57,20 +57,15 @@ crezcan) · `qa/respaldos` (sin JS, movimiento reducido, sin WebGL, ahorro de da
 buenas prácticas y SEO 100) · `?qa=fps` en el iPhone y en un Android de Juan (60 fps sostenidos; si no, el gobernador
 baja sin cortes).
 
-## Preguntas para Juan (las que bloquean)
-1. **Créditos.** ElevenLabs tiene ≈ 222 créditos hasta el **2-dic** (el mes se gastó). ¿Apruebas el escenario
-   **premium (≈ 196K, ≈ US$31)**, y lo compras ya o esperamos al 2-dic? *Recomiendo*: aprobar premium y comprar ya
-   solo ≈ 25K para los cuadros de dirección (la etapa 1 no puede esperar dos semanas). Las etapas 1 y 2 se construyen
-   mientras tanto con la maqueta en gris. El resto sale del cupo del 2-dic, pero **no está garantizado**: este mes
-   los agentes y medios de los clientes gastaron los 612.639. Hay que reservar ≈ 175K de ese cupo para la v3 o comprar
-   aparte. El precio de los créditos sueltos no está confirmado (el US$0,16 por 1.000 es el promedio del plan Pro):
-   se mira en la cuenta antes de comprar.
-2. **El ®.** ¿OCEAN está registrada ante la SIC (o en EE. UU.)? Poner ® en una marca no registrada no se puede hacer
-   y daña la credibilidad. *Recomiendo*: `logo-sin-r.svg` en toda la web hasta tener el certificado; el ® se agrega
-   después con un solo cambio.
-3. **El nombre.** *Recomiendo*: la marca es **OCEAN** en todo (títulos, barra, agente, redes), «Ocean Industries» como
-   nombre legal en el pie, en `/privacidad` y en el `legalName` del JSON-LD, y el dominio sigue siendo
-   oceanindustries.com.co. ¿Así?
-4. **El color del resultado.** El verde neón y el azul Klein salen. La acción principal (WhatsApp) y «el resultado»
-   pasan a la luz cálida del amanecer en la cumbre (`--alba`) sobre la paleta helada. *Recomiendo* aprobarlo ya: es lo
-   que hace que el color tenga significado en un mundo de hielo, y se ve en los cuadros de la etapa 1.
+## Decisiones de Juan (18-nov-2026, 16:21–16:30)
+| Tema | Decisión |
+|---|---|
+| Presupuesto | Premium aprobado **sin pedir aprobación por etapa**; se le informa cada gasto. Recargó US$31: 188.100 créditos disponibles (`account_get_usage`), tope de gasto de la v3 |
+| Textura | Grano fino de película sobre degradados profundos (ver CONCEPTO, «Grano») |
+| Color | Monocromo tipo Tesla: sin acentos; acción = botón blanco sólido |
+| Escenas | La gramática persona / IA / resultado por tono y forma |
+| Idioma | Español por defecto; EN y PT a un toque |
+| ® | OCEAN está registrada: ® en el logotipo grande |
+| Símbolo | El simétrico exacto (`simbolo-simetrico.svg`) |
+| Nombre | OCEAN en títulos, barra, agente y redes; «Ocean Industries» solo como nombre legal (pie, privacidad, JSON-LD `legalName`) |
+| Nivel | «lo más realista, épico y premium posible… extremadamente pulido, con mucha autoridad… una empresa robusta de tecnología internacional al nivel de Tesla» |
