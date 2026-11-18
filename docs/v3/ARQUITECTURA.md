@@ -11,7 +11,7 @@
    partículas (las mismas en los tres tramos), la montaña (una malla de relieve con nieve y roca en triplanar) y la
    estrella (SDF del símbolo).
 2. **Lo que se genera una vez con IA**: los fondos lejanos (el cielo del espacio, las nubes vistas desde arriba, la luz
-   de la superficie vista desde abajo, el mar de nubes, el cielo del amanecer), los detalles de roca y hielo, las dos
+   de la superficie vista desde abajo, la pared de la montaña, el mar de nubes, el cielo del amanecer), los detalles de roca y hielo, las dos
    siluetas (buzo y caminante) y el sonido. Los mapas de profundidad de cada fondo se calculan **en local y gratis**
    (Depth Anything V2 Small, Apache-2.0) y el shader los usa para que la cámara los atraviese con paralaje real.
 
@@ -46,7 +46,7 @@ escriben para poder portarlos después; WebGPU solo si una etapa futura lo pide 
 | Tramo 2 · océano | ≤ 1,0 MB | ≤ 2,5 MB |
 | Tramo 3 · montaña | ≤ 1,2 MB | ≤ 3,0 MB |
 | **Recorrido completo** | **≤ 3,0 MB** | **≤ 7 MB** |
-| Sonido (solo si se enciende) | ≤ 600 KB (Opus) | igual |
+| Sonido (solo si se enciende) | ≤ 600 KB (Opus en WebM; AAC `.m4a` de respaldo para Safari, elegido con `canPlayType`) | igual |
 | Memoria de GPU | ≤ 150 MB | ≤ 400 MB |
 | Cuadro | p95 ≤ 16,7 ms (60 fps), 0 tareas > 50 ms al scrollear | p95 ≤ 8,3 ms en 120 Hz con tier alto |
 | Lighthouse móvil | rendimiento ≥ 95; accesibilidad, buenas prácticas y SEO 100; LCP ≤ 2,0 s; TBT ≤ 100 ms; CLS ≤ 0,01 | — |
@@ -56,7 +56,11 @@ El LCP es el titular (texto), no una imagen. El lienzo se arma después del prim
 
 ## Carga progresiva por tramo
 - El tramo 1 se pide al estar la página quieta; el 2, al entrar al tramo 1 (o en reposo); el 3, al entrar al 2.
-  Nunca se descarga todo de entrada, y con ahorro de datos o 2G no se descarga nada (versión quieta).
+  Nunca se descarga todo de entrada. Con ahorro de datos o 2G no se descarga el mundo: solo los tres pósteres de la
+  versión quieta (≤ 50 KB cada uno, el segundo y el tercero al acercarse). Sin JavaScript, los `<picture>` del segundo y
+  el tercer tramo van con `loading="lazy"`.
+- **La malla de la montaña se arma en el cliente** desde un mapa de alturas de 16 bits (≈ 100 KB AVIF/PNG) en tareas
+  cortas; nunca viaja una malla armada (130k triángulos sin comprimir ≈ 2,5 MB, el doble del tramo 3).
 - **La cámara nunca espera.** Cada textura trae una miniatura de 32 px incrustada que pinta el lugar; la buena la
   reemplaza con un fundido. Las subidas a la GPU van por trozos en cuadros con holgura (ninguna > 4 ms).
 - En el teléfono viven en la GPU solo el tramo actual y el siguiente; lo anterior se suelta y se guarda comprimido para
@@ -70,8 +74,14 @@ El LCP es el titular (texto), no una imagen. El lienzo se arma después del prim
 Tier inicial por GPU, memoria y núcleos (como la v2), luego mide: tiempo de GPU con `EXT_disjoint_timer_query_webgl2`
 si existe, si no el intervalo entre cuadros. Escalones, con histéresis: DPR (hasta 0,8) → partículas (60k → 12k) →
 pasadas secundarias a menor resolución (haces de luz, brillo) → tope de 30 fps → versión quieta. Nunca sube y baja en
-bucle. `?q=high|mid|low` y `?dpr=` para QA. Un panel `?qa=fps` muestra p50/p95, tier y escalón en el propio teléfono
+bucle. **Un ritmo estable de 30 fps no es lentitud**: iOS en bajo consumo y algunos Android limitan los cuadros a 30;
+el gobernador mide el ritmo que entrega la pantalla y solo baja si los cuadros llegan tarde respecto a ese ritmo.
+`EXT_disjoint_timer_query_webgl2` no existe en iOS ni en casi ningún Android: allí el costo de cada tramo se mide como
+diferencia de intervalo entre cuadros (`?qa=fps`, con y sin el tramo). `?q=high|mid|low` y `?dpr=` para QA. Un panel `?qa=fps` muestra p50/p95, tier y escalón en el propio teléfono
 (así se mide en dispositivos reales: el sandbox no tiene GPU).
+
+**Lighthouse no prueba el 3D**: corre con WebGL por software, que lleva a la versión quieta. El ≥ 95 mide el primer
+pintado y la página; la fluidez del mundo solo la prueba `?qa=fps` en el iPhone y el Android de Juan.
 
 ## Respaldos
 | Caso | Qué se ve |

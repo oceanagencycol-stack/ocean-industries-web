@@ -1,6 +1,6 @@
 # OCEAN v3 — concepto
 
-> Etapa 0 · 18-nov-2026 · rama `v3-plan`. Pedido de Juan (18-nov): «una web altamente minimalista inmersiva que empieza
+> Etapa 0 · 18-nov-2026 · rama `v3` (escrito en `v3-plan`). Pedido de Juan (18-nov): «una web altamente minimalista inmersiva que empieza
 > en el espacio profundo, baje al océano profundo y llegue a la montaña de hielo más alta, tecnología y futuro, algo
 > nunca antes visto… lo más suave y optimizada y de calidad ultra posible».
 > Marca: logotipo final `87ffda2c-image.jpg` (18-nov 15:50) y el símbolo de la estrella fluida `d0560d1e-image.png`,
@@ -26,12 +26,14 @@ y dos veces la superficie del mar, en la que **las mismas partículas cambian de
 
 ## La firma (una sola)
 **La estrella de OCEAN guía la toma.** El centro del símbolo (la estrella de cuatro puntas que dejan las dos formas en S)
-es la única luz fuerte de la web: en el espacio es una estrella; bajo el agua, la luz que baja con el buzo; en la cumbre,
+es la única luz con forma propia (el resto de la luz es ambiente: el borde de la Tierra, los haces, el alba): en el espacio es una estrella; bajo el agua, la luz que baja con el buzo; en la cumbre,
 el primer destello del sol sobre el hielo. Todo lo demás es quieto: sin texto que entra letra por letra, sin cursor
 propio, sin marquee, sin grano, sin parallax decorativo de interfaz, sin fade-up por sección.
 
 **La E del logotipo son tres horizontes.** Sus tres barras (la de en medio más corta) son los tres tramos: el
-indicador de recorrido de la barra es esa E, con la barra del tramo actual encendida. No es un adorno nuevo: es la marca
+indicador de recorrido de la barra es esa E, con la barra del tramo actual encendida; en la cumbre se encienden las
+tres (llegaste). Es un indicador de interfaz quieto, del tamaño del texto, nunca animado por su cuenta: no compite con
+la estrella. No es un adorno nuevo: es la marca
 diciendo dónde estás.
 
 ## La marca en la web (sustituye a «el logo no se redibuja»)
@@ -44,7 +46,7 @@ mínimo: logotipo ≥ 72 px de ancho, símbolo ≥ 16 px.
 |---|---|
 | Barra (todas las anchuras) | logotipo sin ® (a tamaño de barra el ® no se lee) |
 | Pie, cumbre | logotipo grande, a lo ancho; con ® solo si la marca está registrada (pregunta 2 del plan) |
-| Favicon, apple-touch, PWA | el símbolo; blanco nieve sobre azul abisal en los íconos con fondo |
+| Favicon, apple-touch, PWA | el símbolo en lienzo cuadrado (`simbolo-cuadrado.svg`), desde 32 px (a 16 px la estrella del centro se pierde); blanco nieve sobre azul abisal en los íconos con fondo |
 | Intro | el símbolo se dibuja (dos trazos en S) y su centro se enciende: esa estrella es la primera del espacio |
 | 3D | solo la estrella (SDF del símbolo); el logotipo no va en 3D (el cristal de la v2 se retira) |
 | og.jpg | logotipo sobre la cumbre, compuesto por código (`tools/og`) |

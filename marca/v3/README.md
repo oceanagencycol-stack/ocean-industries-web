@@ -6,9 +6,11 @@ fluida («el simbolo si se quedo igual»). Aquí están en vector, con `fill="cu
 | Archivo | Qué es |
 |---|---|
 | `logo.svg` | OCEAN® · **dibujo maestro geométrico** (3,7 kB) |
-| `logo-sin-r.svg` | OCEAN sin ® (tamaños donde la ® no se lee: favicon, barra del teléfono) |
-| `simbolo.svg` | La estrella fluida, simétrica por giro de 180° (una pieza y su giro exacto, en un solo trazo) |
-| `hoja-marca-v1.png` | Hoja de revisión: logotipo en noche y en nieve, símbolo, firma símbolo + logotipo |
+| `logo-sin-r.svg` | OCEAN sin ® (la barra, y en toda la web mientras la marca no esté registrada) |
+| `simbolo.svg` | La estrella fluida, **fiel** al archivo de Juan (calcada, ×4 y suavizada) |
+| `simbolo-simetrico.svg` | Propuesta: la misma estrella exactamente simétrica por giro de 180° (el original lo es al 97 %). Solo entra si Juan la aprueba |
+| `simbolo-cuadrado.svg` | El mismo símbolo en lienzo cuadrado: favicon (desde 32 px), íconos y PWA |
+| `hoja-marca-v1.png` | Hoja de revisión (fondos con los tokens de la v3: espacio, abisal, nieve, pizarra): logotipo en noche y en nieve, símbolo, firma símbolo + logotipo |
 | `comparacion-maestro-vs-fuente.png` | El maestro sobre el archivo de Juan: gris = coinciden; rojo = solo el original; cian = solo el maestro |
 | `fuente/` | Los archivos que entregó Juan (logotipo 2576×1438, símbolo 1254×1254) |
 
@@ -22,8 +24,15 @@ Medido en el archivo final con líneas de barrido y ajustes; altura de mayúscul
 - **N**: astas de 93 y diagonal de pendiente 0,9.
 - **®**: calcada de la fuente (×8 y suavizada): es demasiado pequeña para medirla.
 - Las curvas son cúbicas ajustadas a la superelipse (desvío máximo 0,22 px de la fuente). Coincidencia con el archivo
-  de Juan: IoU 0,991; lo distinto son bordes de un píxel del suavizado del JPG.
+  de Juan: ver «Prueba».
 
 Rehacer: `pip install potracer scikit-image scipy` y, en una carpeta de trabajo, `python3 tools/marca/maestro.py`,
-`python3 tools/marca/registrada.py` (leen `marca/v3/fuente/logotipo-ocean-final.jpg`; córrelos desde la raíz del repo).
+`python3 tools/marca/registrada.py`, `python3 tools/marca/armar.py` (leen `marca/v3/fuente/logotipo-ocean-final.jpg`; córrelos desde la raíz del repo).
 El símbolo: `python3 tools/marca/simetria.py marca/v3/fuente/simbolo-estrella-fluida.png simbolo.svg`.
+
+## Prueba
+`python3 qa/marca.py` (raíz del repo): IoU de la tinta contra el archivo de Juan con el mejor encaje subpíxel y
+porcentaje del borde a ≤ 2 px. Pasa con IoU ≥ 0,98 y ≥ 99 %. 18-nov-2026: logotipo 0,9886 / 99,74 %; símbolo
+0,9962 / 100 %; símbolo cuadrado 0,9966 / 100 % → «marca en verde». La simétrica da 0,9878 / 96,7 % (es una corrección,
+no un calco). La prueba encontró que la ® salía recortada 2,5 unidades por arriba: corregido (el `viewBox` sale de la
+tinta real).

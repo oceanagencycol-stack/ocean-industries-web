@@ -25,7 +25,7 @@ caminante.
 | # | Qué | Modelo | Cantidad · formato | Esencial | Premium | Máximo |
 |---|---|---|---|---:|---:|---:|
 | 1 | Dirección visual (para que Juan apruebe antes de construir) | gemini-3-pro-image | 6 momentos × 2 opciones (máx.: × 3), 16:9 2K. Esencial sin referencia; premium y máximo con 1 (la paleta) | 12 × 1.220 = 14.640 | 12 × 1.830 = 21.960 | 18 × 1.830 = 32.940 |
-| 2 | Fondos finales (cielo, nubes, superficie desde abajo, pared, mar de nubes, cielo del alba, roca y hielo de detalle, buzo, caminante) | gemini-3-pro-image | 16:9 2K. Esencial con 1 referencia (el cuadro aprobado); premium y máximo con 2 (cuadro + paleta) | 8 × 1.830 = 14.640 | 12 × 2.440 = 29.280 | 16 × 2.440 = 39.040 |
+| 2 | Fondos finales (cielo, nubes, superficie desde abajo, pared, mar de nubes, cielo del alba, roca y hielo de detalle, buzo, caminante) | gemini-3-pro-image | 16:9 2K. Esencial con 1 referencia (el cuadro aprobado); premium y máximo con 2 (cuadro + paleta) | 10 × 1.830 = 18.300 (una por pieza) | 12 × 2.440 = 29.280 (10 + 2 de reserva) | 16 × 2.440 = 39.040 |
 | 3 | Encuadres verticales (teléfono y película 9:16) | gemini-3-pro-image | 9:16 2K, 1 referencia | — | 6 × 1.830 = 10.980 | 8 × 1.830 = 14.640 |
 | 4 | Ampliación de los fondos protagonistas para pantallas grandes | topaz-image-upscale-v2 | ×2 | — | 6 × 485 = 2.910 | 12 × 485 = 5.820 |
 | 5 | Música: tres colchones en lazo (espacio, agua, cumbre) + una pieza de 35 s para la intro y la película | eleven_music_v2_5 | 3 × 45 s + 35 s = 170 s; máx.: 2 tomas | — | 170 s × 15 = 2.550 | 340 s × 15 = 5.100 |
@@ -33,10 +33,10 @@ caminante.
 | 7 | Voz: una frase por tramo, ES/EN/PT (opcional, apagada por defecto) | eleven_v3 | 9 frases × ~80 caracteres × 2 voces | — | — | 1.440 |
 | 8 | **Película de lanzamiento** (para redes, reels y og:video; no está en el camino crítico de la web): 5 tomas conectadas de 6 s (inicio y fin anclados, como la casa 332) | bytedance-seedance-v2.5-us, sin audio (la música de la línea 5) | Premium: 9:16 a 720p, 30 s. Máximo: 9:16 y 16:9 a 1080p | — | 5 × 20.165 = 100.826 | 60 s × 7.560 = 453.600 |
 | 9 | Lazos de video dentro de los fondos (solo escritorio, tier alto) | bytedance-seedance-v2.5-us | 3 × 6 s a 1080p | — | — | 18 s × 7.560 = 136.080 |
-| | **Subtotal** | | | **30.480** | **170.506** | **691.860** |
-| | Margen para tomas **nuevas** aprobadas (nunca para repetir una llamada) | | | 20 % = 6.096 | 15 % = 25.576 | 15 % = 103.779 |
-| | **Total** | | | **36.576 ≈ 37K** | **196.082 ≈ 196K** | **795.639 ≈ 796K** |
-| | **USD** (1.000 ≈ US$0,16) | | | **≈ US$6** | **≈ US$31** | **≈ US$127** |
+| | **Subtotal** | | | **34.140** | **170.506** | **691.860** |
+| | Margen para tomas **nuevas** aprobadas (nunca para repetir una llamada) | | | 20 % = 6.828 | 15 % = 25.576 | 15 % = 103.779 |
+| | **Total** | | | **40.968 ≈ 41K** | **196.082 ≈ 196K** | **795.639 ≈ 796K** |
+| | **USD** (1.000 ≈ US$0,16, promedio del plan Pro; los créditos sueltos pueden costar más) | | | **≈ US$7** | **≈ US$31** | **≈ US$127** |
 
 ## Recomendación: premium (≈ 196K créditos, ≈ US$31)
 - La web es la misma en los tres escenarios. Premium le da los fondos y el encuadre del teléfono con acabado, el sonido

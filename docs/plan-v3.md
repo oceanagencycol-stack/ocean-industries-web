@@ -6,7 +6,7 @@
 ## Reglas del trabajo
 - La v3 vive en la rama **`v3`** (sale de `main`), con su vista previa de Vercel y `noindex`. **`main` no se toca** sin
   el visto bueno de Juan. Vuelta atrás: «Promote» del despliegue vigente de la v2.
-- Cada paquete va en su rama `v3/<paquete>`, toca **solo sus archivos**, lleva commit y push al terminar y entra a `v3`
+- Cada paquete va en su rama `v3-<paquete>` (no `v3/…`: git no deja crear `v3/x` si existe `v3`), toca **solo sus archivos**, lleva commit y push al terminar y entra a `v3`
   cuando lo aprueba un verificador que no lo construyó. Lo difícil (diseño, arquitectura, revisión crítica) lo dirige el
   director. Los modelos de cada paquete: `opus` para lo difícil, `sonnet` para lo normal, `haiku` para lo mecánico.
 - No se gasta un crédito sin el presupuesto aprobado de esa etapa ([MEDIOS.md](v3/MEDIOS.md)). Cada corrida se anota en
@@ -16,7 +16,7 @@
 ## Etapas
 | # | Etapa | Listo cuando… | Aprueba Juan |
 |---|---|---|---|
-| 0 | Concepto y marca | Están en el repo el concepto, la arquitectura, los medios y este plan (`v3-plan`). El logotipo final y el símbolo están en vector en `v3-marca` y pasan `qa/marca` (el contorno coincide con el PNG maestro en ≥ 99 % de los píxeles a 2.000 px). Juan respondió las preguntas de abajo | las respuestas; el trazo del logotipo final y del símbolo |
+| 0 | Concepto y marca | Están en el repo el concepto, la arquitectura, los medios y este plan (`v3-plan`). El logotipo final y el símbolo están en vector en `v3-marca` y pasan `qa/marca.py` (IoU de la tinta contra el archivo de Juan ≥ 0,98 a su resolución, con el mejor encaje subpíxel, y el 99 % del borde a ≤ 2 px). Juan respondió las preguntas de abajo | las respuestas; el trazo del logotipo final y del símbolo |
 | 1 | Dirección visual | Hay 12 cuadros de dirección (6 momentos × 2) y una **maqueta en gris** de la toma: el recorrido completo con formas simples, anclado al scroll real, grabado en video en escritorio y en teléfono. También la paleta con sus pares de contraste medidos y la tipografía en uso | el presupuesto de la línea 1 **antes** de generar; luego la dirección (cuadros, maqueta, paleta, tipo) **antes de construir** |
 | 2 | Motor y tramos | Los tres tramos corren en tiempo real con texturas provisionales: cámara, partículas, atmósfera, cruce del agua, montaña, estrella, gobernador, carga por tramo y versión quieta. Se cumplen los presupuestos de [ARQUITECTURA](v3/ARQUITECTURA.md) | — (se le muestra la vista previa) |
 | 3 | Medios finales | Los fondos, los encuadres verticales, las profundidades, el sonido y la procedencia de cada archivo están integrados. El peso queda dentro del presupuesto | el presupuesto de las líneas 2–6 **antes** de generar; elige entre las tomas |
@@ -28,15 +28,15 @@
 ## Paquetes por etapa
 | Etapa | Paquete (rama `v3/…`) | Archivos | Modelo | Aceptación medible |
 |---|---|---|---|---|
-| 0 | marca (ya en curso: `v3-marca`) | `marca/v3/*.svg` → `src/brand/` | sonnet | `qa/marca`: coincide ≥ 99 % con el maestro; el SVG pesa ≤ 6 KB; sin `<style>` en línea |
+| 0 | marca (ya en curso: `v3-marca`) | `marca/v3/*.svg` → `src/brand/` | sonnet | `qa/marca.py` en verde (IoU ≥ 0,98, borde ≤ 2 px en el 99 %); el SVG pesa ≤ 6 KB; sin `<style>` en línea |
 | 1 | cuadros | `media/v3/direccion/`, `docs/elevenlabs.tsv` | sonnet | 12 cuadros a 2K, gasto ≤ 21.960, procedencia anotada |
 | 1 | maqueta en gris | `src/world/camera.ts`, `src/world/greybox.ts`, `dev-world.html` | **opus** | toma completa ida y vuelta con rueda, teclado y gesto táctil real (CDP); `?qa=seek` posa 20 puntos idénticos en dos corridas |
 | 1 | tokens y tipo | `src/styles/tokens.css`, `tools/fuentes.py` | sonnet | todo par de texto ≥ 4,5 de contraste (script); Outfit recortada ≤ 35 KB |
 | 2 | motor | `src/world/engine.ts`, `src/core/device.ts` | **opus** | gobernador con histéresis (sin oscilar en 60 s); 0 cuadros en reposo (`qa/reposo`); `forceContextLoss` al soltar |
 | 2 | partículas y estrella | `src/world/particles.ts`, `src/world/star.ts` | sonnet | un solo buffer para los tres medios, sin realocar; 60k/12k partículas por tier |
-| 2 | espacio | `src/world/space.ts` | sonnet | atmósfera en un solo pase; ≤ 2 ms de GPU en tier medio |
-| 2 | océano | `src/world/ocean.ts` | **opus** | cruce de la superficie en las dos direcciones sin costura visible (capturas cuadro a cuadro); ventana de Snell; ≤ 4 ms |
-| 2 | montaña | `src/world/mountain.ts`, `tools/media/relieve.py` | **opus** | malla ≤ 130k triángulos en teléfono; continua del fondo a la cumbre; ≤ 5 ms |
+| 2 | espacio | `src/world/space.ts` | sonnet | atmósfera en un solo pase; costo del tramo ≤ 2 ms medido como diferencia de intervalo entre cuadros con y sin el tramo (`?qa=fps`), en los teléfonos de Juan |
+| 2 | océano | `src/world/ocean.ts` | **opus** | cruce de la superficie en las dos direcciones sin costura visible (capturas cuadro a cuadro); ventana de Snell; ≤ 4 ms (mismo método) |
+| 2 | montaña | `src/world/mountain.ts`, `tools/media/relieve.py` | **opus** | la malla se arma en el cliente desde un mapa de alturas de 16 bits (≈ 100 KB; nunca una malla de 2,5 MB por la red), ≤ 130k triángulos en teléfono; continua del fondo a la cumbre; ≤ 5 ms (mismo método) |
 | 2 | carga y versión quieta | `src/world/assets.ts`, `src/world/still.ts` | sonnet | la cámara nunca espera (6 Mbps y 1,6 Mbps); subida a GPU ≤ 4 ms por cuadro; prueba AVIF contra KTX2 con números |
 | 2 | QA de rendimiento | `qa/peso.cjs`, `qa/fps.cjs`, `qa/reposo.cjs`, `qa/respaldos.cjs` | sonnet | fallan si se rompe un presupuesto; `?qa=fps` en pantalla |
 | 3 | fondos y profundidades | `media/v3/`, `tools/media/`, `public/world/` | sonnet | AVIF + miniatura de 32 px por fondo; profundidad local; `data/procedencia.json` completo |
@@ -61,8 +61,10 @@ baja sin cortes).
 1. **Créditos.** ElevenLabs tiene ≈ 222 créditos hasta el **2-dic** (el mes se gastó). ¿Apruebas el escenario
    **premium (≈ 196K, ≈ US$31)**, y lo compras ya o esperamos al 2-dic? *Recomiendo*: aprobar premium y comprar ya
    solo ≈ 25K para los cuadros de dirección (la etapa 1 no puede esperar dos semanas). Las etapas 1 y 2 se construyen
-   mientras tanto con la maqueta en gris. El resto sale del cupo del 2-dic, que alcanza aunque los agentes de los
-   clientes también lo usan.
+   mientras tanto con la maqueta en gris. El resto sale del cupo del 2-dic, pero **no está garantizado**: este mes
+   los agentes y medios de los clientes gastaron los 612.639. Hay que reservar ≈ 175K de ese cupo para la v3 o comprar
+   aparte. El precio de los créditos sueltos no está confirmado (el US$0,16 por 1.000 es el promedio del plan Pro):
+   se mira en la cuenta antes de comprar.
 2. **El ®.** ¿OCEAN está registrada ante la SIC (o en EE. UU.)? Poner ® en una marca no registrada no se puede hacer
    y daña la credibilidad. *Recomiendo*: `logo-sin-r.svg` en toda la web hasta tener el certificado; el ® se agrega
    después con un solo cambio.
