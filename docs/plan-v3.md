@@ -59,7 +59,7 @@ baja sin cortes).
 
 ## Preguntas para Juan (las que bloquean)
 1. **Créditos.** ElevenLabs tiene ≈ 222 créditos hasta el **2-dic** (el mes se gastó). ¿Apruebas el escenario
-   **premium (≈ 241K, ≈ US$39)**, y lo compras ya o esperamos al 2-dic? *Recomiendo*: aprobar premium y comprar ya
+   **premium (≈ 196K, ≈ US$31)**, y lo compras ya o esperamos al 2-dic? *Recomiendo*: aprobar premium y comprar ya
    solo ≈ 25K para los cuadros de dirección (la etapa 1 no puede esperar dos semanas). Las etapas 1 y 2 se construyen
    mientras tanto con la maqueta en gris. El resto sale del cupo del 2-dic, que alcanza aunque los agentes de los
    clientes también lo usan.
