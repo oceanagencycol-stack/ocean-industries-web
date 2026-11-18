@@ -94,5 +94,37 @@
   "fecha": "2026-11-18",
   "uso": "dirección visual (etapa 1); ilustración, no es un lugar ni una persona real",
   "original": "PNG 2752×1536 en la biblioteca de ElevenLabs"
+ },
+ "media/v3/direccion/M4v2a.jpg": {
+  "origen": "IA (ElevenLabs, gemini-3-pro-image, 16:9 2K, 1 referencia: M4a)",
+  "generation_id": "fBjpFkEmqdrGA9uxIkBT",
+  "flujo": "CfDnSy0alWEv5h3lnPVb",
+  "fecha": "2026-11-18",
+  "uso": "dirección visual (etapa 1); ilustración, no es un vehículo ni un lugar real",
+  "original": "PNG 2752×1536 en la biblioteca de ElevenLabs"
+ },
+ "media/v3/direccion/M4v2b.jpg": {
+  "origen": "IA (ElevenLabs, gemini-3-pro-image, 16:9 2K, 1 referencia: M4a)",
+  "generation_id": "Ikmx04zxk4UrFreOZ9Bo",
+  "flujo": "CfDnSy0alWEv5h3lnPVb",
+  "fecha": "2026-11-18",
+  "uso": "dirección visual (etapa 1); ilustración, no es un vehículo ni un lugar real",
+  "original": "PNG 2752×1536 en la biblioteca de ElevenLabs"
+ },
+ "media/v3/direccion/M1sa.jpg": {
+  "origen": "IA (ElevenLabs, gemini-3-pro-image, 16:9 2K, 1 referencia: M1a)",
+  "generation_id": "4RXtlF4zwZDNHJDzGdcy",
+  "flujo": "CfDnSy0alWEv5h3lnPVb",
+  "fecha": "2026-11-18",
+  "uso": "dirección visual (etapa 1); ilustración, no es un vehículo ni un lugar real",
+  "original": "PNG 2752×1536 en la biblioteca de ElevenLabs"
+ },
+ "media/v3/direccion/M1sb.jpg": {
+  "origen": "IA (ElevenLabs, gemini-3-pro-image, 16:9 2K, 1 referencia: M1a)",
+  "generation_id": "nw1A2bUcii0cy7OHdmw2",
+  "flujo": "CfDnSy0alWEv5h3lnPVb",
+  "fecha": "2026-11-18",
+  "uso": "dirección visual (etapa 1); ilustración, no es un vehículo ni un lugar real",
+  "original": "PNG 2752×1536 en la biblioteca de ElevenLabs"
  }
 }
