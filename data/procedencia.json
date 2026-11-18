@@ -126,5 +126,149 @@
   "fecha": "2026-11-18",
   "uso": "dirección visual (etapa 1); ilustración, no es un vehículo ni un lugar real",
   "original": "PNG 2752×1536 en la biblioteca de ElevenLabs"
+ },
+ "media/v3/sonido/amb-cumbre-a.mp3": {
+  "origen": "IA (ElevenLabs, eleven_music_v2_5)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/amb-cumbre-b.mp3": {
+  "origen": "IA (ElevenLabs, eleven_music_v2_5)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/amb-espacio-a.mp3": {
+  "origen": "IA (ElevenLabs, eleven_music_v2_5)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/amb-espacio-b.mp3": {
+  "origen": "IA (ElevenLabs, eleven_music_v2_5)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/amb-oceano-a.mp3": {
+  "origen": "IA (ElevenLabs, eleven_music_v2_5)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/amb-oceano-b.mp3": {
+  "origen": "IA (ElevenLabs, eleven_music_v2_5)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/sfx-agua-entra-a.mp3": {
+  "origen": "IA (ElevenLabs, eleven_text_to_sound_v3)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/sfx-agua-entra-b.mp3": {
+  "origen": "IA (ElevenLabs, eleven_text_to_sound_v3)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/sfx-agua-sale-a.mp3": {
+  "origen": "IA (ElevenLabs, eleven_text_to_sound_v3)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/sfx-agua-sale-b.mp3": {
+  "origen": "IA (ElevenLabs, eleven_text_to_sound_v3)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/sfx-atmosfera-a.mp3": {
+  "origen": "IA (ElevenLabs, eleven_text_to_sound_v3)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/sfx-atmosfera-b.mp3": {
+  "origen": "IA (ElevenLabs, eleven_text_to_sound_v3)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/sfx-estrella-a.mp3": {
+  "origen": "IA (ElevenLabs, eleven_text_to_sound_v3)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/sfx-estrella-b.mp3": {
+  "origen": "IA (ElevenLabs, eleven_text_to_sound_v3)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/sfx-logo-a.mp3": {
+  "origen": "IA (ElevenLabs, eleven_text_to_sound_v3)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/sfx-logo-b.mp3": {
+  "origen": "IA (ElevenLabs, eleven_text_to_sound_v3)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/sfx-rafaga-a.mp3": {
+  "origen": "IA (ElevenLabs, eleven_text_to_sound_v3)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/sfx-rafaga-b.mp3": {
+  "origen": "IA (ElevenLabs, eleven_text_to_sound_v3)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/sfx-satelite-a.mp3": {
+  "origen": "IA (ElevenLabs, eleven_text_to_sound_v3)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/sfx-satelite-b.mp3": {
+  "origen": "IA (ElevenLabs, eleven_text_to_sound_v3)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/sfx-sumergible-a.mp3": {
+  "origen": "IA (ElevenLabs, eleven_text_to_sound_v3)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/sfx-sumergible-b.mp3": {
+  "origen": "IA (ElevenLabs, eleven_text_to_sound_v3)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/tema-a.mp3": {
+  "origen": "IA (ElevenLabs, eleven_music_v2_5)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "media/v3/sonido/tema-b.mp3": {
+  "origen": "IA (ElevenLabs, eleven_music_v2_5)",
+  "flujo": "S8lhFJcdhU9H7KFIUZlW",
+  "fecha": "2026-11-18",
+  "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
  }
 }
