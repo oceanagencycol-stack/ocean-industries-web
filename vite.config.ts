@@ -182,7 +182,11 @@ export default defineConfig({
     assetsInlineLimit: 0,
     chunkSizeWarningLimit: 900,
     rolldownOptions: {
-      input: Object.fromEntries(PAGES.map((p) => [p === 'index' ? 'main' : p, resolve(ROOT, `${p}.html`)])),
+      input: {
+        ...Object.fromEntries(PAGES.map((p) => [p === 'index' ? 'main' : p, resolve(ROOT, `${p}.html`)])),
+        // v3, etapa 1: la maqueta en gris (noindex) va en las vistas previas; nunca en producción
+        ...(process.env.VERCEL_ENV === 'production' ? {} : { 'dev-world': resolve(ROOT, 'dev-world.html') }),
+      },
     },
   },
 })
