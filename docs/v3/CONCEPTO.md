@@ -27,7 +27,7 @@ y dos veces la superficie del mar, en la que **las mismas partículas cambian de
 ## La firma (una sola)
 **La estrella de OCEAN guía la toma.** El centro del símbolo (la estrella de cuatro puntas que dejan las dos formas en S)
 es la única luz con forma propia (el resto de la luz es ambiente: el borde de la Tierra, los haces, el alba): en el espacio es una estrella; bajo el agua, la luz que baja con el buzo; en la cumbre,
-el primer destello del sol sobre el hielo. Todo lo demás es quieto: sin texto que entra letra por letra, sin cursor
+el primer destello del sol sobre el hielo. Todo lo demás es quieto: sin cursor
 propio, sin marquee, sin parallax decorativo de interfaz, sin fade-up por sección.
 
 **La E del logotipo son tres horizontes.** Sus tres barras (la de en medio más corta) son los tres tramos: el
@@ -81,16 +81,38 @@ del logotipo sin imitarlo. Servida propia, recortada con fontTools a pesos 300�
 ≈ 30 KB. Titulares 600–700 en oración, interletra negativa; etiquetas en mayúsculas pequeñas con aire (el eco del
 logotipo); texto 400 a 17 px, interlineado 1,6, < 60 caracteres por línea; cifras `tabular-nums`. Una sola familia.
 
-## Movimiento y sonido
-- **Intro** (≈ 3,5 s, una vez cada 7 días, sin puerta, «Saltar» desde el primer segundo): el símbolo se traza, la
-  estrella del centro se enciende, la cámara retrocede y esa estrella queda entre miles. Sin intro con ancla, en visita
-  de regreso o con movimiento reducido.
+## Movimiento y sonido (Juan, 18-nov 16:51: «hasta el logo y todo se anime o entre épicamente… lo más épico y premium posible»)
+**Una sola gramática de entrada para todo**, para que lo épico se sienta caro y no ruidoso: la luz revela la forma.
+Nada aparece con un fundido genérico: cada cosa la descubre un barrido de luz fría o un trazo, con curvas de
+aceleración largas (`cubic-bezier(.16,1,.3,1)`, 0,9–1,6 s) y sin rebotes.
+
+**La intro (≈ 4,5 s, una vez cada 7 días, sin puerta, «Saltar» desde el primer segundo)**:
+1. Negro con grano. Un punto de luz se enciende en el centro: la estrella de cuatro puntas (con sus difracciones).
+2. Desde la estrella se trazan las dos formas en S del símbolo (`stroke-dashoffset` sobre su contorno), se llenan
+   de nieve y un reflejo especular las cruza en diagonal: el símbolo queda armado.
+3. El logotipo se construye letra por letra, cada una con su gesto: la **O** se cierra como un anillo; la **C** gira
+   y se abre en su corte; **las tres barras de la E entran una por una desde la izquierda** (los tres horizontes); la
+   **Λ** sube desde la base hasta su tope; la **N** traza su diagonal. Un barrido de luz recorre la palabra completa y
+   aparece la **®**.
+4. El logotipo sube a la barra y la estrella del símbolo se aleja hasta ser una estrella más entre miles: arranca
+   el espacio y la cámara empieza a caer.
+Sonido de la intro: un zumbido grave que crece, un destello cristalino en la estrella, un golpe sordo y profundo
+cuando la palabra queda completa (efectos de ElevenLabs, mezclados bajo el umbral de lo invasivo).
+
+**Al hacer scroll**: los titulares entran por líneas, cada línea sube desde detrás de una máscara mientras su
+interletra se asienta (de 0,04 em a la final); los textos secundarios llegan 120 ms después; las cifras cuentan
+hasta su valor. Las imágenes del mundo no «aparecen»: la cámara llega a ellas. El sumergible enciende sus faros al
+entrar a su tramo; el satélite despliega sus paneles al pasar.
+**Al tocar**: botones con un reflejo que los cruza al pasar el puntero (solo con `hover`), y al presionar se hunden
+1 px; el indicador de la E enciende su barra con un barrido.
+
 - **La toma** es función del scroll (se puede ir y volver a cualquier velocidad, nunca «reproduce un video»), con una
   cámara amortiguada para que nada salte.
 - **Sonido** (solo tras el primer clic o toque, nunca con teclado; botón siempre visible): tres colchones (el zumbido
   del espacio, el agua sorda, el viento de la cumbre) que se cruzan por tramo; efectos en los cruces (entrar a la
   atmósfera, romper la superficie, salir del agua, la ráfaga de la cumbre, el destello de la estrella); los clics de
   interfaz siguen sintetizados en el navegador. Se apaga bajo una conversación o un reel con sonido.
+- **Movimiento reducido**: sin intro; el logotipo y los textos están desde el primer cuadro.
 
 ## Accesibilidad y respaldos
 - Todo el contenido es HTML real y se lee en orden sin JavaScript; el lienzo es `aria-hidden`; cada tramo es una
