@@ -12,9 +12,9 @@ Vercel protegía esa vista previa con acceso del equipo. Se inspeccionó localme
 | Elemento | Decisión |
 | --- | --- |
 | Siete tramos y cambio de oscuridad a nieve | Mantener el arco y darle movimiento real a las imágenes, con un encuadre propio para teléfono. |
-| Titular de la v3 y marca original | Mantener ambos y explicar en la primera pantalla los tres servicios principales y la presencia internacional. |
-| Placas más parallax de WebGL2 | Integrar tomas ambientales, un desplazamiento corto del encuadre y fundidos entre placas. Conservar `?world` para comparar la implementación WebGL2. |
-| Servicios antes que casos | Mantener las seis demostraciones y los tres casos publicados. Usar nombres directos en la barra para llegar a contenido y automatización. |
+| Titular de la v3 y marca original | Conservar el logotipo. Abrir a sangre con «Todo empieza bajo la superficie» y poner los tres servicios principales y el contacto en una columna desplazada. |
+| Placas más parallax de WebGL2 | Componer los fotogramas dentro de una sola cámara, con cruces de atmósfera, lente submarina y nubes. |
+| Servicios antes que casos | Alternar texto y demostraciones en la retícula editorial. Usar las imágenes publicadas de los tres proyectos y dar a Valeria una conversación que avanza al hacer scroll. |
 | Tres idiomas, WhatsApp contextual, sonido, agenda y pagos | Mantener los flujos existentes y añadir un control de movimiento en la barra. |
 
 ## Referencias y decisiones
@@ -31,14 +31,25 @@ Vercel protegía esa vista previa con acceso del equipo. Se inspeccionó localme
 La búsqueda incluyó Instagram. El material indexado no permitió revisar de principio a fin un reel adicional con
 detalle comparable al de los videos adjuntos. Las decisiones visuales se apoyan en los videos y los casos enlazados.
 
-## Reproducción
+## Montaje
 
-El HTML pinta una placa AVIF o WebP por tramo. Se carga un solo MP4 H.264 silencioso a la vez después del pintado y
-de la intro, cuando la cabecera entra en pantalla. El desplazamiento cambia el encuadre y elige la toma visible.
-Los videos son bucles cortos a 24 fps. Cada escena tiene una edición horizontal y otra vertical. La capa de video
-se libera al salir de su cabecera o al pausar y se detiene si la pestaña pierde visibilidad. Los fallos de reproducción
-y las preferencias de ahorro de datos o movimiento reducido dejan el cuadro estático. El sonido por capítulos mantiene
-su control propio.
+El HTML abre con un primer cuadro AVIF o WebP. Una vez montado el lienzo fijo, una sola posición de cámara gobierna
+el encuadre, los fotogramas y la transición. Avanzar o retroceder por la página mueve esa posición. El cielo, la
+superficie, la profundidad y el hielo están compuestos en el mismo lienzo. El cruce del agua usa una franja ondulada
+con refracción y mezcla de las dos perspectivas.
+
+El motor combina ocho fotogramas de cada toma y descarga los paquetes WebP cerca del tramo visible. Hay una edición
+panorámica y otra vertical. El navegador mantiene el contenido HTML y las imágenes de respaldo cuando se pausa el recorrido,
+se pide movimiento reducido o hay ahorro de datos. El sonido por capítulos tiene su propio control.
+
+La portada usa un titular a sangre con la propuesta y el contacto en una columna desplazada. Los ejemplos se recorren
+con el scroll y también se pueden consultar por pasos. Los casos alternan imagen y texto usando las piezas publicadas por
+[Outstanding Garage Doors](https://www.outstandinggaragedoors.com/),
+[Naidikó](https://www.naidiko.co/) y [Álvaro Arroyo](https://www.alvaroarroyo.com/).
+
+Los paquetes se regeneran con `node tools/secuencia.mjs` desde las fuentes del directorio `public/v3/cine/`.
+La prueba `node qa/cine.cjs http://localhost:4175/` verifica la cámara en posiciones intermedias, avance y retroceso,
+el encuadre móvil, la pausa y el respaldo.
 
 Las referencias se usaron para dirección de arte. La web usa tomas propias producidas en ElevenLabs. El registro
 de gasto está en `docs/elevenlabs.tsv` y los identificadores de las tomas elegidas en `data/procedencia.json`.

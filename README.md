@@ -5,11 +5,11 @@ espacio al fondo del mar y del mar a la cumbre de hielo, monocromo tipo Tesla, e
 
 - **La página** (`index.html`, rama `v3-pagina`): HTML real trilingüe (ES/EN/PT) que se lee entero sin JavaScript.
   Cada tramo trae su placa de respaldo; la cumbre (agenda y pagos) y el pie van sobre la nieve.
-- **El recorrido cinematográfico** (`src/v3/cinema.ts`): siete tomas ambientales de ElevenLabs, con encuadres para
-  escritorio y teléfono. La toma activa se carga al entrar en pantalla y se puede pausar desde la barra. Las placas
-  mantienen la composición con movimiento reducido, ahorro de datos o reproducción no disponible. El mundo WebGL2
-  sigue disponible con `?world` para comparar.
-- **La intro** (`src/intro-v3/`): el logotipo se escribe y vuela a la barra; una vez cada 7 días.
+- **El recorrido cinematográfico** (`src/world/plates.ts`): una cámara continua que el desplazamiento mueve desde la órbita
+  hasta la cumbre. Los fotogramas seleccionados de ElevenLabs alimentan el mismo lienzo y se cargan cerca de cada tramo.
+  La composición editorial y los ejemplos siguen el recorrido. Las placas mantienen la lectura con movimiento reducido,
+  ahorro de datos o WebGL2 no disponible.
+- **La intro de marca** (`src/intro-v3/`): el logotipo se escribe y vuela a la barra cuando se elige reproducirla.
 - **Lo que se conserva de la v2**: WhatsApp con el mensaje escrito por contexto e idioma, las seis escenas de servicios,
   Valeria (de ejemplo), el chat «Habla con OCEAN» (`/api/agente`), Cal.com, los pagos con Wompi (`/api/pago-wompi`),
   los reels (`/api/reels`), GA4 solo en el dominio real, la 404 y ahora `/privacidad`.

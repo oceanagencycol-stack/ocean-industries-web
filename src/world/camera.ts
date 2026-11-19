@@ -79,18 +79,22 @@ export class Spring {
  */
 export class ScrollTrack {
   /** px de scroll de cada ancla (crecientes) */
-  private ys = new Float64Array(16)
+  private ys: Float64Array
   /** punto de la toma de cada ancla (creciente) */
-  private ss = new Float64Array(16)
+  private ss: Float64Array
   private n = 0
   private ro: ResizeObserver
   private sections: HTMLElement[]
+  private story: boolean
   maxScroll = 0
   /** cuántas veces se midieron las anclas (QA) */
   measures = 0
 
-  constructor(sections: HTMLElement[]) {
+  constructor(sections: HTMLElement[], story = false) {
     this.sections = sections
+    this.story = story
+    this.ys = new Float64Array(sections.length * 2 + 2)
+    this.ss = new Float64Array(this.ys.length)
     this.ro = new ResizeObserver(() => this.measure())
     for (const el of sections) this.ro.observe(el)
     this.ro.observe(document.documentElement)
@@ -120,11 +124,20 @@ export class ScrollTrack {
       n++
     }
     push(0, 0)
-    for (let i = 0; i < this.sections.length && n < 15; i++) {
+    for (let i = 0; i < this.sections.length; i++) {
       const el = this.sections[i]
       const shot = Number(el.dataset.shot ?? 0)
       const top = el.getBoundingClientRect().top + sy
       push(top, shot)
+      const next = this.sections[i + 1]
+      if (this.story && next) {
+        const end = next.getBoundingClientRect().top + sy
+        const lead = Number(next.dataset.shot ?? shot) - shot
+        // Los ejemplos conservan su encuadre mientras se leen. La cámara cruza
+        // hacia el siguiente espacio en el último tramo de desplazamiento.
+        const crossingHeight = Math.min((end - top) * 0.67, vh * 1.16)
+        push(end - crossingHeight, shot + lead * 0.16)
+      }
     }
     push(this.maxScroll, 1)
     this.n = n

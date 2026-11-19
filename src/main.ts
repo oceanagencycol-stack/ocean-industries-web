@@ -4,7 +4,7 @@
  *  - La página es HTML real y se lee entera sin JavaScript: cada tramo trae su placa de respaldo (<picture>).
  *  - La intro (src/intro-v3, por su API) se decide antes de pintar (script de arranque: html.intro-due); mientras
  *    corre, la portada espera y entra cuando el negro se abre.
- *  - Las tomas ambientales se cargan por tramo después de pintar. El mundo WebGL2 sigue disponible para QA.
+ *  - Una cámara fija al viewport compone los fotogramas en función del desplazamiento.
  *  - Una sola gramática de entrada (src/v3/reveal.ts). Sin GSAP, sin Lenis, sin three.js en el primer trozo.
  *  - Lo que funcionaba en la v2 sigue: idioma, WhatsApp por contexto, escenas, Valeria, el chat, Cal.com, Wompi,
  *    los reels y GA4 (solo en el dominio real).
@@ -12,6 +12,7 @@
 import './styles/fonts.css'
 import './styles/v3.css'
 import './styles/demos.css'
+import './styles/sequence.css'
 
 import { store } from './core/storage'
 import { initLang, lang } from './ui/i18n'
@@ -27,7 +28,6 @@ import { initAnalytics } from './ui/analytics'
 import { initChrome } from './v3/chrome'
 import { initSound, markReplay } from './v3/sound-gate'
 import { initReveal, holdHero, releaseHero } from './v3/reveal'
-import { mountCinema } from './v3/cinema'
 import { hasRealIntro, hasRealWorld, loadWorld, playIntro, type WorldHandle } from './v3/bridge'
 
 const html = document.documentElement
@@ -39,7 +39,6 @@ const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effe
 const saveData = conn?.saveData === true || /(^|-)2g$/.test(conn?.effectiveType ?? '')
 // QA: ?qa=1&noworld deja la página sin el mundo (capturas rápidas en el sandbox sin GPU)
 const noWorld = params.has('noworld')
-const useWorld = params.has('world') || params.has('q')
 const MOTION_KEY = 'ocean-motion-paused'
 
 /* ---------- la página ---------- */
@@ -65,6 +64,11 @@ const intro = introDue
   ? playIntro(document.querySelector('[data-intro-dock]'), lang()).finally(() => {
       document.querySelectorAll('[data-intro-veil]').forEach((v) => v.remove())
       html.classList.remove('intro-due')
+      if (params.get('intro') === '1') {
+        const destination = new URL(location.href)
+        destination.searchParams.delete('intro')
+        history.replaceState(null, '', destination)
+      }
       releaseHero()
     })
   : Promise.resolve()
@@ -76,16 +80,15 @@ if (replay && hasRealIntro && !reduced) {
   replay.addEventListener('click', () => {
     store.remove('ocean-v3-intro-at')
     markReplay()
-    history.replaceState(null, '', location.pathname)
-    window.scrollTo(0, 0)
-    location.reload()
+    const destination = new URL(location.pathname, location.origin)
+    destination.searchParams.set('intro', '1')
+    location.assign(destination)
   })
 }
 
 /* ---------- el mundo ---------- */
-const canvas = document.getElementById('world') as HTMLCanvasElement | null
+let canvas = document.querySelector<HTMLCanvasElement>('#world')
 let world: WorldHandle | null = null
-let cinema: ReturnType<typeof mountCinema> = null
 let mounting = false
 let ready = false
 let paused = store.get(MOTION_KEY) === '1'
@@ -100,10 +103,15 @@ async function mountWorld(): Promise<void> {
   try {
     const m = await loadWorld()
     if (!shouldMove()) return
-    const h = await m.mountWorld({ canvas, sections: document.querySelectorAll<HTMLElement>('[data-tramo]') })
+    const h = await m.mountWorld({
+      canvas,
+      sections: document.querySelectorAll<HTMLElement>('[data-tramo]'),
+      story: true,
+    })
     if (h && typeof h.dispose === 'function') {
       if (!shouldMove()) {
         h.dispose()
+        replaceCanvas()
         return
       }
       world = h
@@ -118,11 +126,21 @@ async function mountWorld(): Promise<void> {
 }
 
 function unmount(): void {
-  cinema?.dispose()
-  cinema = null
-  world?.dispose()
-  world = null
+  if (world) {
+    world.dispose()
+    world = null
+    replaceCanvas()
+  }
   html.classList.remove('has-world')
+}
+
+function replaceCanvas(): void {
+  if (!canvas) return
+  const clean = canvas.cloneNode(false) as HTMLCanvasElement
+  clean.removeAttribute('width')
+  clean.removeAttribute('height')
+  canvas.replaceWith(clean)
+  canvas = clean
 }
 
 /** Un momento tranquilo para lo pesado: después de pintar y, donde existe, con el hilo libre. */
@@ -152,15 +170,14 @@ function showMotionToggle(show: boolean): void {
 }
 
 function syncMotion(): void {
+  html.classList.toggle('motion-paused', paused)
+  window.dispatchEvent(new Event('ocean:motion-preference'))
   if (!shouldMove()) {
     unmount()
     showMotionToggle(ready && !noWorld && !saveData && !motionQuery.matches && paused)
-  } else if (useWorld && hasRealWorld) {
+  } else if (hasRealWorld) {
     void mountWorld()
     showMotionToggle(!!world)
-  } else {
-    cinema ??= mountCinema()
-    showMotionToggle(!!cinema)
   }
 }
 
@@ -171,7 +188,10 @@ for (const button of motionButtons) {
     syncMotion()
   })
 }
-motionQuery.addEventListener('change', syncMotion)
+motionQuery.addEventListener('change', () => {
+  html.classList.toggle('no-motion', motionQuery.matches)
+  syncMotion()
+})
 void intro.catch(() => undefined).then(() => whenCalm()).then(() => {
   ready = true
   syncMotion()

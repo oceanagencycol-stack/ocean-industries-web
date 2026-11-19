@@ -926,31 +926,13 @@ main {
   overflow: hidden;
 }
 
-.plate img,
-.plate__motion {
+.plate img {
   width: 100%;
   height: 100%;
   max-width: none;
   object-fit: cover;
   object-position: var(--plate-position, 50%) 50%;
   transform: scale(1.045);
-}
-
-.plate__motion {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.58s var(--ease);
-}
-
-.plate__frame.is-playing .plate__motion {
-  opacity: 1;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .plate__frame.is-moving :is(img, .plate__motion) {
-    transform: translate3d(0, var(--scene-offset, 0px), 0) scale(var(--scene-scale, 1.045));
-  }
 }
 
 /* las sombras que dejan leer el texto sobre la foto (la foto no cambia: cambia la luz encima) */

@@ -42,15 +42,12 @@ Contenido: **ES por defecto, EN y PT** (cada elemento lleva `data-es` / `data-en
 - **Placas de respaldo**: cada `[data-tramo]` trae su `<!--PLACA:nombre-->` (vertical en pantallas altas, 16:9 en las
   demás; AVIF + WebP en `public/v3/pagina/`). Con el mundo montado se esconden (`html.has-world`). La de la portada va
   con prioridad; la del satélite no invade la primera pantalla (si no, es el LCP y perezosa).
-- **La intro**: el script de arranque (`<script data-ocean-boot>`) decide antes de pintar con la regla de
-  `shouldRunIntro()` (no con movimiento reducido ni si se vio en 7 días, `ocean-v3-intro-at`), más: no con ancla ni con
-  `?qa` salvo `?qa=intro`. Si toca, `html.intro-due` muestra el velo `[data-intro-veil]` (se va solo a los 3 s si el JS no
-  llega). La portada espera (`holdHero`) y entra cuando el negro se abre. `[data-intro-dock]` es el logotipo de la barra;
-  `[data-intro-inert]` en barra, `main` y pie.
+- **La intro de marca**: abre a petición desde el pie (`?intro=1`; QA con `?qa=intro`). El recorrido normal abre con la
+  portada a sangre. Si toca, `html.intro-due` muestra el velo. `[data-intro-dock]` es el logotipo de la barra.
 - **La E son tres horizontes**: `.horizon` (las barras de la E de `logo.svg`) quieta al borde izquierdo en el computador;
   el tramo en el centro de la pantalla enciende su barra (`data-horizon` 1–3; la cumbre, 4 = las tres).
 - **La cumbre y el pie van sobre la nieve** (`[data-light]`): la barra se vuelve clara encima (`html.nav-light`).
-- **Pausar el movimiento** (WCAG 2.2.2): botón en el pie, solo con el mundo real; suelta el mundo, deja las placas y se
+- **Pausar el movimiento** (WCAG 2.2.2): controles en la barra y el pie con el mundo real; suelta el mundo, deja las placas y se
   recuerda (`ocean-motion-paused`).
 - **CSP**: el script de arranque va por hash en `vercel.json`; si cambia, el build falla y da el hash nuevo. Wompi
   necesita `https://checkout.wompi.co` en `script-src`.
@@ -81,7 +78,7 @@ privacidad) · `api/` (agente, firma de Wompi, reels) · `public/v3/` (placas, g
   reels, Cal.com, pagos sin pagar, menú del teléfono, intro (velo y salida), movimiento reducido, sin JS, 404 y
   privacidad. Termina en «todo en verde».
 - `node qa/overflow.cjs http://localhost:4175/`: nada se sale de 320 a 1440 px en ES/EN/PT («nada se sale de la pantalla»).
-- `node qa/intro-pagina.cjs http://localhost:4175/ <carpeta>`: primera visita real con la intro, capturas en el tiempo.
+- `node qa/intro-pagina.cjs http://localhost:4175/ <carpeta>`: intro a petición, capturas en el tiempo.
 - `node qa/intro-v3.cjs` (del paquete de la intro).
 - Lighthouse móvil contra el preview (`CHROME_PATH` al Chromium de Playwright, `/opt/pw-browsers/.../chrome`):
   19-nov-2026, primera visita con intro, 7 corridas: rendimiento 93–99 (mediana 98); accesibilidad, buenas prácticas y

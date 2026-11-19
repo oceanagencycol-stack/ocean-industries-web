@@ -3,80 +3,66 @@ const assert = require('node:assert/strict')
 const { chromium } = require('playwright')
 
 const base = process.argv[2] ?? 'http://localhost:4175/'
-const chapters = [
-  ['inicio', 'espacio'],
-  ['senal', 'satelite'],
-  ['mar', 'mar'],
-  ['agentes', 'agua'],
-  ['maquina', 'maquina'],
-  ['trabajo', 'emerge'],
-  ['hablemos', 'cumbre'],
-]
-
-async function waitForShot(page, name) {
-  await page.waitForFunction((file) => {
-    const video = document.querySelector('.plate__frame.is-playing video')
-    return video?.currentSrc.endsWith(`/${file}.mp4`) && video.currentTime > 0
-  }, name)
-}
 
 async function run() {
-  const browser = await chromium.launch()
+  const browser = await chromium.launch({ args: ['--enable-unsafe-swiftshader'] })
   try {
-    const requests = new Set()
     const desktop = await browser.newPage({ viewport: { width: 1440, height: 900 } })
     const errors = []
+    const requests = new Set()
     desktop.on('pageerror', (error) => errors.push(error.message))
     desktop.on('request', (request) => {
-      if (/\/v3\/cine\/[^/]+\.mp4$/.test(request.url())) requests.add(new URL(request.url()).pathname)
+      if (/\/v3\/secuencia\/[^/]+\.webp$/.test(request.url())) requests.add(new URL(request.url()).pathname)
     })
     await desktop.goto(new URL('?qa=1', base).href)
-    await waitForShot(desktop, 'espacio')
-    assert.deepEqual([...requests], ['/v3/cine/espacio.mp4'], 'solo la portada pide video al inicio')
-    assert.equal(await desktop.locator('.plate__motion').evaluate((v) => v.muted && v.playsInline), true)
-    const frame = desktop.locator('#inicio .plate__frame')
-    const scale = await frame.evaluate((el) => Number(el.style.getPropertyValue('--scene-scale')))
-    await desktop.mouse.wheel(0, 200)
-    await desktop.waitForFunction(
-      (before) => Number(document.querySelector('#inicio .plate__frame').style.getPropertyValue('--scene-scale')) > before,
-      scale,
+    await desktop.locator('html.has-world').waitFor()
+    await desktop.waitForFunction(() => window.__ocean.world.isSleeping)
+    assert.ok(requests.has('/v3/secuencia/espacio.webp'))
+    assert.ok(requests.size <= 2, 'la portada difiere los fotogramas lejanos')
+    assert.equal(await desktop.locator('canvas.world').count(), 1)
+    assert.equal(await desktop.locator('.plate video').count(), 0)
+
+    const cursor = () => desktop.evaluate(() => window.__ocean.world.shot)
+    const to = (progress) => desktop.evaluate((position) => {
+      const track = window.__ocean.world.scrollTrack
+      window.__ocean.to(track.scrollFor(position))
+    }, progress)
+    const near = (progress) => desktop.waitForFunction(
+      (position) => Math.abs(window.__ocean.world.shot - position) < 0.007,
+      progress,
     )
 
-    for (const [id, shot] of chapters.slice(1)) {
-      await desktop.locator('#' + id).evaluate((el) => el.scrollIntoView({ behavior: 'instant' }))
-      await waitForShot(desktop, shot)
-      assert.equal(await desktop.locator('.plate__motion').count(), 1, `una sola toma en ${id}`)
-      assert.equal(await desktop.locator('#' + id + ' .plate img').evaluate((img) => img.complete && img.naturalWidth > 0), true)
+    // Medir varias posiciones dentro del mismo cruce, ida y vuelta, sin posar
+    // el motor con su API de pruebas. Así se verifica el control real por scroll.
+    for (const position of [0.12, 0.35, 0.39, 0.42, 0.47, 0.58, 0.74, 0.94, 0.44, 0.41, 0.37, 0]) {
+      await to(position)
+      await near(position)
     }
-    assert.equal(requests.size, chapters.length)
+    assert.ok(await cursor() < 0.007)
+    assert.equal(await desktop.locator('canvas.world').count(), 1)
+    assert.deepEqual(errors, [])
 
     const pause = desktop.locator('.nav [data-motion-toggle]')
     await pause.click()
+    await desktop.locator('html.motion-paused').waitFor()
+    await desktop.locator('html.has-world').waitFor({ state: 'detached' })
     assert.equal(await pause.getAttribute('aria-pressed'), 'true')
     assert.equal(await desktop.locator('.nav [data-sound-toggle]').getAttribute('aria-pressed'), 'false')
-    assert.equal(await desktop.locator('.plate__motion').count(), 0)
-    await desktop.goto(new URL('?qa=1#hablemos', base).href)
     await desktop.reload()
     await pause.waitFor()
     assert.equal(await pause.getAttribute('aria-pressed'), 'true', 'la pausa persiste al recargar')
     await pause.click()
-    await waitForShot(desktop, 'cumbre')
-    assert.deepEqual(errors, [])
+    await desktop.locator('html.has-world').waitFor()
 
     const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
+    const portrait = mobile.waitForResponse((res) => /\/v3\/secuencia\/agua-v\.webp$/.test(res.url()) && res.ok())
     await mobile.goto(new URL('?qa=1#agentes', base).href)
-    await waitForShot(mobile, 'agua-v')
-    assert.equal(await mobile.locator('#agentes .plate img').evaluate((img) => /-v\./.test(img.currentSrc)), true)
+    await mobile.locator('html.has-world').waitFor()
+    await portrait
+    await mobile.waitForFunction(() => Math.abs(window.__ocean.world.shot - 0.5) < 0.025)
     await mobile.emulateMedia({ reducedMotion: 'reduce' })
-    await mobile.waitForFunction(() => !document.querySelector('.plate__motion'))
+    await mobile.locator('html.has-world').waitFor({ state: 'detached' })
     assert.equal(await mobile.locator('.nav [data-motion-toggle]').isVisible(), false)
-
-    const reduced = await browser.newPage({ reducedMotion: 'reduce' })
-    let loadedVideo = false
-    reduced.on('request', (request) => { loadedVideo ||= /\/v3\/cine\/[^/]+\.mp4$/.test(request.url()) })
-    await reduced.goto(new URL('?qa=1', base).href)
-    await reduced.locator('#inicio .plate img').evaluate((img) => img.decode())
-    assert.equal(loadedVideo, false, 'movimiento reducido conserva la placa desde la primera visita')
 
     const saver = await browser.newPage()
     await saver.addInitScript(() => Object.defineProperty(navigator, 'connection', {
@@ -84,9 +70,8 @@ async function run() {
     }))
     await saver.goto(new URL('?qa=1', base).href)
     await saver.locator('#inicio .plate img').evaluate((img) => img.decode())
-    assert.equal(await saver.locator('.plate__motion').count(), 0, 'ahorro de datos conserva la placa')
-
-    console.log('cine: siete tomas, una sola activa, encuadre vertical, pausa y movimiento reducido')
+    assert.equal(await saver.locator('html.has-world').count(), 0, 'ahorro de datos conserva la placa')
+    console.log('Cámara continua, posiciones de scroll reversibles, carga cercana, retrato, pausa y respaldos.')
   } finally {
     await browser.close()
   }

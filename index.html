@@ -42,14 +42,13 @@
       body { margin: 0; }
     </style>
     <script data-ocean-boot>
-      // Antes de pintar: ¿toca la intro (una vez cada 7 días, sin movimiento reducido ni ancla)? Si toca, el velo negro
-      // ya cubre el primer cuadro y nada parpadea. Su hash va en la CSP de vercel.json (el build avisa si cambia).
+      // El recorrido abre en la órbita. La intro de marca se reproduce cuando el visitante la pide.
       try {
-        var d = document.documentElement, q = location.search, ls = localStorage
+        var d = document.documentElement, q = new URLSearchParams(location.search), ls = localStorage
         d.classList.add('js')
         var rm = matchMedia('(prefers-reduced-motion: reduce)').matches
         if (rm) d.classList.add('no-motion')
-        if (/[?&]qa=[^&]*intro/.test(q) || (!rm && location.hash.length < 2 && !/[?&]qa=/.test(q) && Date.now() - (Number(ls.getItem('ocean-v3-intro-at')) || 0) >= 6048e5)) d.classList.add('intro-due')
+        if (/^intro(?:=|$)/.test(q.get('qa') || '') || (!rm && q.get('intro') === '1')) d.classList.add('intro-due')
         var l = ls.getItem('ocean-lang')
         if (l === 'en' || l === 'pt') d.setAttribute('data-lang-pending', l)
       } catch (e) {}
@@ -173,6 +172,7 @@
           <span class="vh" data-es="Menú" data-en="Menu" data-pt="Menu">Menú</span>
         </button>
       </div>
+      <div class="sequence__progress" aria-hidden="true"></div>
     </header>
 
     <nav class="menu" id="menu" hidden data-es-aria="Menú" data-en-aria="Menu" data-pt-aria="Menu" aria-label="Menú">
@@ -197,50 +197,51 @@
       </a>
     </nav>
 
-    <main id="contenido" data-intro-inert>
+    <main id="contenido" class="sequence" data-intro-inert>
       <!-- ============================================================ 1 · ESPACIO: la portada -->
-      <section id="inicio" class="tramo tramo--espacio" data-tramo="espacio" data-horizon="1" data-fab-hide aria-labelledby="hero-title">
+      <section id="inicio" class="tramo tramo--espacio" data-tramo="espacio" data-shot="0" data-horizon="1" data-fab-hide aria-labelledby="hero-title">
         <!--PLACA:m1a:first-->
         <div class="hero">
-          <p class="label hero__label" data-rv><span class="hero__beacon" aria-hidden="true"></span><span data-es="Estudio de inteligencia artificial" data-en="Artificial intelligence studio" data-pt="Estúdio de inteligência artificial">Estudio de inteligencia artificial</span></p>
-          <h1 class="hero__title" id="hero-title" data-reveal>
-            <span class="ln"><span data-es="De lo más profundo" data-en="From the deepest depths" data-pt="Do mais profundo">De lo más profundo</span></span>
-            <span class="ln"><span data-es="a lo más alto." data-en="to the highest peak." data-pt="ao mais alto.">a lo más alto.</span></span>
-          </h1>
-          <p
-            class="hero__lead"
-            data-rv
-            data-es="Creamos agentes de IA para WhatsApp, automatizamos procesos y construimos tiendas rápidas para que tu negocio pueda crecer."
-            data-en="We build AI agents for WhatsApp, automate workflows, and create fast online stores so your business can scale."
-            data-pt="Criamos agentes de IA para WhatsApp, automatizamos processos e construímos lojas rápidas para sua empresa crescer."
-          >Creamos agentes de IA para WhatsApp, automatizamos procesos y construimos tiendas rápidas para que tu negocio pueda crecer.</p>
-          <div class="actions" data-rv>
-            <a class="btn btn--primary" data-wa="general" href="https://wa.me/573138721665" target="_blank" rel="noopener">
-              <svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg>
-              <span data-es="Escríbenos por WhatsApp" data-en="Message us on WhatsApp" data-pt="Fale no WhatsApp">Escríbenos por WhatsApp</span>
-            </a>
-            <a class="btn btn--line" href="#book" data-es="Agendar una llamada" data-en="Book a call" data-pt="Agendar uma chamada">Agendar una llamada</a>
+          <div class="hero__opening">
+            <p class="label hero__label" data-rv><span class="hero__beacon" aria-hidden="true"></span><span data-es="Estudio de inteligencia artificial" data-en="Artificial intelligence studio" data-pt="Estúdio de inteligência artificial">Estudio de inteligencia artificial</span></p>
+            <h1 class="hero__title" id="hero-title" data-reveal>
+              <span class="ln"><span data-es="Todo empieza" data-en="Everything starts" data-pt="Tudo começa">Todo empieza</span></span>
+              <span class="ln"><span data-es="bajo la superficie." data-en="beneath the surface." data-pt="sob a superfície.">bajo la superficie.</span></span>
+            </h1>
           </div>
+          <aside class="hero__info" data-rv>
+            <p class="hero__lead" data-es="Agentes de IA para WhatsApp. Procesos que se automatizan. Tiendas hechas para vender." data-en="AI agents for WhatsApp. Automated workflows. Stores built to sell." data-pt="Agentes de IA para WhatsApp. Processos automatizados. Lojas feitas para vender.">Agentes de IA para WhatsApp. Procesos que se automatizan. Tiendas hechas para vender.</p>
+            <div class="actions">
+              <a class="btn btn--primary" data-wa="general" href="https://wa.me/573138721665" target="_blank" rel="noopener">
+                <svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg>
+                <span data-es="Hablemos por WhatsApp" data-en="Talk on WhatsApp" data-pt="Vamos falar no WhatsApp">Hablemos por WhatsApp</span>
+              </a>
+              <a class="hero__book" href="#book">
+                <span data-es="Agendar una llamada" data-en="Book a call" data-pt="Agendar uma chamada">Agendar una llamada</span>
+                <svg class="ico" aria-hidden="true"><use href="#i-out" /></svg>
+              </a>
+            </div>
+          </aside>
         </div>
         <div class="hero__footer">
           <a class="descend" href="#senal">
             <svg class="ico" aria-hidden="true"><use href="#i-arrow" /></svg>
-            <span data-es="Explora el recorrido" data-en="Explore the journey" data-pt="Explore a jornada">Explora el recorrido</span>
+            <span data-es="Empieza el descenso" data-en="Begin the descent" data-pt="Comece a descida">Empieza el descenso</span>
           </a>
           <p class="hero__regions" data-es="Colombia · Estados Unidos · Italia" data-en="Colombia · United States · Italy" data-pt="Colômbia · Estados Unidos · Itália">Colombia · Estados Unidos · Italia</p>
         </div>
       </section>
 
       <!-- ============================================================ 2 · SATÉLITE: la señal -->
-      <section id="senal" class="tramo tramo--satelite" data-tramo="satelite" data-horizon="1" aria-labelledby="senal-title">
+      <section id="senal" class="tramo tramo--satelite" data-tramo="satelite" data-shot="0.166667" data-horizon="1" aria-labelledby="senal-title">
         <!--PLACA:m1sb-->
         <header class="head">
-          <p class="label" data-rv><span class="label__n">01</span><span data-es="La señal" data-en="The signal" data-pt="O sinal">La señal</span></p>
+          <p class="label" data-rv><span class="label__n">01</span><span data-es="Contenido y pauta" data-en="Content and advertising" data-pt="Conteúdo e mídia">Contenido y pauta</span></p>
           <h2 class="title" id="senal-title" data-reveal>
-            <span class="ln"><span data-es="Desde arriba" data-en="From up here" data-pt="Lá de cima">Desde arriba</span></span>
-            <span class="ln"><span data-es="se ve todo." data-en="you see everything." data-pt="se vê tudo.">se ve todo.</span></span>
+            <span class="ln"><span data-es="Primero," data-en="First," data-pt="Primeiro,">Primero,</span></span>
+            <span class="ln"><span data-es="una señal." data-en="a signal." data-pt="um sinal.">una señal.</span></span>
           </h2>
-          <p class="lead" data-rv data-es="Tu mensaje tiene que llegar a la gente correcta. Contenido que detiene el scroll y pauta en Meta que encuentra a quien sí compra." data-en="Your message has to reach the right people. Content that stops the scroll and Meta ads that find the people who actually buy." data-pt="Sua mensagem precisa chegar às pessoas certas. Conteúdo que para o scroll e anúncios no Meta que encontram quem realmente compra.">Tu mensaje tiene que llegar a la gente correcta. Contenido que detiene el scroll y pauta en Meta que encuentra a quien sí compra.</p>
+          <p class="lead" data-rv data-es="Creamos contenido y campañas en Meta para que quien te descubre pueda pasar de la pantalla a una conversación." data-en="We create content and Meta campaigns that take people from discovering you to starting a conversation." data-pt="Criamos conteúdo e campanhas na Meta para quem descobre sua marca iniciar uma conversa.">Creamos contenido y campañas en Meta para que quien te descubre pueda pasar de la pantalla a una conversación.</p>
         </header>
         <div class="body">
           <ul class="key" data-rv data-es-aria="Cómo leer los ejemplos" data-en-aria="How to read the examples" data-pt-aria="Como ler os exemplos" aria-label="Cómo leer los ejemplos">
@@ -313,27 +314,29 @@
       </section>
 
       <!-- ============================================================ 3 · MAR: hacia el agua -->
-      <section id="mar" class="tramo tramo--mar" data-tramo="mar" data-horizon="2" aria-labelledby="mar-title">
+      <section id="mar" class="tramo tramo--mar" data-tramo="mar" data-shot="0.333333" data-horizon="2" aria-labelledby="mar-title">
         <!--PLACA:m2b-->
         <div class="pause">
-          <h2 class="pause__title" id="mar-title" data-reveal>
-            <span class="ln"><span data-es="Lo que hace crecer una marca" data-en="What grows a brand" data-pt="O que faz uma marca crescer">Lo que hace crecer una marca</span></span>
-            <span class="ln"><span data-es="casi nunca se ve." data-en="is rarely what you see." data-pt="quase nunca se vê.">casi nunca se ve.</span></span>
-          </h2>
-          <p class="pause__go" data-rv data-es="Bajemos." data-en="Let's go down." data-pt="Vamos descer.">Bajemos.</p>
+          <div class="pause__copy">
+            <h2 class="pause__title" id="mar-title" data-reveal>
+              <span class="ln"><span data-es="Lo que sigue ocurre" data-en="What happens next" data-pt="O que vem a seguir">Lo que sigue ocurre</span></span>
+              <span class="ln"><span data-es="bajo la superficie." data-en="happens beneath the surface." data-pt="acontece sob a superfície.">bajo la superficie.</span></span>
+            </h2>
+            <p class="pause__go" data-rv data-es="Una conversación enciende el sistema." data-en="A conversation sets the system in motion." data-pt="Uma conversa coloca o sistema em movimento.">Una conversación enciende el sistema.</p>
+          </div>
         </div>
       </section>
 
       <!-- ============================================================ 4 · AGUA: los agentes -->
-      <section id="agentes" class="tramo tramo--agua" data-tramo="agua" data-horizon="2" aria-labelledby="agentes-title">
+      <section id="agentes" class="tramo tramo--agua" data-tramo="agua" data-shot="0.5" data-horizon="2" aria-labelledby="agentes-title">
         <!--PLACA:m3b-->
         <header class="head">
-          <p class="label" data-rv><span class="label__n">02</span><span data-es="Bajo el agua" data-en="Under the water" data-pt="Debaixo d'água">Bajo el agua</span></p>
+          <p class="label" data-rv><span class="label__n">02</span><span data-es="Agentes de IA" data-en="AI agents" data-pt="Agentes de IA">Agentes de IA</span></p>
           <h2 class="title" id="agentes-title" data-reveal>
-            <span class="ln"><span data-es="Agentes que responden" data-en="Agents that answer" data-pt="Agentes que respondem">Agentes que responden</span></span>
-            <span class="ln"><span data-es="mientras duermes." data-en="while you sleep." data-pt="enquanto você dorme.">mientras duermes.</span></span>
+            <span class="ln"><span data-es="Cada mensaje" data-en="Every message" data-pt="Cada mensagem">Cada mensaje</span></span>
+            <span class="ln"><span data-es="abre una puerta." data-en="opens a door." data-pt="abre uma porta.">abre una puerta.</span></span>
           </h2>
-          <p class="lead" data-rv data-es="Agentes de IA en tu WhatsApp y tu web que entienden el contexto, agendan citas y venden a cualquier hora. Cuando no saben algo, pasan a una persona: no inventan." data-en="AI agents on your WhatsApp and your site that understand context, book appointments and sell at any hour. When they don't know something, they hand over to a person: they don't make things up." data-pt="Agentes de IA no seu WhatsApp e no seu site que entendem o contexto, agendam e vendem a qualquer hora. Quando não sabem algo, passam para uma pessoa: não inventam.">Agentes de IA en tu WhatsApp y tu web que entienden el contexto, agendan citas y venden a cualquier hora. Cuando no saben algo, pasan a una persona: no inventan.</p>
+          <p class="lead" data-rv data-es="Un agente de IA en tu WhatsApp responde, agenda y vende. Si la conversación necesita criterio humano, pasa a tu equipo." data-en="An AI agent in your WhatsApp replies, books appointments, and sells. When the conversation needs human judgment, it hands over to your team." data-pt="Um agente de IA no WhatsApp responde, agenda e vende. Quando a conversa precisa de atenção humana, encaminha para sua equipe.">Un agente de IA en tu WhatsApp responde, agenda y vende. Si la conversación necesita criterio humano, pasa a tu equipo.</p>
         </header>
         <div class="body">
           <article class="svc" id="omnicanal">
@@ -365,13 +368,13 @@
 
           <div class="live" id="agente-vivo">
             <header class="live__head">
-              <h3 class="live__title" data-es="Esto es lo que ve tu cliente" data-en="This is what your customer sees" data-pt="Isto é o que seu cliente vê">Esto es lo que ve tu cliente</h3>
+              <h3 class="live__title" data-es="Un mensaje. Una cita." data-en="A message. An appointment." data-pt="Uma mensagem. Um agendamento.">Un mensaje. Una cita.</h3>
               <p data-es="Una conversación de ejemplo, al ritmo real: los tiempos son los que medimos en nuestra propia línea de WhatsApp, donde atiende un agente como este." data-en="A sample conversation at real speed: the timings are the ones we measure on our own WhatsApp line, where an agent like this one answers." data-pt="Uma conversa de exemplo, no ritmo real: os tempos são os que medimos na nossa própria linha de WhatsApp, onde atende um agente como este.">Una conversación de ejemplo, al ritmo real: los tiempos son los que medimos en nuestra propia línea de WhatsApp, donde atiende un agente como este.</p>
             </header>
             <div class="live__grid">
               <div class="live__chat" role="img" data-es-aria="Conversación de ejemplo con Valeria, un agente de IA" data-en-aria="Sample conversation with Valeria, an AI agent" data-pt-aria="Conversa de exemplo com a Valeria, um agente de IA" aria-label="Conversación de ejemplo con Valeria, un agente de IA">
                 <p class="live__top">
-                  <span class="live__av" aria-hidden="true"></span>
+                  <span class="live__av" aria-hidden="true">V</span>
                   <span class="live__who"><b>Valeria</b><span><span class="live-dot" aria-hidden="true"></span><span data-es="en línea" data-en="online" data-pt="online">en línea</span></span></span>
                   <span class="live__tag" data-es="Ejemplo" data-en="Example" data-pt="Exemplo">Ejemplo</span>
                 </p>
@@ -403,15 +406,15 @@
       </section>
 
       <!-- ============================================================ 5 · MÁQUINA: software y automatización -->
-      <section id="maquina" class="tramo tramo--maquina" data-tramo="maquina" data-horizon="2" aria-labelledby="maquina-title">
+      <section id="maquina" class="tramo tramo--maquina" data-tramo="maquina" data-shot="0.666667" data-horizon="2" aria-labelledby="maquina-title">
         <!--PLACA:m4v2a-->
         <header class="head head--low">
-          <p class="label" data-rv><span class="label__n">03</span><span data-es="La máquina" data-en="The machine" data-pt="A máquina">La máquina</span></p>
+          <p class="label" data-rv><span class="label__n">03</span><span data-es="Software y automatización" data-en="Software and automation" data-pt="Software e automação">Software y automatización</span></p>
           <h2 class="title" id="maquina-title" data-reveal>
-            <span class="ln"><span data-es="La máquina" data-en="The OCEAN" data-pt="A máquina">La máquina</span></span>
-            <span class="ln"><span data-es="de OCEAN." data-en="machine." data-pt="da OCEAN.">de OCEAN.</span></span>
+            <span class="ln"><span data-es="El trabajo invisible" data-en="The work you never see" data-pt="O trabalho invisível">El trabajo invisible</span></span>
+            <span class="ln"><span data-es="sostiene todo." data-en="holds it all together." data-pt="sustenta tudo.">sostiene todo.</span></span>
           </h2>
-          <p class="lead" data-rv data-es="Software con IA y automatizaciones que trabajan abajo, a oscuras, sin descanso. Tu equipo deja de copiar y pegar y tu operación corre sola." data-en="AI software and automations that work down below, in the dark, without rest. Your team stops copy-pasting and your operation runs on its own." data-pt="Software com IA e automações que trabalham lá embaixo, no escuro, sem descanso. Sua equipe para de copiar e colar e sua operação roda sozinha.">Software con IA y automatizaciones que trabajan abajo, a oscuras, sin descanso. Tu equipo deja de copiar y pegar y tu operación corre sola.</p>
+          <p class="lead" data-rv data-es="Conectamos los datos, el CRM y los pagos con software a medida para que tu equipo pueda dejar de copiar y pegar." data-en="We connect data, CRM and payments with custom software so your team can leave copy and paste behind." data-pt="Conectamos dados, CRM e pagamentos com software sob medida para sua equipe parar de copiar e colar.">Conectamos los datos, el CRM y los pagos con software a medida para que tu equipo pueda dejar de copiar y pegar.</p>
           <dl class="stats" data-rv>
             <div><dt data-es="tu demo funcionando" data-en="your demo up and running" data-pt="sua demo funcionando">tu demo funcionando</dt><dd><span data-count="48">48</span>&#8239;h</dd></div>
             <div><dt data-es="tu operación trabajando" data-en="your operation at work" data-pt="sua operação trabalhando">tu operación trabajando</dt><dd>24/7</dd></div>
@@ -481,15 +484,15 @@
       </section>
 
       <!-- ============================================================ 6 · EMERGE: lo que queda en pie -->
-      <section id="trabajo" class="tramo tramo--emerge" data-tramo="emerge" data-horizon="3" aria-labelledby="trabajo-title">
+      <section id="trabajo" class="tramo tramo--emerge" data-tramo="emerge" data-shot="0.833333" data-horizon="3" aria-labelledby="trabajo-title">
         <!--PLACA:m5a-->
         <header class="head head--low">
-          <p class="label" data-rv><span class="label__n">04</span><span data-es="Lo que queda en pie" data-en="What stays standing" data-pt="O que fica de pé">Lo que queda en pie</span></p>
+          <p class="label" data-rv><span class="label__n">04</span><span data-es="Comercio y casos" data-en="Commerce and selected work" data-pt="Comércio e projetos">Comercio y casos</span></p>
           <h2 class="title" id="trabajo-title" data-reveal>
             <span class="ln"><span data-es="Lo que construimos" data-en="What we build" data-pt="O que construímos">Lo que construimos</span></span>
-            <span class="ln"><span data-es="queda en pie." data-en="stays standing." data-pt="fica de pé.">queda en pie.</span></span>
+            <span class="ln"><span data-es="sale a la luz." data-en="comes to the surface." data-pt="vem à tona.">sale a la luz.</span></span>
           </h2>
-          <p class="lead" data-rv data-es="Webs y tiendas que cargan al instante y venden solas, y sistemas que ya están en producción para clientes reales." data-en="Websites and stores that load instantly and sell on their own, and systems already in production for real clients." data-pt="Sites e lojas que carregam na hora e vendem sozinhos, e sistemas já em produção para clientes reais.">Webs y tiendas que cargan al instante y venden solas, y sistemas que ya están en producción para clientes reales.</p>
+          <p class="lead" data-rv data-es="Compras simples en móvil, sitios que cargan rápido y sistemas que ya trabajan para nuestros clientes." data-en="Easy shopping on mobile, fast websites, and systems already working for our clients." data-pt="Compras simples no celular, sites rápidos e sistemas que já trabalham para nossos clientes.">Compras simples en móvil, sitios que cargan rápido y sistemas que ya trabajan para nuestros clientes.</p>
         </header>
         <div class="body">
           <article class="svc" id="web">
@@ -506,9 +509,14 @@
                   <p class="shop__url" data-es="tumarca.co" data-en="yourbrand.com" data-pt="suamarca.com.br">tumarca.co</p>
                   <p class="shop__from" data-off="2" data-es="Llegando desde Instagram…" data-en="Coming from Instagram…" data-pt="Chegando do Instagram…">Llegando desde Instagram…</p>
                   <div class="shop__page" data-on="2">
-                    <span class="shop__hero"></span>
-                    <span class="shop__title" data-es="Colección nueva" data-en="New collection" data-pt="Coleção nova">Colección nueva</span>
-                    <span class="shop__grid"><i></i><i></i><i></i><i></i></span>
+                    <div class="shop__hero">
+                      <span data-es="Del Pacífico a tu mesa" data-en="From the Pacific to your table" data-pt="Do Pacífico à sua mesa">Del Pacífico a tu mesa</span>
+                    </div>
+                    <span class="shop__title" data-es="Catálogo de ejemplo" data-en="Sample catalog" data-pt="Catálogo de exemplo">Catálogo de ejemplo</span>
+                    <div class="shop__grid">
+                      <div><img src="/v3/casos/pulpa.webp" width="240" height="240" loading="lazy" decoding="async" alt="" /><span data-es="Pulpa de naidí" data-en="Naidí pulp" data-pt="Polpa de açaí">Pulpa de naidí</span></div>
+                      <div><img src="/v3/casos/pepa.webp" width="240" height="240" loading="lazy" decoding="async" alt="" /><span data-es="Naidí entero" data-en="Whole naidí" data-pt="Açaí inteiro">Naidí entero</span></div>
+                    </div>
                   </div>
                   <div class="shop__pay" data-on="3">
                     <span class="shop__total" data-es="Total $89.900" data-en="Total $89.90" data-pt="Total R$ 189,90">Total $89.900</span>
@@ -533,37 +541,49 @@
             </header>
             <div class="cases">
               <article class="case">
-                <p class="case__n" aria-hidden="true">01</p>
-                <h4 class="case__name">Outstanding Garage Doors</h4>
-                <p class="case__place">Miami, Florida</p>
-                <dl class="case__rows">
-                  <div><dt data-es="Contexto" data-en="Context" data-pt="Contexto">Contexto</dt><dd data-es="Negocio de servicio local en el sur de Florida." data-en="A local service business in South Florida." data-pt="Negócio de serviço local no sul da Flórida.">Negocio de servicio local en el sur de Florida.</dd></div>
-                  <div><dt data-es="Sistema" data-en="System" data-pt="Sistema">Sistema</dt><dd data-es="Su WhatsApp conectado a un agente de IA que responde y agenda." data-en="Their WhatsApp connected to an AI agent that answers and books." data-pt="O WhatsApp deles conectado a um agente de IA que responde e agenda.">Su WhatsApp conectado a un agente de IA que responde y agenda.</dd></div>
-                  <div class="case__state"><dt data-es="Estado" data-en="Status" data-pt="Estado">Estado</dt><dd data-es="Agente en operación y sitio en inglés publicado." data-en="Agent live and English site published." data-pt="Agente em operação e site em inglês publicado.">Agente en operación y sitio en inglés publicado.</dd></div>
-                </dl>
-                <a class="case__link" href="https://www.outstandinggaragedoors.com/" target="_blank" rel="noopener"><span>outstandinggaragedoors.com</span><svg class="ico" aria-hidden="true"><use href="#i-out" /></svg></a>
+                <div class="case__media">
+                  <img src="/v3/casos/outstanding.webp" width="1440" height="756" alt="" loading="lazy" decoding="async" />
+                </div>
+                <div class="case__copy">
+                  <h4 class="case__name">Outstanding Garage Doors</h4>
+                  <p class="case__place">Miami, Florida</p>
+                  <dl class="case__rows">
+                    <div><dt data-es="Contexto" data-en="Context" data-pt="Contexto">Contexto</dt><dd data-es="Negocio de servicio local en el sur de Florida." data-en="A local service business in South Florida." data-pt="Negócio de serviço local no sul da Flórida.">Negocio de servicio local en el sur de Florida.</dd></div>
+                    <div><dt data-es="Sistema" data-en="System" data-pt="Sistema">Sistema</dt><dd data-es="Su WhatsApp conectado a un agente de IA que responde y agenda." data-en="Their WhatsApp connected to an AI agent that answers and books." data-pt="O WhatsApp deles conectado a um agente de IA que responde e agenda.">Su WhatsApp conectado a un agente de IA que responde y agenda.</dd></div>
+                    <div class="case__state"><dt data-es="Estado" data-en="Status" data-pt="Estado">Estado</dt><dd data-es="Agente en operación y sitio en inglés publicado." data-en="Agent live and English site published." data-pt="Agente em operação e site em inglês publicado.">Agente en operación y sitio en inglés publicado.</dd></div>
+                  </dl>
+                  <a class="case__link" href="https://www.outstandinggaragedoors.com/" target="_blank" rel="noopener"><span>outstandinggaragedoors.com</span><svg class="ico" aria-hidden="true"><use href="#i-out" /></svg></a>
+                </div>
               </article>
               <article class="case">
-                <p class="case__n" aria-hidden="true">02</p>
-                <h4 class="case__name">Naidikó</h4>
-                <p class="case__place" data-es="Pacífico colombiano" data-en="Colombian Pacific" data-pt="Pacífico colombiano">Pacífico colombiano</p>
-                <dl class="case__rows">
-                  <div><dt data-es="Contexto" data-en="Context" data-pt="Contexto">Contexto</dt><dd data-es="Marca de naidí (el açaí del Pacífico) con tres modelos de venta en un mismo sitio." data-en="A brand of naidí (the Pacific’s açaí) with three sales models on one site." data-pt="Marca de naidí (o açaí do Pacífico) com três modelos de venda em um mesmo site.">Marca de naidí (el açaí del Pacífico) con tres modelos de venta en un mismo sitio.</dd></div>
-                  <div><dt data-es="Sistema" data-en="System" data-pt="Sistema">Sistema</dt><dd data-es="Una web propia con catálogo, formularios y pedidos por WhatsApp." data-en="Their own website with catalog, forms and WhatsApp orders." data-pt="Um site próprio com catálogo, formulários e pedidos pelo WhatsApp.">Una web propia con catálogo, formularios y pedidos por WhatsApp.</dd></div>
-                  <div class="case__state"><dt data-es="Estado" data-en="Status" data-pt="Estado">Estado</dt><dd data-es="En producción: catálogo, mayoreo e inversión activos." data-en="Live: catalog, wholesale and investment active." data-pt="No ar: catálogo, atacado e investimento ativos.">En producción: catálogo, mayoreo e inversión activos.</dd></div>
-                </dl>
-                <a class="case__link" href="https://www.naidiko.co/" target="_blank" rel="noopener"><span>naidiko.co</span><svg class="ico" aria-hidden="true"><use href="#i-out" /></svg></a>
+                <div class="case__media">
+                  <img src="/v3/casos/naidiko.webp" width="1440" height="756" alt="" loading="lazy" decoding="async" />
+                </div>
+                <div class="case__copy">
+                  <h4 class="case__name">Naidikó</h4>
+                  <p class="case__place" data-es="Pacífico colombiano" data-en="Colombian Pacific" data-pt="Pacífico colombiano">Pacífico colombiano</p>
+                  <dl class="case__rows">
+                    <div><dt data-es="Contexto" data-en="Context" data-pt="Contexto">Contexto</dt><dd data-es="Marca de naidí (el açaí del Pacífico) con tres modelos de venta en un mismo sitio." data-en="A brand of naidí (the Pacific’s açaí) with three sales models on one site." data-pt="Marca de naidí (o açaí do Pacífico) com três modelos de venda em um mesmo site.">Marca de naidí (el açaí del Pacífico) con tres modelos de venta en un mismo sitio.</dd></div>
+                    <div><dt data-es="Sistema" data-en="System" data-pt="Sistema">Sistema</dt><dd data-es="Una web propia con catálogo, formularios y pedidos por WhatsApp." data-en="Their own website with catalog, forms and WhatsApp orders." data-pt="Um site próprio com catálogo, formulários e pedidos pelo WhatsApp.">Una web propia con catálogo, formularios y pedidos por WhatsApp.</dd></div>
+                    <div class="case__state"><dt data-es="Estado" data-en="Status" data-pt="Estado">Estado</dt><dd data-es="En producción: catálogo, mayoreo e inversión activos." data-en="Live: catalog, wholesale and investment active." data-pt="No ar: catálogo, atacado e investimento ativos.">En producción: catálogo, mayoreo e inversión activos.</dd></div>
+                  </dl>
+                  <a class="case__link" href="https://www.naidiko.co/" target="_blank" rel="noopener"><span>naidiko.co</span><svg class="ico" aria-hidden="true"><use href="#i-out" /></svg></a>
+                </div>
               </article>
               <article class="case">
-                <p class="case__n" aria-hidden="true">03</p>
-                <h4 class="case__name">Álvaro Arroyo</h4>
-                <p class="case__place">Colombia</p>
-                <dl class="case__rows">
-                  <div><dt data-es="Contexto" data-en="Context" data-pt="Contexto">Contexto</dt><dd data-es="Figura pública sin un sitio propio donde publicar." data-en="A public figure with no website of his own." data-pt="Figura pública sem um site próprio para publicar.">Figura pública sin un sitio propio donde publicar.</dd></div>
-                  <div><dt data-es="Sistema" data-en="System" data-pt="Sistema">Sistema</dt><dd data-es="Un sitio de autoridad de 20 páginas pensado para buscadores." data-en="A 20-page authority site built for search engines." data-pt="Um site de autoridade de 20 páginas pensado para buscadores.">Un sitio de autoridad de 20 páginas pensado para buscadores.</dd></div>
-                  <div class="case__state"><dt data-es="Estado" data-en="Status" data-pt="Estado">Estado</dt><dd data-es="Publicado, con 20 páginas indexadas." data-en="Published, with 20 indexed pages." data-pt="Publicado, com 20 páginas indexadas.">Publicado, con 20 páginas indexadas.</dd></div>
-                </dl>
-                <a class="case__link" href="https://www.alvaroarroyo.com/" target="_blank" rel="noopener"><span>alvaroarroyo.com</span><svg class="ico" aria-hidden="true"><use href="#i-out" /></svg></a>
+                <div class="case__media">
+                  <img src="/v3/casos/arroyo.webp" width="1440" height="756" alt="" loading="lazy" decoding="async" />
+                </div>
+                <div class="case__copy">
+                  <h4 class="case__name">Álvaro Arroyo</h4>
+                  <p class="case__place">Colombia</p>
+                  <dl class="case__rows">
+                    <div><dt data-es="Contexto" data-en="Context" data-pt="Contexto">Contexto</dt><dd data-es="Figura pública sin un sitio propio donde publicar." data-en="A public figure with no website of his own." data-pt="Figura pública sem um site próprio para publicar.">Figura pública sin un sitio propio donde publicar.</dd></div>
+                    <div><dt data-es="Sistema" data-en="System" data-pt="Sistema">Sistema</dt><dd data-es="Un sitio de autoridad de 20 páginas pensado para buscadores." data-en="A 20-page authority site built for search engines." data-pt="Um site de autoridade de 20 páginas pensado para buscadores.">Un sitio de autoridad de 20 páginas pensado para buscadores.</dd></div>
+                    <div class="case__state"><dt data-es="Estado" data-en="Status" data-pt="Estado">Estado</dt><dd data-es="Publicado, con 20 páginas indexadas." data-en="Published, with 20 indexed pages." data-pt="Publicado, com 20 páginas indexadas.">Publicado, con 20 páginas indexadas.</dd></div>
+                  </dl>
+                  <a class="case__link" href="https://www.alvaroarroyo.com/" target="_blank" rel="noopener"><span>alvaroarroyo.com</span><svg class="ico" aria-hidden="true"><use href="#i-out" /></svg></a>
+                </div>
               </article>
             </div>
 
@@ -602,15 +622,15 @@
       </section>
 
       <!-- ============================================================ 7 · CUMBRE: hablemos, la agenda y los pagos -->
-      <section id="hablemos" class="tramo tramo--cumbre" data-tramo="cumbre" data-horizon="4" data-fab-hide aria-labelledby="hablemos-title">
+      <section id="hablemos" class="tramo tramo--cumbre" data-tramo="cumbre" data-shot="1" data-horizon="4" data-fab-hide aria-labelledby="hablemos-title">
         <!--PLACA:m6a-->
         <header class="head head--top">
-          <p class="label" data-rv><span class="label__n">05</span><span data-es="La cumbre" data-en="The summit" data-pt="O cume">La cumbre</span></p>
+          <p class="label" data-rv><span class="label__n">05</span><span data-es="Contacto" data-en="Contact" data-pt="Contato">Contacto</span></p>
           <h2 class="title title--xl" id="hablemos-title" data-reveal>
-            <span class="ln"><span data-es="¿Llevamos tu marca" data-en="Shall we take your brand" data-pt="Vamos levar sua marca">¿Llevamos tu marca</span></span>
-            <span class="ln"><span data-es="a lo más alto?" data-en="to the top?" data-pt="ao topo?">a lo más alto?</span></span>
+            <span class="ln"><span data-es="¿Qué construimos" data-en="What should we" data-pt="O que vamos">¿Qué construimos</span></span>
+            <span class="ln"><span data-es="contigo?" data-en="build together?" data-pt="construir juntos?">contigo?</span></span>
           </h2>
-          <p class="lead" data-rv data-es="Cuéntanos qué hace tu negocio y en la misma conversación te mostramos qué podemos automatizar. Sin formularios eternos." data-en="Tell us what your business does and in the same chat we'll show you what we can automate. No endless forms." data-pt="Conte o que seu negócio faz e na mesma conversa mostramos o que podemos automatizar. Sem formulários intermináveis.">Cuéntanos qué hace tu negocio y en la misma conversación te mostramos qué podemos automatizar. Sin formularios eternos.</p>
+          <p class="lead" data-rv data-es="Cuéntanos dónde se atasca tu operación. En la primera conversación vemos qué vale la pena automatizar y qué podemos prototipar en 48 horas." data-en="Tell us where your operation gets stuck. In our first conversation, we’ll identify what is worth automating and what we can prototype in 48 hours." data-pt="Conte onde sua operação trava. Na primeira conversa, vemos o que vale automatizar e o que podemos prototipar em 48 horas.">Cuéntanos dónde se atasca tu operación. En la primera conversación vemos qué vale la pena automatizar y qué podemos prototipar en 48 horas.</p>
           <div class="actions" data-rv>
             <a class="btn btn--primary btn--lg" data-wa="general" href="https://wa.me/573138721665" target="_blank" rel="noopener">
               <svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg>
@@ -707,7 +727,7 @@
             <button type="button" data-lang="pt" aria-pressed="false" lang="pt">PT</button>
           </div>
           <button class="footer__btn" type="button" data-motion-toggle aria-pressed="false" hidden data-es="Pausar el movimiento" data-en="Pause motion" data-pt="Pausar o movimento">Pausar el movimiento</button>
-          <button class="footer__btn" type="button" data-replay hidden data-es="Repetir la intro" data-en="Replay the intro" data-pt="Repetir a intro">Repetir la intro</button>
+          <button class="footer__btn" type="button" data-replay hidden data-es="Ver intro de marca" data-en="Play brand intro" data-pt="Ver intro da marca">Ver intro de marca</button>
         </div>
       </div>
       <a class="footer__brand" href="#inicio" data-es-aria="OCEAN, al inicio" data-en-aria="OCEAN, back to top" data-pt-aria="OCEAN, ao início" aria-label="OCEAN, al inicio"><!--LOGO_R:footer__logo--></a>
