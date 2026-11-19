@@ -1,14 +1,16 @@
-// QA de la maqueta en gris (v3, etapa 1): dev-world.html.
+// QA del mundo de la v3 (película de placas sobre la toma de scroll): dev-world.html.
 //
 //   node qa/maqueta.cjs [url-base] [--film] [--no-video] [--no-captures]
 //
 // Sin url-base arma el sitio (npm run build) y lo sirve con `vite preview` en el puerto 4187. Prueba:
-//   1. capturas: 20 puntos de la toma con ?qa=seek= en escritorio (1440×900) y teléfono (390×844, DPR 3), dos corridas
-//      que deben dar capturas idénticas byte a byte;
+//   1. capturas: 20 puntos de la toma (cada placa quieta y cada cruce a 30 % y 70 %) con ?qa=seek= en escritorio
+//      (1440×900) y teléfono (390×844, DPR 3), dos corridas que deben dar capturas idénticas byte a byte;
 //   2. ida y vuelta con la rueda (Lenis) y con el teclado (End, Home, PageDown) en escritorio, y con gesto táctil real
 //      (CDP Input.dispatchTouchEvent, scroll nativo) en el teléfono: la toma avanza de forma monótona y sin saltos (el
-//      paso de `s` por cuadro no pasa del tope del resorte, y la cámara nunca se mueve más de lo que ese paso permite);
+//      paso de `s` por cuadro no pasa del tope del resorte);
 //   3. reposo: sin scroll ni puntero baja a 30 fps y a los 4 s no pide cuadros (requestAnimationFrame contado);
+//   3b. respaldos: con movimiento reducido, la versión quieta (html.world-still, sin lienzo, las placas en <picture>);
+//      sin JavaScript, las placas en <picture>;
 //   4. videos de la toma completa con recordVideo de Playwright (escritorio y teléfono) y, con --film, una película
 //      cuadro a cuadro (seek + ffmpeg) que muestra la coreografía sin el atraso de SwiftShader.
 // Todo queda en qa/out/maqueta/. Termina en «maqueta en verde» o lista los fallos.
@@ -27,7 +29,13 @@ let BASE = args.find((a) => /^https?:/.test(a))
 const LAUNCH = { args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'] }
 const DESK = { name: 'escritorio', viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 }
 const PHONE = { name: 'telefono', viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, userAgent: devices['iPhone 13'].userAgent }
-const POINTS = Array.from({ length: 20 }, (_, i) => +(i / 19).toFixed(4))
+// p = s · 6: cada placa quieta (p = 0…6), cada cruce a 30 % y 70 % (p = i + 0,42 e i + 0,58) y el movimiento de la
+// primera (p = 0,2)
+const POINTS = [...[0, 0.2, 1, 2, 3, 4, 5, 6], ...[0, 1, 2, 3, 4, 5].flatMap((i) => [i + 0.42, i + 0.58])]
+  .sort((a, b) => a - b)
+  .map((p) => +(p / 6).toFixed(5))
+/** las capturas corren el mundo en SwiftShader: ?q= lo permite (sin él, WebGL por software va a la versión quieta) */
+const Q = 'q=high'
 /** el tope del resorte (camera.ts: vmax 0,4 tomas/s, dt ≤ 0,05 s por paso) */
 const STEP_MAX = 0.4 * 0.05 + 1e-6
 
@@ -58,7 +66,7 @@ async function open(ctx, query, errors) {
   page.on('console', (m) => {
     if (m.type() === 'error') errors.push(`console: ${m.text().slice(0, 300)}`)
   })
-  await page.goto(`${BASE}/dev-world?${query}`, { waitUntil: 'load' })
+  await page.goto(`${BASE}/dev-world?${Q}&${query}`, { waitUntil: 'load' })
   await page.waitForFunction(() => window.__world && (window.__world.ready || window.__world.error), null, { timeout: 300000 })
   await page.evaluate(() => document.fonts.ready)
   const err = await page.evaluate(() => window.__world.error || '')
@@ -79,9 +87,9 @@ async function captures(browser) {
       for (let i = 0; i < POINTS.length; i++) {
         const s = POINTS[i]
         const page = await open(ctx, `qa=seek=${s}`, errors)
-        await page.screenshot({ path: path.join(dirs[run], `${String(i).padStart(2, '0')}-s${s.toFixed(3)}.png`) })
-        if (run === 0 && [0, 7, 12, 19].includes(i)) bench[`${dev.name} s=${s.toFixed(2)}`] = await page.evaluate(() => window.__world.world.bench(5))
-        if (run === 0 && i === 0) bench[`${dev.name} dpr`] = await page.evaluate(() => window.__world.world.dpr)
+        await page.screenshot({ path: path.join(dirs[run], `${String(i).padStart(2, '0')}-p${(s * 6).toFixed(2)}.png`) })
+        if (run === 0 && (i === 0 || i % 3 === 2)) bench[`${dev.name} p=${(s * 6).toFixed(2)}`] = await page.evaluate(() => window.__world.world.bench(5))
+        if (run === 0 && i === 0) bench[`${dev.name} dpr`] = await page.evaluate(() => window.__world.world.pixelRatio)
         await page.close()
       }
       await ctx.close()
@@ -100,21 +108,6 @@ async function captures(browser) {
 }
 
 /* ---------------- 2 · ida y vuelta ---------------- */
-/** la rapidez máxima de la cámara en la toma (unidades de mundo por unidad de s), medida con la misma pose */
-async function pathSpeed(page) {
-  return page.evaluate(() => {
-    let max = 0
-    const N = 4000
-    let a = window.__world.poseAt(0)
-    for (let i = 1; i <= N; i++) {
-      const b = window.__world.poseAt(i / N)
-      max = Math.max(max, Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z) * N)
-      a = b
-    }
-    return max
-  })
-}
-
 /** espera a que el scroll se quede quieto (el teclado de Chrome y Lenis animan) y la toma llegue a su objetivo */
 async function settle(page, timeout = 60000) {
   await page.waitForTimeout(150)
@@ -136,10 +129,9 @@ async function settle(page, timeout = 60000) {
 
 const mark = (page) => page.evaluate(() => window.__world.world.samples.length)
 
-/** revisa un tramo de cuadros: monótono en la dirección pedida, sin pasos de `s` mayores al tope, sin saltos de cámara */
-function analyze(label, samples, dir, speed, expectEnd, pxTol = 0) {
+/** revisa un tramo de cuadros: monótono en la dirección pedida y sin pasos de `s` mayores al tope del resorte */
+function analyze(label, samples, dir, expectEnd, pxTol = 0) {
   let worstStep = 0
-  let worstCam = 0
   let back = 0
   let worstBack = 0
   let tiny = 0
@@ -155,12 +147,10 @@ function analyze(label, samples, dir, speed, expectEnd, pxTol = 0) {
       worstBack = Math.max(worstBack, -dir * ds)
     } else if (dir * ds < -1e-6) tiny++
     worstStep = Math.max(worstStep, Math.abs(ds))
-    const dp = Math.hypot(b.cx - a.cx, b.cy - a.cy, b.cz - a.cz)
-    worstCam = Math.max(worstCam, dp)
-    if (Math.abs(ds) > STEP_MAX || dp > speed * Math.abs(ds) * 1.02 + 1e-3) jumps++
+    if (Math.abs(ds) > STEP_MAX) jumps++
   }
   const end = samples.length ? samples[samples.length - 1].s : NaN
-  const detail = `${samples.length} cuadros, paso máx. de s ${worstStep.toFixed(4)} (tope ${STEP_MAX.toFixed(4)}), cámara máx. ${worstCam.toFixed(2)} u/cuadro${tiny ? `, ${tiny} retrocesos de menos de 1 px de scroll` : ''}`
+  const detail = `${samples.length} cuadros, paso máx. de s ${worstStep.toFixed(4)} (tope ${STEP_MAX.toFixed(4)})${tiny ? `, ${tiny} retrocesos de menos de 1 px de scroll` : ''}`
   if (samples.length < 5) return fail(`${label}: casi no hubo cuadros (${samples.length})`)
   if (back) fail(`${label}: la toma retrocedió en ${back} cuadros (hasta ${worstBack.toExponential(2)} de s; ${detail})`)
   if (jumps) fail(`${label}: ${jumps} saltos (${detail})`)
@@ -175,7 +165,6 @@ async function wheelTrip(browser) {
   await ctx.addInitScript(RAF_COUNTER)
   // la ida y vuelta mide la toma, no la imagen: un lienzo chico va más rápido en SwiftShader y no cambia s
   const page = await open(ctx, 'qa=trace&dpr=0.5', errors)
-  const speed = await pathSpeed(page)
   const maxScroll = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight)
   await page.mouse.move(720, 450)
 
@@ -189,7 +178,7 @@ async function wheelTrip(browser) {
   await settle(page)
   let m1 = await mark(page)
   let S = await page.evaluate(([a, b]) => window.__world.world.samples.slice(a, b), [m0, m1])
-  analyze('rueda, ida', S, +1, speed, 1)
+  analyze('rueda, ida', S, +1, 1)
 
   // vuelta
   m0 = m1
@@ -201,7 +190,7 @@ async function wheelTrip(browser) {
   await settle(page)
   m1 = await mark(page)
   S = await page.evaluate(([a, b]) => window.__world.world.samples.slice(a, b), [m0, m1])
-  analyze('rueda, vuelta', S, -1, speed, 0)
+  analyze('rueda, vuelta', S, -1, 0)
 
   // el teclado necesita el foco en la página (la rueda no lo da): un clic en un lugar sin enlaces
   await page.mouse.click(1300, 120)
@@ -220,7 +209,7 @@ async function wheelTrip(browser) {
     await settle(page)
     m1 = await mark(page)
     S = await page.evaluate(([a, b]) => window.__world.world.samples.slice(a, b), [m0, m1])
-    analyze(`teclado ${key}${times > 1 ? ` ×${times}` : ''}`, S, dir, speed, end)
+    analyze(`teclado ${key}${times > 1 ? ` ×${times}` : ''}`, S, dir, end)
   }
 
   await rest(page, 'escritorio')
@@ -245,10 +234,9 @@ async function touchTrip(browser) {
   await ctx.addInitScript(RAF_COUNTER)
   const page = await open(ctx, 'qa=trace&dpr=0.5', errors)
   const cdp = await ctx.newCDPSession(page)
-  const speed = await pathSpeed(page)
   // cuánto de la toma vale 1 px de scroll (la pendiente mayor entre anclas)
   const pxTol = await page.evaluate(() => {
-    const A = window.__world.anchors()
+    const A = window.__world.track.anchors()
     let m = 0
     for (let i = 1; i < A.length; i++) if (A[i].y > A[i - 1].y) m = Math.max(m, (A[i].s - A[i - 1].s) / (A[i].y - A[i - 1].y))
     return m
@@ -265,7 +253,7 @@ async function touchTrip(browser) {
   await settle(page)
   let m1 = await mark(page)
   let S = await page.evaluate(([a, b]) => window.__world.world.samples.slice(a, b), [m0, m1])
-  analyze('táctil, ida', S, +1, speed, 1, pxTol)
+  analyze('táctil, ida', S, +1, 1, pxTol)
 
   m0 = m1
   for (let i = 0; i < 120 && (await page.evaluate(() => scrollY)) > 0; i++) {
@@ -276,7 +264,7 @@ async function touchTrip(browser) {
   await settle(page)
   m1 = await mark(page)
   S = await page.evaluate(([a, b]) => window.__world.world.samples.slice(a, b), [m0, m1])
-  analyze('táctil, vuelta', S, -1, speed, 0, pxTol)
+  analyze('táctil, vuelta', S, -1, 0, pxTol)
 
   await rest(page, 'teléfono')
   if (errors.length) fail(`teléfono: errores en la consola: ${[...new Set(errors)].slice(0, 3).join(' | ')}`)
@@ -309,6 +297,36 @@ async function rest(page, label) {
   void r0
 }
 
+/* ---------------- 3b · respaldos ---------------- */
+async function fallbacks(browser) {
+  console.log('\n3b · respaldos: versión quieta y sin JavaScript')
+  for (const [label, extra] of [
+    ['movimiento reducido', { reducedMotion: 'reduce' }],
+    ['sin JavaScript', { javaScriptEnabled: false }],
+  ]) {
+    for (const dev of [DESK, PHONE]) {
+      const ctx = await browser.newContext(ctxOpts(dev, extra))
+      const page = await ctx.newPage()
+      // sin ?q=: en SwiftShader también iría a la versión quieta; aquí lo que se prueba es la razón pedida
+      await page.goto(`${BASE}/dev-world`, { waitUntil: 'load' })
+      if (extra.javaScriptEnabled !== false) await page.waitForFunction(() => window.__world && window.__world.ready, null, { timeout: 60000 })
+      await page.evaluate(() => document.fonts.ready)
+      const r = await page.evaluate(async () => {
+        const img = document.querySelector('[data-tramo] .still img')
+        if (img && !img.complete) await new Promise((res) => img.addEventListener('load', res, { once: true }))
+        const cv = getComputedStyle(document.getElementById('world'))
+        const shown = [...document.querySelectorAll('.still')].filter((p) => getComputedStyle(p).display !== 'none').length
+        return { still: document.documentElement.classList.contains('world-still'), on: document.documentElement.classList.contains('world-on'), canvas: cv.display !== 'none' && cv.opacity !== '0', shown, src: img && img.currentSrc.split('/').pop(), w: img && img.naturalWidth }
+      })
+      const okJs = extra.javaScriptEnabled === false ? !r.on : r.still && !r.canvas
+      if (okJs && r.shown === 7 && r.w > 0) ok(`${label}, ${dev.name}: las 7 placas en <picture> (la primera: ${r.src}, ${r.w} px)`)
+      else fail(`${label}, ${dev.name}: ${JSON.stringify(r)}`)
+      await page.screenshot({ path: path.join(OUT, `quieta-${label.split(' ')[0]}-${dev.name}.png`) })
+      await ctx.close()
+    }
+  }
+}
+
 /* ---------------- 4 · videos ---------------- */
 async function videos(browser) {
   console.log('\n4 · videos de la toma completa (recordVideo)')
@@ -317,8 +335,8 @@ async function videos(browser) {
   for (const dev of [DESK, PHONE]) {
     const errors = []
     const ctx = await browser.newContext(ctxOpts(dev, { recordVideo: { dir: tmp, size: dev.viewport } }))
-    // el video mide lo que el sandbox alcanza a pintar: lienzo a media resolución para que SwiftShader dé más cuadros
-    const page = await open(ctx, `qa=video&dpr=${dev === DESK ? 0.5 : 0.6}`, errors)
+    // el video mide lo que el sandbox alcanza a pintar (SwiftShader, sin GPU): la fluidez real se mide en un teléfono
+    const page = await open(ctx, 'qa=video', errors)
     const maxScroll = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight)
     await page.waitForTimeout(1200)
     if (dev === DESK) {
@@ -406,6 +424,7 @@ async function serve() {
     const bench = CAPTURES ? await captures(browser) : {}
     await wheelTrip(browser)
     await touchTrip(browser)
+    await fallbacks(browser)
     if (VIDEO) await videos(browser)
     if (FILM) await film(browser)
     console.log('\nms por cuadro en este equipo (SwiftShader, escena + pasada final, mediana de 5):')
