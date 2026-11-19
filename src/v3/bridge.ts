@@ -8,9 +8,9 @@
  * objeto vacío y se usan los stubs (src/v3/stubs.ts). Así esta rama compila y funciona sola, y al integrar las tres
  * ramas los módulos reales entran sin tocar una línea.
  *
- * La intro en curso (rama v3-intro, 18-nov) expone `introDue()` / `bootIntro()` en vez de `shouldRunIntro()` /
- * `runIntro()`, y avisa el final con `ocean:intro-done` en window y con `handle.done`: el puente acepta los dos
- * nombres y las dos señales.
+ * La intro (src/intro-v3, fusionada en v3 el 18-nov) cumple la API: `runIntro()` devuelve una promesa que se cumple al
+ * terminar o al saltarla, y además avisa `ocean:intro-done` en window. El puente escucha las dos señales y tiene una
+ * salida de seguridad (9 s): la página nunca queda tapada. Acepta también los nombres viejos (`introDue`/`bootIntro`).
  */
 
 export interface WorldHandle {

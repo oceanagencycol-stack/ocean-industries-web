@@ -13,6 +13,9 @@ const SITE_URL = (process.env.SITE_URL || 'https://www.oceanindustries.com.co').
 /** Páginas: la web es una sola (index), la privacidad y la 404 que Vercel sirve en cualquier ruta que no existe. */
 const PAGES = ['index', 'privacidad', '404'] as const
 
+/** Páginas de desarrollo (noindex, fuera del sitemap): la intro v3 sola, sobre el espacio de M1a. */
+const DEV_PAGES = ['dev-intro'] as const
+
 /** Identificador del build (va en un <meta>: sirve para saber qué versión está viendo alguien). */
 const BUILD_ID = Date.now().toString(36)
 
@@ -60,6 +63,28 @@ function plate(name: string, first: boolean): string {
     `<img src="${b}-1600.webp" alt="" width="1600" height="893" decoding="async" ${load}>` +
     `</picture></div>`
   )
+}
+
+/**
+ * dev-intro.html: el logotipo de la barra sale de marca/v3/logo-sin-r.svg tal cual (en el HTML desde el primer cuadro,
+ * para que con movimiento reducido ya esté en su lugar). Solo toca esa página.
+ */
+function devIntroPage(): Plugin {
+  return {
+    name: 'ocean-dev-intro',
+    transformIndexHtml: {
+      order: 'post',
+      handler(html, ctx) {
+        if (!/dev-intro\.html$/.test(ctx.filename)) return html
+        const svg = readFileSync(resolve(ROOT, 'marca/v3/logo-sin-r.svg'), 'utf8')
+          .trim()
+          .replace(/<title>[^<]*<\/title>/, '')
+          .replace('<svg ', '<svg aria-hidden="true" focusable="false" ')
+        // la página no usa la fuente de la v2: sin su precarga (Chrome avisaría que no se usó)
+        return html.replace('<!--LOGO_V3_SIN_R-->', svg).replace(/\s*<link rel="preload"[^>]*as="font"[^>]*>/g, '')
+      },
+    },
+  }
 }
 
 /** Marcadores del HTML: la marca, las placas y los botones de las escenas salen de una sola fuente. */
@@ -182,7 +207,7 @@ function devApiMocks(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [devApiMocks(), oceanBrand(), preloadFonts(), inlineCSS(), bootScriptCSP()],
+  plugins: [devApiMocks(), oceanBrand(), preloadFonts(), inlineCSS(), bootScriptCSP(), devIntroPage()],
   server: { port: 5175 },
   build: {
     target: 'es2022',
@@ -190,7 +215,7 @@ export default defineConfig({
     assetsInlineLimit: 0,
     chunkSizeWarningLimit: 900,
     rolldownOptions: {
-      input: Object.fromEntries(PAGES.map((p) => [p === 'index' ? 'main' : p, resolve(ROOT, `${p}.html`)])),
+      input: Object.fromEntries([...PAGES, ...DEV_PAGES].map((p) => [p === 'index' ? 'main' : p, resolve(ROOT, `${p}.html`)])),
     },
   },
 })

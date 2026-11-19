@@ -4,7 +4,6 @@ Medios de la página v3 (todo por código, en local y gratis; nada de IA):
 
   public/v3/pagina/<placa>-{960,1600}.{avif,webp}   las placas de respaldo de cada tramo (16:9)
   public/v3/pagina/<placa>-v.{avif,webp}            su encuadre vertical para el teléfono (720×1280)
-  public/v3/grano-pagina.png                         la tesela de grano de película (256 px, sin costuras)
   public/favicon.svg, favicon-32.png, apple-touch-icon.png, icon-192.png, icon-512.png
   public/og.jpg                                      1200×630: el logotipo OCEAN® sobre M1a
 
@@ -75,7 +74,7 @@ def grano() -> None:
     g = (g - g.mean()) / g.std()
     # 32 niveles: a opacidad 0,06 no se distinguen de 256 y la tesela pesa la mitad
     px = (np.clip(128 + g * 46, 0, 255) / 8).round().astype(np.uint8) * 8
-    Image.fromarray(px, 'L').quantize(32).save(ROOT / 'public/v3/grano-pagina.png', optimize=True)
+    Image.fromarray(px, 'L').quantize(32).save(ROOT / 'public/v3/grano-pagina.png', optimize=True)  # alternativa, fuera de la web
     print('grano listo')
 
 
@@ -159,6 +158,8 @@ def og() -> None:
 
 
 if __name__ == '__main__':
-    what = sys.argv[1:] or ['placas', 'grano', 'iconos', 'og']
+    # el grano de la casa es public/v3/grano.png (tools/grano.mjs, del paquete de la intro); `grano` aquí queda como
+    # alternativa y no se usa en la web
+    what = sys.argv[1:] or ['placas', 'iconos', 'og']
     for w in what:
         {'placas': placas, 'grano': grano, 'iconos': iconos, 'og': og}[w]()

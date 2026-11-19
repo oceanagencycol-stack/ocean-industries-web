@@ -214,13 +214,14 @@ html.intro-due .intro-veil {
   }
 }
 
-/* grano de película: una tesela de 256 px sobre todo, fina, en luz suave (tools/medios_pagina.py) */
+/* grano de película: la tesela de la casa (public/v3/grano.png, tools/grano.mjs: 256 px, la misma de la intro) sobre
+   todo, fina, en luz suave */
 .grain {
   position: fixed;
   inset: 0;
   z-index: 90;
   pointer-events: none;
-  background: url('/v3/grano-pagina.png') repeat;
+  background: url('/v3/grano.png') repeat;
   background-size: 256px;
   mix-blend-mode: soft-light;
   opacity: 0.06;

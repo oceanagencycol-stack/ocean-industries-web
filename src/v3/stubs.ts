@@ -1,5 +1,6 @@
 /**
- * Stubs mínimos de los otros dos paquetes de la v3, para que la página funcione sola mientras no estén en su rama.
+ * Stubs mínimos de los otros dos paquetes de la v3 (la intro real ya está en v3 desde el 18-nov: su stub solo queda
+ * por si el módulo faltara), para que la página funcione sola mientras no estén en su rama.
  * Se reemplazan solos al integrar: `bridge.ts` busca primero los módulos reales (import.meta.glob) y solo si no
  * existen usa estos. Nada que tocar aquí cuando lleguen.
  *
