@@ -95,7 +95,7 @@ async function captures(browser) {
       }
       await ctx.close()
     }
-    // idéntica byte a byte; o, donde SwiftShader redondea distinto un borde animado (la línea del agua), a lo sumo
+    // idéntica byte a byte; o, donde SwiftShader redondea distinto entre corridas (bordes, degradados), a lo sumo
     // 3/255 en a lo sumo el 0,05 % de los píxeles (se informa)
     let same = 0
     const near = []
@@ -119,7 +119,7 @@ async function captures(browser) {
       else fail(`${dev.name}: ${f} cambia entre corridas (${n} px, hasta ${max}/255)`)
     }
     if (same + near.length === POINTS.length)
-      ok(`${dev.name}: ${same}/${POINTS.length} capturas idénticas byte a byte${near.length ? `; ${near.length} con ruido de redondeo de SwiftShader en la línea del agua: ${near.join(', ')}` : ''}`)
+      ok(`${dev.name}: ${same}/${POINTS.length} capturas idénticas byte a byte${near.length ? `; ${near.length} con ruido de redondeo de SwiftShader: ${near.join(', ')}` : ''}`)
     if (errors.length) fail(`${dev.name}: errores en la consola: ${[...new Set(errors)].slice(0, 3).join(' | ')}`)
   }
   return bench
@@ -449,7 +449,7 @@ async function serve() {
     await fallbacks(browser)
     if (VIDEO) await videos(browser)
     if (FILM) await film(browser)
-    console.log('\nms por cuadro en este equipo (SwiftShader, escena + pasada final, mediana de 5):')
+    console.log('\nms por cuadro en este equipo (SwiftShader, placa o cruce + partículas, mediana de 5):')
     for (const [k, v] of Object.entries(bench)) console.log(`  ${k}: ${typeof v === 'number' ? v.toFixed(1) : v}`)
     fs.writeFileSync(path.join(OUT, 'bench.json'), JSON.stringify(bench, null, 2))
   } catch (e) {
