@@ -577,7 +577,8 @@ export class World implements WorldHandle {
     await Promise.all(
       PLATES.map(async (p, i) => {
         const th = TH[p.id]
-        const bmp = await createImageBitmap(await (await fetch(this.portrait ? th.v : th.d)).blob())
+        // data: URI → Blob sin fetch(): la CSP de producción no abre connect-src a data:
+        const bmp = await createImageBitmap(dataUriBlob(this.portrait ? th.v : th.d))
         const t = this.texs[i] ?? { tex: gl.createTexture()!, full: false, loading: false, aspect: 1 }
         this.texs[i] = t
         gl.bindTexture(gl.TEXTURE_2D, t.tex)
@@ -698,6 +699,15 @@ export class World implements WorldHandle {
     this.pan[1] = P.move.pan[1] * u + this.pointer[1] * 0.004
     this.pan[2] = P.depth[0]
     this.pan[3] = P.depth[1]
+    // el paneo nunca pide más margen del que el foco deja
+    const px = (0.45 * Math.min(fx, 1 - fx)) / 1.45
+    const py = (0.45 * Math.min(fy, 1 - fy)) / 1.45
+    this.pan[0] = Math.max(-px, Math.min(px, this.pan[0]))
+    this.pan[1] = Math.max(-py, Math.min(py, this.pan[1]))
+    // la placa nunca muestra su borde: si el paneo (con su paralaje, hasta ×1,45) sacaría la ventana de la imagen,
+    // se acerca lo justo para que quepa (antes el borde se estiraba en una franja al pie de la pantalla)
+    this.cam[0] = Math.max(this.cam[0], fitZoom(this.rect[0], this.rect[2], fx, Math.abs(this.pan[0]) * 1.45),
+      fitZoom(this.rect[1], this.rect[3], fy, Math.abs(this.pan[1]) * 1.45))
   }
 
   private draw(): void {
@@ -981,4 +991,22 @@ export async function mountWorld(opts: MountOptions): Promise<WorldHandle | null
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
   root.classList.add('world-on')
   return w
+}
+
+/** Convierte una URI data:…;base64 en Blob sin pasar por fetch (lo bloquearía connect-src). */
+function dataUriBlob(uri: string): Blob {
+  const comma = uri.indexOf(',')
+  const mime = /^data:([^;,]+)/.exec(uri)?.[1] ?? 'application/octet-stream'
+  const bin = atob(uri.slice(comma + 1))
+  const bytes = new Uint8Array(bin.length)
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i)
+  return new Blob([bytes], { type: mime })
+}
+
+/** El zoom mínimo (alrededor del foco f) para que la ventana [x0, x0 + w], corrida hasta m, quede dentro de [0, 1]. */
+function fitZoom(x0: number, w: number, f: number, m: number): number {
+  const mm = Math.min(m, 0.45 * Math.min(f, 1 - f))
+  const a = f - x0 > 1e-6 ? (f - x0) / Math.max(1e-3, f - mm) : 1
+  const b = x0 + w - f > 1e-6 ? (x0 + w - f) / Math.max(1e-3, 1 - f - mm) : 1
+  return Math.max(1, a, b)
 }
