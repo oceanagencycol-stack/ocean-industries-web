@@ -1,14 +1,14 @@
 # OCEAN — web v3
 
 **De lo más profundo a lo más alto.** La web oficial de OCEAN (Ocean Industries): un recorrido en siete tramos del
-espacio al fondo del mar y del mar a la cumbre de hielo, monocromo tipo Tesla, en Geist, con grano de película.
+espacio al fondo del mar y del mar a la cumbre de hielo, con luz azul, tipografía Geist e Instrument Serif y una señal que guía la cámara.
 
 - **La página** (`index.html`, rama `v3-pagina`): HTML real trilingüe (ES/EN/PT) que se lee entero sin JavaScript.
   Cada tramo trae su placa de respaldo; la cumbre (agenda y pagos) y el pie van sobre la nieve.
-- **El recorrido cinematográfico** (`src/world/plates.ts`): una cámara continua que el desplazamiento mueve desde la órbita
-  hasta la cumbre. Los fotogramas seleccionados de ElevenLabs alimentan el mismo lienzo y se cargan cerca de cada tramo.
-  La composición editorial y los ejemplos siguen el recorrido. Las placas mantienen la lectura con movimiento reducido,
-  ahorro de datos o WebGL2 no disponible.
+- **La película** (`src/v3/film.ts`) sigue a una clienta desde un reel hasta la compra.
+  Un máster de 55 segundos enlaza las siete composiciones con movimientos de cámara generados entre pares de placas.
+  Se recorre con el scroll, el índice o la reproducción continua. Las demos, proyectos y el contacto conservan sus enlaces.
+  Cada encuadre tiene respaldo estático para movimiento reducido y ahorro de datos.
 - **La intro de marca** (`src/intro-v3/`): el logotipo se escribe y vuela a la barra cuando se elige reproducirla.
 - **Lo que se conserva de la v2**: WhatsApp con el mensaje escrito por contexto e idioma, las seis escenas de servicios,
   Valeria (de ejemplo), el chat «Habla con OCEAN» (`/api/agente`), Cal.com, los pagos con Wompi (`/api/pago-wompi`),

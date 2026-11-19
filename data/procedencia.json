@@ -326,5 +326,29 @@
   "fecha": "2026-11-19",
   "uso": "Toma ambiental. Variante vertical con sufijo -v y primer cuadro en AVIF y WebP.",
   "original": "Video 1920×1080 en la biblioteca de ElevenLabs"
+ },
+ "public/v3/film/horizonte.mp4": {
+  "origen": "Montaje de animaciones originales de OCEAN en ElevenLabs, Kling 2.5 Turbo",
+  "flujo": "sLm667CIzIgoV4IlhbzO",
+  "fecha": "2026-11-19",
+  "placas": [
+   "M1a",
+   "M1sb",
+   "M2b",
+   "M3b",
+   "M4v2a",
+   "M5a",
+   "M6a"
+  ],
+  "tomas_en_orden": [
+   "kHO4eod5Jdh5LF7SlD3A",
+   "wchcrhKMBwFNCH1f2vSJ",
+   "JAx9KcupmergMRbQFOUK",
+   "ZTbusmxgAi94rVPaJQol",
+   "FFXoIESuIPBfzutzDYxz",
+   "dUIhgdlDVBBA2uB6eElG"
+  ],
+  "apertura": "n2MzQm2aeS502qlaPnun",
+  "derivados": "Montaje, etalonaje y señal luminosa en tools/film.py. Retemporización, encuadres de respaldo y ventanas de lectura en tools/film-delivery.py. La edición vertical sigue el mismo reloj."
  }
 }

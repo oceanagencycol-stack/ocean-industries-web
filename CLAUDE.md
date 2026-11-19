@@ -4,6 +4,8 @@ Web oficial de OCEAN (nombre legal: Ocean Industries; oceanindustries.com.co). C
 Contenido: **ES por defecto, EN y PT** (cada elemento lleva `data-es` / `data-en` / `data-pt`, y `data-*-aria` /
 `data-*-ph` para nombres accesibles y placeholders).
 
+La rama de montaje `v3-cine` usa `src/v3/film.ts` y el máster de `public/v3/film/` en la portada. Los detalles de producción y el recorrido actual están en `docs/v3/CINE.md`. El lienzo de `src/world/` sigue disponible en la maqueta de desarrollo.
+
 ## Antes de tocar nada
 1. Lee `DESIGN.md` (el sistema v3), `docs/v3/CONCEPTO.md`, `docs/v3/ARQUITECTURA.md`, `docs/plan-v3.md` («Decisiones
    de Juan») y el brain (`brain/proyectos/ocean-industries-web.md`).

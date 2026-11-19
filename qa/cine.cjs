@@ -1,80 +1,106 @@
-// node qa/cine.cjs http://localhost:4175/
+// Checks the actual decoded time of the one master as the visitor scrolls,
+// including reverse motion, native playback, deep links and static fallbacks.
 const assert = require('node:assert/strict')
 const { chromium } = require('playwright')
-
-const base = process.argv[2] ?? 'http://localhost:4175/'
+const timing = require('../src/v3/film-timing.json')
+const at = (i) => timing.opening + (timing.anchors[1] - timing.opening) * i
+const base = process.argv[2] || 'http://localhost:4175/'
 
 async function run() {
-  const browser = await chromium.launch({ args: ['--enable-unsafe-swiftshader'] })
+  const browser = await chromium.launch()
   try {
-    const desktop = await browser.newPage({ viewport: { width: 1440, height: 900 } })
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } })
     const errors = []
-    const requests = new Set()
-    desktop.on('pageerror', (error) => errors.push(error.message))
-    desktop.on('request', (request) => {
-      if (/\/v3\/secuencia\/[^/]+\.webp$/.test(request.url())) requests.add(new URL(request.url()).pathname)
-    })
-    await desktop.goto(new URL('?qa=1', base).href)
-    await desktop.locator('html.has-world').waitFor()
-    await desktop.waitForFunction(() => window.__ocean.world.isSleeping)
-    assert.ok(requests.has('/v3/secuencia/espacio.webp'))
-    assert.ok(requests.size <= 2, 'la portada difiere los fotogramas lejanos')
-    assert.equal(await desktop.locator('canvas.world').count(), 1)
-    assert.equal(await desktop.locator('.plate video').count(), 0)
-
-    const cursor = () => desktop.evaluate(() => window.__ocean.world.shot)
-    const to = (progress) => desktop.evaluate((position) => {
-      const track = window.__ocean.world.scrollTrack
-      window.__ocean.to(track.scrollFor(position))
-    }, progress)
-    const near = (progress) => desktop.waitForFunction(
-      (position) => Math.abs(window.__ocean.world.shot - position) < 0.007,
-      progress,
-    )
-
-    // Medir varias posiciones dentro del mismo cruce, ida y vuelta, sin posar
-    // el motor con su API de pruebas. Así se verifica el control real por scroll.
-    for (const position of [0.12, 0.35, 0.39, 0.42, 0.47, 0.58, 0.74, 0.94, 0.44, 0.41, 0.37, 0]) {
-      await to(position)
-      await near(position)
+    page.on('pageerror', (e) => errors.push(e.message))
+    await page.goto(base)
+    await page.waitForSelector('html.has-world')
+    assert.equal(await page.locator('#film').evaluate((v) => v.videoWidth), 1440)
+    const go = async (i, t) => {
+      await page.evaluate(
+        (i) =>
+          window.scrollTo({ top: i * document.querySelector('.film-shot').offsetHeight, behavior: 'instant' }),
+        i,
+      )
+      await page.waitForFunction((t) => {
+        const v = document.getElementById('film')
+        return v.readyState >= 2 && !v.seeking && Math.abs(t - v.currentTime) < 0.18
+      }, t)
     }
-    assert.ok(await cursor() < 0.007)
-    assert.equal(await desktop.locator('canvas.world').count(), 1)
+    await page.mouse.wheel(0, 150)
+    await page.waitForFunction(() => scrollY > 75)
+    for (const i of [1, 2.2, 2.6, 3, 5, 4.2, 1.85]) await go(i, at(i))
+    // Verify visible reverse frames, not just a requested HTMLMediaElement time.
+    await go(2.4, at(2.4))
+    const reverse = await page.evaluate(async () => {
+      const surface = document.querySelector('.film-frames')
+      const initial = scrollY
+      const frames = new Set()
+      let first, last
+      await new Promise((resolve) => {
+        const begin = performance.now()
+        function scrub(now) {
+          const progress = Math.min(1, (now - begin) / 1200)
+          window.scrollTo({ top: initial - progress * innerHeight * 0.23, behavior: 'instant' })
+          if (!surface.hidden && surface.dataset.frame) {
+            last = Number(surface.dataset.frame)
+            first ??= last
+            frames.add(last)
+          }
+          if (progress < 1) requestAnimationFrame(scrub)
+          else resolve()
+        }
+        requestAnimationFrame(scrub)
+      })
+      return { count: frames.size, first, last }
+    })
+    assert.ok(reverse.count >= 8 && reverse.first > reverse.last, 'la lente muestra el recorrido inverso')
+    await go(1.2, at(1.2))
+    await page.locator('.transport-play').click()
+    await page.waitForFunction(() => !document.querySelector('#film').paused)
+    const beforeWheel = await page.evaluate(() => scrollY)
+    await page.mouse.wheel(0, 270)
+    await page.waitForFunction((y) => document.querySelector('#film').paused && scrollY > y + 150, beforeWheel)
+    await go(3, at(3))
+    await page.locator('#agentes .film-link').click()
+    assert.ok(await page.locator('#agente-vivo').isVisible())
+    assert.equal(await page.locator('[data-dossier]:visible').count(), 1)
+    await page.locator('[data-dossier]:visible .film-back').click()
+    assert.equal(await page.locator('[data-dossier]:visible').count(), 0)
+    await page.waitForFunction(() => document.querySelector('#agentes .on-camera'))
+    await page.locator('.nav [data-motion-toggle]').click()
+    assert.equal(await page.locator('#film').getAttribute('src'), null)
+    await page.reload()
+    await page.locator('.nav [data-motion-toggle]').click()
+    await page.waitForSelector('html.has-world')
     assert.deepEqual(errors, [])
 
-    const pause = desktop.locator('.nav [data-motion-toggle]')
-    await pause.click()
-    await desktop.locator('html.motion-paused').waitFor()
-    await desktop.locator('html.has-world').waitFor({ state: 'detached' })
-    assert.equal(await pause.getAttribute('aria-pressed'), 'true')
-    assert.equal(await desktop.locator('.nav [data-sound-toggle]').getAttribute('aria-pressed'), 'false')
-    await desktop.reload()
-    await pause.waitFor()
-    assert.equal(await pause.getAttribute('aria-pressed'), 'true', 'la pausa persiste al recargar')
-    await pause.click()
-    await desktop.locator('html.has-world').waitFor()
-
-    const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
-    const portrait = mobile.waitForResponse((res) => /\/v3\/secuencia\/agua-v\.webp$/.test(res.url()) && res.ok())
-    await mobile.goto(new URL('?qa=1#agentes', base).href)
-    await mobile.locator('html.has-world').waitFor()
-    await portrait
-    await mobile.waitForFunction(() => Math.abs(window.__ocean.world.shot - 0.5) < 0.025)
-    await mobile.emulateMedia({ reducedMotion: 'reduce' })
-    await mobile.locator('html.has-world').waitFor({ state: 'detached' })
-    assert.equal(await mobile.locator('.nav [data-motion-toggle]').isVisible(), false)
-
+    const phone = await browser.newPage({
+      viewport: { width: 390, height: 844 },
+      isMobile: true,
+      hasTouch: true,
+    })
+    await phone.goto(new URL('#agentes', base).href)
+    await phone.waitForFunction((t) => Math.abs(document.querySelector('#film').currentTime - t) < 0.18, at(3))
+    assert.ok((await phone.locator('#film').getAttribute('src')).endsWith('vertical.mp4'))
+    await phone.emulateMedia({ reducedMotion: 'reduce' })
+    await phone.waitForFunction(() => !document.querySelector('#film').hasAttribute('src'))
+    await phone.goto(new URL('#pay', base).href)
+    assert.ok(await phone.locator('#pay').isVisible())
     const saver = await browser.newPage()
-    await saver.addInitScript(() => Object.defineProperty(navigator, 'connection', {
-      value: { saveData: true, effectiveType: '4g' },
-    }))
-    await saver.goto(new URL('?qa=1', base).href)
-    await saver.locator('#inicio .plate img').evaluate((img) => img.decode())
-    assert.equal(await saver.locator('html.has-world').count(), 0, 'ahorro de datos conserva la placa')
-    console.log('Cámara continua, posiciones de scroll reversibles, carga cercana, retrato, pausa y respaldos.')
+    await saver.addInitScript(() =>
+      Object.defineProperty(navigator, 'connection', { value: { saveData: true } }),
+    )
+    await saver.goto(base)
+    assert.equal(await saver.locator('#film').getAttribute('src'), null)
+    await saver.locator('#inicio .plate img').evaluate((i) => i.decode())
+    console.log(
+      'Máster H.264, reloj nativo, avance y retroceso, lectura, anclas, móvil, pausa y ahorro de datos.',
+    )
   } finally {
     await browser.close()
   }
 }
-
-run().catch((error) => { console.error(error); process.exitCode = 1 })
+run().catch((e) => {
+  console.error(e)
+  process.exitCode = 1
+})
