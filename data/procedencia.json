@@ -270,5 +270,61 @@
   "flujo": "S8lhFJcdhU9H7KFIUZlW",
   "fecha": "2026-11-18",
   "uso": "sonido de la v3 (dos tomas; Juan elige en la página «OCEAN v3 · Sonido para elegir»)"
+ },
+ "public/v3/cine/espacio.mp4": {
+  "origen": "IA (ElevenLabs, Kling 2.5 Turbo, animación de M1a)",
+  "generation_id": "n2MzQm2aeS502qlaPnun",
+  "flujo": "LiaatOAW98T1VzwveE9i",
+  "fecha": "2026-11-19",
+  "uso": "Toma ambiental. Variante vertical con sufijo -v y primer cuadro en AVIF y WebP.",
+  "original": "Video 1928×1072 en la biblioteca de ElevenLabs"
+ },
+ "public/v3/cine/satelite.mp4": {
+  "origen": "IA (ElevenLabs, Kling 2.5 Turbo, animación de M1sb)",
+  "generation_id": "JOp7Yai4KbxVUUvc7qes",
+  "flujo": "LiaatOAW98T1VzwveE9i",
+  "fecha": "2026-11-19",
+  "uso": "Toma ambiental. Variante vertical con sufijo -v y primer cuadro en AVIF y WebP.",
+  "original": "Video 1928×1072 en la biblioteca de ElevenLabs"
+ },
+ "public/v3/cine/mar.mp4": {
+  "origen": "IA (ElevenLabs, Kling 2.5 Turbo)",
+  "generation_id": "WV07ToLD6RKAbfmXZRiZ",
+  "flujo": "LiaatOAW98T1VzwveE9i",
+  "fecha": "2026-11-19",
+  "uso": "Toma ambiental. Variante vertical con sufijo -v y primer cuadro en AVIF y WebP.",
+  "original": "Video 1920×1080 en la biblioteca de ElevenLabs"
+ },
+ "public/v3/cine/agua.mp4": {
+  "origen": "IA (ElevenLabs, Kling 2.5 Turbo)",
+  "generation_id": "gAIW7ROAOUSzkto3hlP2",
+  "flujo": "LiaatOAW98T1VzwveE9i",
+  "fecha": "2026-11-19",
+  "uso": "Toma ambiental. Variante vertical con sufijo -v y primer cuadro en AVIF y WebP.",
+  "original": "Video 1920×1080 en la biblioteca de ElevenLabs"
+ },
+ "public/v3/cine/maquina.mp4": {
+  "origen": "IA (ElevenLabs, Kling 2.5 Turbo, animación de M4v2a)",
+  "generation_id": "n2jbQ9ROpWqH0dg9Eor5",
+  "flujo": "LiaatOAW98T1VzwveE9i",
+  "fecha": "2026-11-19",
+  "uso": "Toma ambiental. Variante vertical con sufijo -v y primer cuadro en AVIF y WebP.",
+  "original": "Video 1928×1072 en la biblioteca de ElevenLabs"
+ },
+ "public/v3/cine/emerge.mp4": {
+  "origen": "IA (ElevenLabs, Kling 2.5 Turbo)",
+  "generation_id": "hkQPLFyPPX30k4dsfr0J",
+  "flujo": "LiaatOAW98T1VzwveE9i",
+  "fecha": "2026-11-19",
+  "uso": "Toma ambiental. Variante vertical con sufijo -v y primer cuadro en AVIF y WebP.",
+  "original": "Video 1920×1080 en la biblioteca de ElevenLabs"
+ },
+ "public/v3/cine/cumbre.mp4": {
+  "origen": "IA (ElevenLabs, Kling 2.5 Turbo)",
+  "generation_id": "MW1iCwl2dEbpQuyI8GG7",
+  "flujo": "LiaatOAW98T1VzwveE9i",
+  "fecha": "2026-11-19",
+  "uso": "Toma ambiental. Variante vertical con sufijo -v y primer cuadro en AVIF y WebP.",
+  "original": "Video 1920×1080 en la biblioteca de ElevenLabs"
  }
 }

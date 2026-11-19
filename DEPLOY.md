@@ -36,9 +36,10 @@ Ojo: la vista previa usa las mismas llaves de Wompi que producción. **Nunca se 
    La última versión de la v1 es `dpl_4eeUPUZNYtEx1pmfF9DUn7ZZvFFQ` (commit `1f92216`, «GA4 en produccion», 8-sep-2026).
 
 ## Regenerar lo que sale de un script
-- `public/v3/pagina/*` (placas de cada tramo), `public/favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`,
-  `icon-192.png`, `icon-512.png` y `public/og.jpg`: `python3 tools/medios_pagina.py` (desde `media/v3/direccion/` y
-  `marca/v3/`; por código, sin IA).
+- `public/v3/cine/posters/*` (placas de cada tramo) salen del primer cuadro de las tomas de `public/v3/cine/`.
+  Para ver su procedencia y los encuadres, consulta `data/procedencia.json` y `docs/v3/CINE.md`.
+- `public/favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png` y `public/og.jpg`:
+  `python3 tools/medios_pagina.py`, desde `media/v3/direccion/` y `marca/v3/`.
 - `public/v3/grano.png`: `node tools/grano.mjs` (paquete de la intro).
 - Si cambia el script de arranque de `index.html`, el build falla y da el hash nuevo para `script-src` en
   `vercel.json`.

@@ -137,7 +137,7 @@ export function initSound(): void {
   btn?.addEventListener('click', toggle)
 
   // el primer clic o toque, y solo ese
-  const IGNORE = 'input, textarea, select, form, label, [data-lang], .lang, .oi-skip, #chat, [data-sound-toggle], .fab, .reel__sound'
+  const IGNORE = 'input, textarea, select, form, label, [data-lang], .lang, .oi-skip, #chat, [data-sound-toggle], [data-motion-toggle], .fab, .reel__sound'
   const first = (e: MouseEvent) => {
     if (!e.isTrusted || e.detail === 0) return // un «clic» sacado de una tecla (Enter/Espacio) no cuenta
     if ((e.target as Element | null)?.closest?.(IGNORE)) return

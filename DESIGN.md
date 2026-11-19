@@ -21,7 +21,8 @@ la web, la venta).
 
 Cada tramo: una cabecera de pantalla completa sobre su placa (con sombras que dejan leer, nunca cambian la foto) y un
 cuerpo donde la luz baja a la noche y se lee el contenido. La placa queda fija mientras dura su tramo y la siguiente
-entra fundida encima (máscara de 34 vh). Con el mundo (WebGL2) montado, las placas se van y el mundo hace la toma.
+entra fundida encima (máscara de 34 vh). La cabecera en vista pasa de la placa a una toma ambiental con el mismo
+encuadre. El desplazamiento mueve suavemente el encuadre. El mundo WebGL2 se puede comparar con `?world`.
 
 ## Color: monocromo tipo Tesla
 | Token | Hex | Uso |
@@ -33,6 +34,7 @@ entra fundida encima (máscara de 34 vh). Con el mundo (WebGL2) montado, las pla
 | `--mist` | `#B2C0CC` | texto secundario sobre la noche; la línea de la IA |
 | `--snow` | `#E0E7ED` | texto principal; la persona; el fondo de la cumbre y el pie |
 | `--white` | `#FFFFFF` | solo la acción principal y el resultado que se enciende |
+| `--signal` | `#A5FFD0` | punto de la portada y flecha de exploración |
 
 Contraste (WCAG): snow/space 16,3 · mist/space 10,9 · haze/space 5,05 · haze/abyss 4,64 · mist/slate 5,8 · abyss/snow
 14,9 · slate/snow 8,6 · abyss/white 18,7. Fallan y no se usan para texto: haze/slate 2,7 · haze/snow 3,2.
@@ -60,7 +62,8 @@ sobre abisal (desde 32 px).
   el logotipo vuela a la barra. La portada entra cuando el negro se abre.
 - **Botones**: reflejo que los cruza al pasar el puntero (solo con hover); se hunden 1 px al presionar.
 - Nada late solo: la luz de «en línea» es fija. Las escenas corren en vista, tres vueltas, con pausa (WCAG 2.2.2).
-- Movimiento reducido: sin intro, sin mundo, todo visible desde el primer cuadro.
+- Pausa de movimiento en la barra y el pie con preferencia compartida. Con movimiento reducido se muestran las placas
+  y el contenido está visible desde el primer cuadro.
 
 ## Grano
 Grano fino de película sobre toda la página (`public/v3/grano.png`, `soft-light` al 0,06): la textura de la casa, la

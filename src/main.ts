@@ -4,9 +4,7 @@
  *  - La página es HTML real y se lee entera sin JavaScript: cada tramo trae su placa de respaldo (<picture>).
  *  - La intro (src/intro-v3, por su API) se decide antes de pintar (script de arranque: html.intro-due); mientras
  *    corre, la portada espera y entra cuando el negro se abre.
- *  - El mundo (src/world, WebGL2, por su API) se pide en un momento tranquilo: después del primer pintado y con el
- *    hilo libre, nunca con movimiento reducido ni ahorro de datos, y nunca precargado. Si monta, las placas se
- *    esconden (html.has-world); si no, se quedan: esa es la versión quieta.
+ *  - Las tomas ambientales se cargan por tramo después de pintar. El mundo WebGL2 sigue disponible para QA.
  *  - Una sola gramática de entrada (src/v3/reveal.ts). Sin GSAP, sin Lenis, sin three.js en el primer trozo.
  *  - Lo que funcionaba en la v2 sigue: idioma, WhatsApp por contexto, escenas, Valeria, el chat, Cal.com, Wompi,
  *    los reels y GA4 (solo en el dominio real).
@@ -29,16 +27,19 @@ import { initAnalytics } from './ui/analytics'
 import { initChrome } from './v3/chrome'
 import { initSound, markReplay } from './v3/sound-gate'
 import { initReveal, holdHero, releaseHero } from './v3/reveal'
+import { mountCinema } from './v3/cinema'
 import { hasRealIntro, hasRealWorld, loadWorld, playIntro, type WorldHandle } from './v3/bridge'
 
 const html = document.documentElement
 const params = new URLSearchParams(location.search)
-const reduced = html.classList.contains('no-motion') || matchMedia('(prefers-reduced-motion: reduce)').matches
+const motionQuery = matchMedia('(prefers-reduced-motion: reduce)')
+const reduced = html.classList.contains('no-motion') || motionQuery.matches
 if (reduced) html.classList.add('no-motion')
 const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection
 const saveData = conn?.saveData === true || /(^|-)2g$/.test(conn?.effectiveType ?? '')
 // QA: ?qa=1&noworld deja la página sin el mundo (capturas rápidas en el sandbox sin GPU)
 const noWorld = params.has('noworld')
+const useWorld = params.has('world') || params.has('q')
 const MOTION_KEY = 'ocean-motion-paused'
 
 /* ---------- la página ---------- */
@@ -60,13 +61,13 @@ if (introDue) holdHero()
 initReveal()
 
 /* ---------- la intro ---------- */
-if (introDue) {
-  void playIntro(document.querySelector('[data-intro-dock]'), lang()).finally(() => {
-    document.querySelectorAll('[data-intro-veil]').forEach((v) => v.remove())
-    html.classList.remove('intro-due')
-    releaseHero()
-  })
-}
+const intro = introDue
+  ? playIntro(document.querySelector('[data-intro-dock]'), lang()).finally(() => {
+      document.querySelectorAll('[data-intro-veil]').forEach((v) => v.remove())
+      html.classList.remove('intro-due')
+      releaseHero()
+    })
+  : Promise.resolve()
 
 // «Repetir la intro»: solo donde hay intro de verdad y movimiento
 const replay = document.querySelector<HTMLButtonElement>('[data-replay]')
@@ -84,18 +85,30 @@ if (replay && hasRealIntro && !reduced) {
 /* ---------- el mundo ---------- */
 const canvas = document.getElementById('world') as HTMLCanvasElement | null
 let world: WorldHandle | null = null
+let cinema: ReturnType<typeof mountCinema> = null
 let mounting = false
+let ready = false
+let paused = store.get(MOTION_KEY) === '1'
 
-async function mount(): Promise<void> {
-  if (!canvas || world || mounting) return
+function shouldMove(): boolean {
+  return ready && !noWorld && !motionQuery.matches && !saveData && !paused
+}
+
+async function mountWorld(): Promise<void> {
+  if (!canvas || world || mounting || !shouldMove()) return
   mounting = true
   try {
     const m = await loadWorld()
+    if (!shouldMove()) return
     const h = await m.mountWorld({ canvas, sections: document.querySelectorAll<HTMLElement>('[data-tramo]') })
     if (h && typeof h.dispose === 'function') {
+      if (!shouldMove()) {
+        h.dispose()
+        return
+      }
       world = h
       html.classList.add('has-world')
-      showMotionToggle()
+      showMotionToggle(true)
     }
   } catch (err) {
     console.warn('[ocean] el mundo no montó: queda la versión quieta', err)
@@ -105,6 +118,8 @@ async function mount(): Promise<void> {
 }
 
 function unmount(): void {
+  cinema?.dispose()
+  cinema = null
   world?.dispose()
   world = null
   html.classList.remove('has-world')
@@ -119,35 +134,48 @@ function whenCalm(maxMs = 2000): Promise<void> {
   )
 }
 
-// «Pausar el movimiento» (WCAG 2.2.2): suelta el mundo y deja las placas quietas; se recuerda
-const motionBtn = document.querySelector<HTMLButtonElement>('[data-motion-toggle]')
-function paintMotion(paused: boolean): void {
-  if (!motionBtn) return
-  motionBtn.setAttribute('aria-pressed', String(paused))
+// La preferencia se comparte entre la barra y el pie.
+const motionButtons = document.querySelectorAll<HTMLButtonElement>('[data-motion-toggle]')
+function showMotionToggle(show: boolean): void {
   const words = paused
     ? { es: 'Reanudar el movimiento', en: 'Resume motion', pt: 'Retomar o movimento' }
     : { es: 'Pausar el movimiento', en: 'Pause motion', pt: 'Pausar o movimento' }
-  motionBtn.dataset.es = words.es
-  motionBtn.dataset.en = words.en
-  motionBtn.dataset.pt = words.pt
-  motionBtn.textContent = words[lang()]
+  for (const button of motionButtons) {
+    button.hidden = !show
+    button.setAttribute('aria-pressed', String(paused))
+    const label = button.querySelector<HTMLElement>('[data-motion-label]') ?? button
+    label.dataset.es = words.es
+    label.dataset.en = words.en
+    label.dataset.pt = words.pt
+    label.textContent = words[lang()]
+  }
 }
-function showMotionToggle(): void {
-  if (!motionBtn) return
-  motionBtn.hidden = false
-  paintMotion(store.get(MOTION_KEY) === '1')
-}
-motionBtn?.addEventListener('click', () => {
-  const paused = store.get(MOTION_KEY) !== '1'
-  store.set(MOTION_KEY, paused ? '1' : '0')
-  paintMotion(paused)
-  if (paused) unmount()
-  else void mount()
-})
 
-const worldOK = !!canvas && !noWorld && !reduced && !saveData
-if (worldOK && hasRealWorld && store.get(MOTION_KEY) === '1') showMotionToggle()
-else if (worldOK) void whenCalm().then(mount)
+function syncMotion(): void {
+  if (!shouldMove()) {
+    unmount()
+    showMotionToggle(ready && !noWorld && !saveData && !motionQuery.matches && paused)
+  } else if (useWorld && hasRealWorld) {
+    void mountWorld()
+    showMotionToggle(!!world)
+  } else {
+    cinema ??= mountCinema()
+    showMotionToggle(!!cinema)
+  }
+}
+
+for (const button of motionButtons) {
+  button.addEventListener('click', () => {
+    paused = !paused
+    store.set(MOTION_KEY, paused ? '1' : '0')
+    syncMotion()
+  })
+}
+motionQuery.addEventListener('change', syncMotion)
+void intro.catch(() => undefined).then(() => whenCalm()).then(() => {
+  ready = true
+  syncMotion()
+})
 
 // ---- QA (solo con ?qa en la dirección): posar escenas y saltar sin animación ----
 if (params.has('qa')) {

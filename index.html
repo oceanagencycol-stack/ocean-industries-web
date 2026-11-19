@@ -141,13 +141,20 @@
     <header class="nav" data-intro-inert>
       <a class="nav__brand" href="#inicio" data-intro-dock data-es-aria="OCEAN, al inicio" data-en-aria="OCEAN, back to top" data-pt-aria="OCEAN, ao início" aria-label="OCEAN, al inicio"><!--LOGO:nav__logo--></a>
       <nav class="nav__links" data-es-aria="Principal" data-en-aria="Main" data-pt-aria="Principal" aria-label="Principal">
-        <a href="#senal" data-es="Señal" data-en="Signal" data-pt="Sinal">Señal</a>
+        <a href="#senal" data-es="Contenido" data-en="Content" data-pt="Conteúdo">Contenido</a>
         <a href="#agentes" data-es="Agentes" data-en="Agents" data-pt="Agentes">Agentes</a>
-        <a href="#maquina" data-es="Máquina" data-en="Machine" data-pt="Máquina">Máquina</a>
+        <a href="#maquina" data-es="Automatización" data-en="Automation" data-pt="Automação">Automatización</a>
         <a href="#trabajo" data-es="Trabajo" data-en="Work" data-pt="Trabalho">Trabajo</a>
         <a href="#hablemos" data-es="Hablemos" data-en="Let's talk" data-pt="Vamos conversar">Hablemos</a>
       </nav>
       <div class="nav__tools">
+        <button class="motion" type="button" data-motion-toggle aria-pressed="false" hidden>
+          <svg class="ico" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <path class="motion__pause" d="M7 5v10m6-10v10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+            <path class="motion__play" d="m7 5 8 5-8 5Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+          </svg>
+          <span class="vh" data-motion-label data-es="Pausar el movimiento" data-en="Pause motion" data-pt="Pausar o movimento">Pausar el movimiento</span>
+        </button>
         <button class="snd" type="button" data-sound-toggle aria-pressed="false">
           <span class="snd__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
           <span class="vh" data-es="Sonido" data-en="Sound" data-pt="Som">Sonido</span>
@@ -195,7 +202,7 @@
       <section id="inicio" class="tramo tramo--espacio" data-tramo="espacio" data-horizon="1" data-fab-hide aria-labelledby="hero-title">
         <!--PLACA:m1a:first-->
         <div class="hero">
-          <p class="label hero__label" data-rv><span data-es="Estudio de tecnología" data-en="Technology studio" data-pt="Estúdio de tecnologia">Estudio de tecnología</span></p>
+          <p class="label hero__label" data-rv><span class="hero__beacon" aria-hidden="true"></span><span data-es="Estudio de inteligencia artificial" data-en="Artificial intelligence studio" data-pt="Estúdio de inteligência artificial">Estudio de inteligencia artificial</span></p>
           <h1 class="hero__title" id="hero-title" data-reveal>
             <span class="ln"><span data-es="De lo más profundo" data-en="From the deepest depths" data-pt="Do mais profundo">De lo más profundo</span></span>
             <span class="ln"><span data-es="a lo más alto." data-en="to the highest peak." data-pt="ao mais alto.">a lo más alto.</span></span>
@@ -203,10 +210,10 @@
           <p
             class="hero__lead"
             data-rv
-            data-es="Agentes de IA, automatización, webs, software y contenido: lo que trabaja abajo para que tu marca llegue arriba."
-            data-en="AI agents, automation, websites, software and content: what works down below so your brand reaches the top."
-            data-pt="Agentes de IA, automação, sites, software e conteúdo: o que trabalha lá embaixo para sua marca chegar lá em cima."
-          >Agentes de IA, automatización, webs, software y contenido: lo que trabaja abajo para que tu marca llegue arriba.</p>
+            data-es="Creamos agentes de IA para WhatsApp, automatizamos procesos y construimos tiendas rápidas para que tu negocio pueda crecer."
+            data-en="We build AI agents for WhatsApp, automate workflows, and create fast online stores so your business can scale."
+            data-pt="Criamos agentes de IA para WhatsApp, automatizamos processos e construímos lojas rápidas para sua empresa crescer."
+          >Creamos agentes de IA para WhatsApp, automatizamos procesos y construimos tiendas rápidas para que tu negocio pueda crecer.</p>
           <div class="actions" data-rv>
             <a class="btn btn--primary" data-wa="general" href="https://wa.me/573138721665" target="_blank" rel="noopener">
               <svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg>
@@ -214,12 +221,14 @@
             </a>
             <a class="btn btn--line" href="#book" data-es="Agendar una llamada" data-en="Book a call" data-pt="Agendar uma chamada">Agendar una llamada</a>
           </div>
-          <p class="hero__live" data-rv>
-            <span class="live-dot" aria-hidden="true"></span>
-            <span data-es="Nuestro agente responde las 24 horas" data-en="Our AI agent answers 24/7" data-pt="Nosso agente responde 24 horas">Nuestro agente responde las 24 horas</span>
-          </p>
         </div>
-        <p class="descend" aria-hidden="true"><span data-es="Desciende" data-en="Descend" data-pt="Desça">Desciende</span><i></i></p>
+        <div class="hero__footer">
+          <a class="descend" href="#senal">
+            <svg class="ico" aria-hidden="true"><use href="#i-arrow" /></svg>
+            <span data-es="Explora el recorrido" data-en="Explore the journey" data-pt="Explore a jornada">Explora el recorrido</span>
+          </a>
+          <p class="hero__regions" data-es="Colombia · Estados Unidos · Italia" data-en="Colombia · United States · Italy" data-pt="Colômbia · Estados Unidos · Itália">Colombia · Estados Unidos · Italia</p>
+        </div>
       </section>
 
       <!-- ============================================================ 2 · SATÉLITE: la señal -->
@@ -704,7 +713,7 @@
       <a class="footer__brand" href="#inicio" data-es-aria="OCEAN, al inicio" data-en-aria="OCEAN, back to top" data-pt-aria="OCEAN, ao início" aria-label="OCEAN, al inicio"><!--LOGO_R:footer__logo--></a>
       <div class="footer__legal">
         <p>© <span id="year">2026</span> Ocean Industries. <span data-es="OCEAN es una marca registrada." data-en="OCEAN is a registered trademark." data-pt="OCEAN é uma marca registrada.">OCEAN es una marca registrada.</span></p>
-        <p data-es="Los paisajes de esta web son ilustraciones hechas con IA." data-en="The landscapes on this site are AI-made illustrations." data-pt="As paisagens deste site são ilustrações feitas com IA.">Los paisajes de esta web son ilustraciones hechas con IA.</p>
+        <p data-es="Los paisajes de esta web se crearon con IA." data-en="The landscapes on this site were created with AI." data-pt="As paisagens deste site foram criadas com IA.">Los paisajes de esta web se crearon con IA.</p>
         <p><a href="/privacidad" data-es="Privacidad" data-en="Privacy" data-pt="Privacidade">Privacidad</a></p>
       </div>
     </footer>
