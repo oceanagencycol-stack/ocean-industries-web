@@ -364,6 +364,8 @@ html.nav-light .nav.is-scrolled .nav__cta {
 }
 
 .sequence .demo__stage {
+  width: 100%;
+  min-width: 0;
   min-height: min(320px, 85vw);
   aspect-ratio: 16 / 10;
   border-radius: 2px;
