@@ -10,12 +10,34 @@ export function frameWindow(canvas: HTMLCanvasElement, edition: string, repaint:
   const cache = new Map<number, HTMLImageElement>()
   const pending = new Map<number, HTMLImageElement>()
   const failures = new Map<number, number>()
+  const guide = new Image()
+  guide.decoding = 'async'
+  guide.fetchPriority = 'low'
+  let guideReady = false
+  let sharp = false
   let group = -1,
     lastFrame = -1,
     direction = 1,
     drawn = -1,
     disposed = false
   const path = '/v3/film/' + edition + '/'
+  const w = edition === 'vertical' ? 400 : 768
+  const h = edition === 'vertical' ? 642 : 432
+  const frameAt = (time: number) => Math.min(count - 1, Math.max(0, Math.round(time * timing.fps)))
+  canvas.width = w
+  canvas.height = h
+  function warm() {
+    if (guide.hasAttribute('src')) return
+    guide.src = path + 'guia.jpg'
+    guide.decode().then(
+      () => {
+        if (disposed) return
+        guideReady = true
+        repaint()
+      },
+      () => { /* The native film and detailed sheets are independently available. */ },
+    )
+  }
   function load(index: number) {
     if (
       index < 0 ||
@@ -27,6 +49,7 @@ export function frameWindow(canvas: HTMLCanvasElement, edition: string, repaint:
       return
     const image = new Image()
     image.decoding = 'async'
+    image.fetchPriority = index === group ? 'high' : 'auto'
     pending.set(index, image)
     image.src = path + String(index).padStart(3, '0') + '.webp'
     image
@@ -44,8 +67,7 @@ export function frameWindow(canvas: HTMLCanvasElement, edition: string, repaint:
         }
       })
   }
-  function seek(time: number): boolean {
-    const n = Math.min(count - 1, Math.max(0, Math.round(time * timing.fps)))
+  function prime(n: number) {
     const index = Math.floor(n / framesPerSheet)
     if (lastFrame !== n) direction = n > lastFrame ? 1 : -1
     lastFrame = n
@@ -61,25 +83,39 @@ export function frameWindow(canvas: HTMLCanvasElement, edition: string, repaint:
     load(index)
     load(index + direction)
     load(index - direction)
+    return index
+  }
+  function seek(time: number): boolean {
+    const n = frameAt(time)
+    const index = prime(n)
     const image = cache.get(index)
-    if (!image) return false
-    if (drawn !== n) {
-      const w = image.naturalWidth / 4,
-        h = image.naturalHeight / 2
-      if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w
-        canvas.height = h
-      }
-      context!.drawImage(image, (n % 4) * w, Math.floor((n % framesPerSheet) / 4) * h, w, h, 0, 0, w, h)
-      drawn = n
-      canvas.dataset.frame = String(n)
+    if (!image && !guideReady) return false
+    // A fling can cross a cold sheet before it decodes. The small contact
+    // sheet covers the whole edit, including reverse travel on a cold cache.
+    const precise = !!image
+    const source = image ?? guide
+    const cell = precise ? n % framesPerSheet : Math.floor(n / 3)
+    const columns = precise ? 4 : 16
+    const sw = source.naturalWidth / columns
+    const sh = source.naturalHeight / (precise ? 2 : 28)
+    const actual = precise ? n : cell * 3
+    if (drawn !== actual || sharp !== precise) {
+      context!.drawImage(source, (cell % columns) * sw, Math.floor(cell / columns) * sh, sw, sh, 0, 0, w, h)
+      drawn = actual
+      sharp = precise
+      canvas.dataset.frame = String(actual)
     }
     return true
   }
   return {
+    warm,
+    primeAt(time: number) {
+      prime(frameAt(time))
+    },
     seek,
     dispose() {
       disposed = true
+      guide.removeAttribute('src')
       pending.forEach((image) => image.removeAttribute('src'))
       pending.clear()
       cache.clear()

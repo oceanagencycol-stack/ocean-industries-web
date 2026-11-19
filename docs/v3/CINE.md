@@ -59,7 +59,7 @@ Con los archivos originales del flujo, nombrados `bridge0.mp4` a `bridge5.mp4`, 
 La procedencia y los créditos están en `data/procedencia.json` y `docs/elevenlabs.tsv`.
 
 La reproducción continua usa H.264. Durante el desplazamiento se dibujan los fotogramas del mismo montaje.
-El navegador conserva una ventana de tres paquetes de ocho imágenes y la desplaza en ambos sentidos.
+El navegador conserva una ventana de tres paquetes de ocho imágenes y la desplaza en ambos sentidos. Una guía ligera del montaje completo permite avanzar incluso al saltar a imágenes pendientes de descarga.
 Al soltar el scroll, el video presenta el fotograma a resolución completa. Los modos de movimiento reducido y ahorro de datos
 presentan fotogramas fijos. La apertura orbital tiene movimiento propio. La proyección usa el ritmo ya montado, con un fotograma cada 1/24 s y tiempos de lectura más largos al llegar. El filtro de sonido cruza el agua con la cámara. Las imágenes de referencia, el video del pin y los clips de terceros se usaron solo en el análisis.
 

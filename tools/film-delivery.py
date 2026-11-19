@@ -195,6 +195,16 @@ def encode(name, quality, rate, buf, cell):
         check=True,
     )
     suffix = "" if name == "horizonte" else "-v"
+    guide_size = "176:99" if name == "horizonte" else "108:172"
+    subprocess.run(
+        ff + [
+            "-i", str(dest), "-vf",
+            f"select='not(mod(n,3))',scale={guide_size},tile=16x28",
+            "-frames:v", "1", "-c:v", "mjpeg", "-q:v", "5", "-threads", "2",
+            str(folder / "guia.jpg"),
+        ],
+        check=True,
+    )
     for i, t in enumerate(anchors):
         subprocess.run(
             ff

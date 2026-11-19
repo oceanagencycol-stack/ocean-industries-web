@@ -53,7 +53,7 @@ async function run() {
       })
       return { count: frames.size, first, last }
     })
-    assert.ok(reverse.count >= 8 && reverse.first > reverse.last, 'la lente muestra el recorrido inverso')
+    assert.ok(reverse.count >= 8 && reverse.first > reverse.last, `la lente muestra el recorrido inverso (${JSON.stringify(reverse)})`)
     await go(1.2, at(1.2))
     await page.locator('.transport-play').click()
     await page.waitForFunction(() => !document.querySelector('#film').paused)

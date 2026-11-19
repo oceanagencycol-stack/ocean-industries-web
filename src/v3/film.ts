@@ -113,7 +113,10 @@ export function initFilm(intro: Promise<unknown>, saveData: boolean): void {
     if (moving || video.seeking || Math.abs(video.currentTime - visual) > 0.08) {
       if (frames?.seek(visual)) frameCanvas.hidden = false
       else if (frameCanvas.hidden) requestFrame(visual)
-    } else frameCanvas.hidden = true
+    } else {
+      frameCanvas.hidden = true
+      frames?.primeAt(visual)
+    }
     if (moving) schedule()
   }
   function fromTime(t: number) {
@@ -262,6 +265,7 @@ export function initFilm(intro: Promise<unknown>, saveData: boolean): void {
   video.addEventListener('loadeddata', () => {
     if (!canMove()) return
     ready = true
+    frames?.warm()
     html.classList.add('has-world')
     controls()
     if (scrollY < 2 && !location.hash && !document.hidden) {
