@@ -146,11 +146,11 @@ void main(){
     float c = mix(-0.25, 1.25, k);
     float blur = bump(k, 0.0, 1.0) * 0.07;
     vec3 a = vec3(0.0), bb = vec3(0.0);
-    for (int i = 0; i < 6; i++){
-      vec2 si = 0.5 + (s - 0.5) * (1.0 - blur * float(i) / 5.0);
+    for (int i = 0; i < 4; i++){
+      vec2 si = 0.5 + (s - 0.5) * (1.0 - blur * float(i) / 3.0);
       a += A(si); bb += B(si);
     }
-    a /= 6.0; bb /= 6.0;
+    a *= 0.25; bb *= 0.25;
     col = mix(bb, a, smoothstep(c - 0.12, c + 0.12, x));
     float band = exp(-pow((x - c) / 0.09, 2.0));
     col += vec3(0.9, 0.95, 1.0) * band * 1.4 + vec3(0.6, 0.7, 0.8) * bump(k, 0.15, 0.85) * 0.12;
