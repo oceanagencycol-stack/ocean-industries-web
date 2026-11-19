@@ -646,6 +646,74 @@ html.nav-light .nav.is-scrolled .btn--primary {
   color: var(--white);
 }
 
+/* ---- botón de sonido (barra): cuatro barras que solo se mueven cuando suena ---- */
+.snd {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -6px;
+  border-radius: var(--r);
+  opacity: 0.7;
+  transition: opacity 0.25s;
+}
+.snd.is-on {
+  opacity: 1;
+}
+.snd__bars {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 16px;
+}
+.snd__bars i {
+  display: block;
+  width: 2px;
+  height: 16px;
+  background: currentColor;
+  border-radius: 1px;
+  transform: scaleY(0.14);
+  transition: transform 0.4s var(--ease);
+}
+.snd.is-on .snd__bars i {
+  transform: scaleY(0.4);
+}
+.snd.is-playing .snd__bars i {
+  animation: snd-bar 1.15s ease-in-out infinite;
+}
+.snd.is-playing .snd__bars i:nth-child(2) {
+  animation-duration: 0.9s;
+  animation-delay: -0.3s;
+}
+.snd.is-playing .snd__bars i:nth-child(3) {
+  animation-duration: 1.35s;
+  animation-delay: -0.6s;
+}
+.snd.is-playing .snd__bars i:nth-child(4) {
+  animation-duration: 1s;
+  animation-delay: -0.15s;
+}
+@keyframes snd-bar {
+  0%,
+  100% {
+    transform: scaleY(0.25);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+@media (hover: hover) {
+  .snd:hover {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .snd.is-playing .snd__bars i {
+    animation: none;
+    transform: scaleY(0.6);
+  }
+}
+
 .nav__menu {
   display: none;
   width: 44px;

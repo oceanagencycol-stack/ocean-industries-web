@@ -61,7 +61,7 @@ Contenido: **ES por defecto, EN y PT** (cada elemento lleva `data-es` / `data-en
 - **Analítica**: GA4 solo mide en `oceanindustries.com.co` (ni vistas previas, ni local, ni `?qa`).
 - **Agenda**: Cal.com en claro; en el teléfono (≤ 760 px) se abre en su página; en el computador va incrustado.
 - **Barra**: enlaces desde 1081 px; el menú desde 1080 px hacia abajo. «Habla con OCEAN» solo en el computador.
-- Sin sonido en la página por ahora (los ambientes de la v3 llegan con su paquete; la intro trae sus ganchos).
+- **Sonido v3** (`src/v3/SONIDO.md`): cero audio hasta el primer clic o toque (nunca una tecla, formulario, idioma o «Saltar intro») o el botón de la barra; motor `sound.ts` por import dinámico, ambientes por tramo con paso bajo bajo el agua, efectos en los cruces; se calla con el chat o un reel con sonido; ahorro de datos = apagado. Audio en `public/v3/audio/` (`node tools/audio.mjs`); `node qa/sonido.cjs`.
 - Honestidad: nada de cifras, clientes, logos ni testimonios que no estén aprobados (48 h, 24/7, 11 s y los tres casos).
   Los paisajes son ilustraciones con IA y el pie lo dice.
 - Sin secretos en el repo. Commits con identidad `oceanagencycol-stack <oceanagencycol@gmail.com>`.

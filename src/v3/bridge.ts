@@ -13,6 +13,8 @@
  * salida de seguridad (9 s): la página nunca queda tapada. Acepta también los nombres viejos (`introDue`/`bootIntro`).
  */
 
+import { introCue } from './sound-gate'
+
 export interface WorldHandle {
   dispose(): void
 }
@@ -23,7 +25,7 @@ export interface WorldModule {
 type IntroResult = { done?: Promise<unknown>; skip?: () => void } | Promise<unknown> | null | undefined | void
 export interface IntroModule {
   shouldRunIntro?: () => boolean
-  runIntro?: (opts: { dock: Element | null; lang?: string }) => IntroResult
+  runIntro?: (opts: { dock: Element | null; lang?: string; onStar?: () => void; onWordComplete?: () => void }) => IntroResult
   /** nombres de la rama v3-intro (18-nov) */
   introDue?: () => boolean
   bootIntro?: (opts: { dock: Element | null; lang?: string }) => IntroResult
@@ -74,7 +76,7 @@ export async function playIntro(dock: Element | null, lang: string): Promise<boo
     window.addEventListener('ocean:intro-done', finish)
     const safety = window.setTimeout(finish, 9000)
     try {
-      const r = run({ dock, lang })
+      const r = run({ dock, lang, onStar: () => introCue('star'), onWordComplete: () => introCue('word') })
       if (!r) return finish()
       const p = r instanceof Promise ? r : r.done
       if (p) p.then(finish, finish)

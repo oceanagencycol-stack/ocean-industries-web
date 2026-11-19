@@ -27,6 +27,7 @@ import { initReels } from './ui/reels'
 import { initBooking } from './ui/booking'
 import { initAnalytics } from './ui/analytics'
 import { initChrome } from './v3/chrome'
+import { initSound, markReplay } from './v3/sound-gate'
 import { initReveal, holdHero, releaseHero } from './v3/reveal'
 import { hasRealIntro, hasRealWorld, loadWorld, playIntro, type WorldHandle } from './v3/bridge'
 
@@ -52,6 +53,7 @@ initReels()
 initBooking()
 initChat()
 initAnalytics()
+initSound()
 
 const introDue = html.classList.contains('intro-due')
 if (introDue) holdHero()
@@ -72,6 +74,7 @@ if (replay && hasRealIntro && !reduced) {
   replay.hidden = false
   replay.addEventListener('click', () => {
     store.remove('ocean-v3-intro-at')
+    markReplay()
     history.replaceState(null, '', location.pathname)
     window.scrollTo(0, 0)
     location.reload()
