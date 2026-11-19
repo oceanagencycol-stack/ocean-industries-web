@@ -36,8 +36,9 @@ Ojo: la vista previa usa las mismas llaves de Wompi que producción. **Nunca se 
    La última versión de la v1 es `dpl_4eeUPUZNYtEx1pmfF9DUn7ZZvFFQ` (commit `1f92216`, «GA4 en produccion», 8-sep-2026).
 
 ## Regenerar lo que sale de un script
-- `src/brand/wordmark.svg`: trazo del logo maestro (2501 px) con potrace; no se edita a mano.
-- `public/favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`: la O de la firma.
-- `public/og.jpg`: una captura del mar con la firma (`qa/og.cjs`).
+- `public/v3/pagina/*` (placas de cada tramo), `public/favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`,
+  `icon-192.png`, `icon-512.png` y `public/og.jpg`: `python3 tools/medios_pagina.py` (desde `media/v3/direccion/` y
+  `marca/v3/`; por código, sin IA).
+- `public/v3/grano.png`: `node tools/grano.mjs` (paquete de la intro).
 - Si cambia el script de arranque de `index.html`, el build falla y da el hash nuevo para `script-src` en
   `vercel.json`.
