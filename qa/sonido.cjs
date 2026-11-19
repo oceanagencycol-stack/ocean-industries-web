@@ -96,6 +96,9 @@ const TRAMOS = ['espacio', 'satelite', 'mar', 'agua', 'maquina', 'emerge', 'cumb
     }
     await p.click('.nav [data-lang="es"]')
 
+    // las teclas de antes (Espacio, flechas) pueden haber bajado la página: se vuelve a la portada antes del clic
+    await p.evaluate(() => { window.__ocean?.to ? window.__ocean.to(0) : window.scrollTo(0, 0) })
+    await p.waitForTimeout(1200)
     // un clic de verdad enciende
     await p.mouse.click(700, 450)
     ok(await waitFor(p, (s) => s.started && s.ctx === 'running'), 'un clic en la página enciende el sonido (AudioContext en marcha)')
