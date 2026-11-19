@@ -7,7 +7,7 @@
  * Todo lo de QA vive en `window.__world`.
  */
 import '@fontsource-variable/archivo/wdth.css'
-import { ScrollTrack, seekParam } from './camera'
+import { newPose, pose, ScrollTrack, seekParam } from './camera'
 import type { World } from './greybox'
 
 type Tier = 'high' | 'mid' | 'low'
@@ -35,7 +35,7 @@ interface QAHook {
   anchors: () => { y: number; s: number }[]
   [k: string]: unknown
 }
-const hook: QAHook = { ready: false, track, anchors: () => track.anchors() }
+const hook: QAHook = { ready: false, track, anchors: () => track.anchors(), poseAt: (s: number) => pose(s, newPose()) }
 ;(window as unknown as { __world: QAHook }).__world = hook
 
 function pickTier(): Tier {

@@ -790,6 +790,8 @@ export class World {
   private pointer = new Vector2()
   private pointerTarget = new Vector2()
   private disposed = false
+  /** hasta que init() termina, nada despierta al bucle (el ResizeObserver avisa antes) */
+  private built = false
 
   // QA
   rafs = 0
@@ -1092,6 +1094,7 @@ export class World {
     fsq.frustumCulled = false
     this.fxScene.add(fsq)
 
+    this.built = true
     this.resize()
     this.apply(0)
   }
@@ -1294,12 +1297,9 @@ export class World {
   }
 
   /* ---------------- el bucle ---------------- */
+  /** Arranca el bucle (si ya corre, solo cuenta como actividad: nunca hay dos bucles). */
   start(): void {
-    if (this.disposed) return
-    this.last = performance.now()
-    this.lastActive = this.last
-    this.sleeping = false
-    this.raf = requestAnimationFrame(this.loop)
+    this.wake()
   }
 
   stop(): void {
@@ -1310,9 +1310,9 @@ export class World {
 
   /** Algo pasó (scroll, rueda, puntero, toque, tamaño): el bucle despierta si dormía. */
   wake = (): void => {
-    if (this.disposed) return
+    if (this.disposed || !this.built) return
     this.lastActive = performance.now()
-    if (this.sleeping && !document.hidden) {
+    if (this.sleeping && !document.hidden && this.raf === 0) {
       this.sleeping = false
       this.last = this.lastActive
       this.raf = requestAnimationFrame(this.loop)
@@ -1391,8 +1391,13 @@ export class World {
     return this.q.particles
   }
 
-  /** Posa la toma en `s` sin resorte (y lleva el scroll a su lugar); se resuelve cuando ese cuadro ya se pintó. */
-  seek(s: number): Promise<void> {
+  /** Posa la toma en `s` sin resorte (y lleva el scroll a su lugar); se resuelve cuando ese cuadro ya se pintó.
+   *  `time` (opcional, QA de película) fija el reloj de las partículas, el agua y el grano para ese cuadro. */
+  seek(s: number, time?: number): Promise<void> {
+    if (time !== undefined) {
+      this.time = time
+      this.seed = (time * 7.31) % 1
+    }
     this.seekValue = Math.min(1, Math.max(0, s))
     this.spring.reset(this.seekValue)
     scrollTo(0, this.opts.track.scrollFor(this.seekValue))
@@ -1402,15 +1407,18 @@ export class World {
     })
   }
 
-  /** Mide n cuadros completos (escena + pasada final) con gl.finish(): ms por cuadro (mediana). */
+  /** Mide n cuadros completos (escena + pasada final), cada uno esperado con la lectura de un píxel (gl.finish() no
+   *  espera en todos los navegadores): ms por cuadro (mediana). Solo QA. */
   bench(n = 6): number {
     const gl = this.renderer.getContext()
+    const px = new Uint8Array(4)
     const ts: number[] = []
+    gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px)
     for (let i = 0; i < n; i++) {
       const t0 = performance.now()
       this.apply(1 / 60)
       this.render()
-      gl.finish()
+      gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px)
       ts.push(performance.now() - t0)
     }
     ts.sort((a, b) => a - b)
