@@ -1,0 +1,921 @@
+/* ==========================================================================
+   OCEAN v4 · la web como una sola toma
+   La película vive detrás de todo (.stage). La página es una línea de tiempo: cada .track define su tramo de película
+   (data-film) y expone su progreso a CSS (--a entrada, --e salida, --p recorrido). Todo lo que entra y sale se dibuja
+   con esas variables: se puede ir hacia atrás y hacia adelante como en un video.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  src: url('@fontsource-variable/archivo/files/archivo-latin-standard-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  src: url('@fontsource-variable/archivo/files/archivo-latin-ext-standard-normal.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  --display: 'Archivo', 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --vh: 1vh;
+  --sv: 100svh;
+}
+
+html {
+  background: var(--space);
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------- el escenario ---------- */
+.stage {
+  position: fixed;
+  inset: 0;
+  height: 100lvh;
+  z-index: 0;
+  background: var(--space);
+  overflow: hidden;
+  pointer-events: none;
+}
+.stage__poster,
+.stage__poster img,
+.stage__gl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.stage__poster img {
+  object-fit: cover;
+  object-position: 60% 50%;
+}
+.stage__gl {
+  opacity: 0;
+  transition: opacity 1.2s var(--ease);
+}
+html.has-stage .stage__gl {
+  opacity: 1;
+}
+html.has-stage .stage__poster {
+  visibility: hidden;
+  transition: visibility 0s 1.2s;
+}
+.stage__src {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  opacity: 0;
+  left: 0;
+  top: 0;
+}
+/* sombra de lectura: la mueve el relato (--shade-l izquierda, --shade-b abajo, --shade-c centro, --shade-r derecha) */
+.stage__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(3, 6, 12, calc(var(--shade-l, 0) * 0.82)) 0%, rgba(3, 6, 12, 0) 58%),
+    linear-gradient(270deg, rgba(3, 6, 12, calc(var(--shade-r, 0) * 0.82)) 0%, rgba(3, 6, 12, 0) 58%),
+    linear-gradient(0deg, rgba(3, 6, 12, calc(var(--shade-b, 0) * 0.85)) 0%, rgba(3, 6, 12, 0) 55%),
+    radial-gradient(ellipse 70% 55% at 50% 50%, rgba(3, 6, 12, calc(var(--shade-c, 0) * 0.62)), rgba(3, 6, 12, 0) 70%),
+    linear-gradient(180deg, rgba(3, 6, 12, calc(var(--hud, 1) * 0.55)) 0%, rgba(3, 6, 12, 0) 14%);
+}
+
+.grain {
+  z-index: 40;
+  opacity: 0.05;
+}
+
+/* ---------- la barra: transparente sobre la película ---------- */
+.nav.is-scrolled {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+html.nav-light .nav.is-scrolled {
+  background: rgba(224, 231, 237, 0.94);
+  border-bottom-color: var(--ink-line);
+}
+
+/* ---------- la línea de tiempo ---------- */
+.film {
+  position: relative;
+  z-index: 2;
+}
+html.js .track {
+  position: relative;
+  min-height: calc(var(--h, 100) * var(--vh));
+}
+.pin {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  align-items: center;
+  padding: calc(var(--nav-h) + 24px) var(--gutter) 96px;
+  pointer-events: none;
+}
+.pin a,
+.pin button {
+  pointer-events: auto;
+}
+html.js .pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 0;
+}
+
+/* ---------- las letras: cada carácter tiene su azar (--r) y vive de la variable de su línea (--l) ---------- */
+.ln {
+  display: block;
+}
+.ch {
+  display: inline-block;
+  white-space: pre;
+}
+.w {
+  display: inline-block;
+  white-space: nowrap;
+}
+html.js .ch {
+  --t: clamp(0, calc((var(--l, 1) - var(--r) * 0.55) / 0.45), 1);
+  --x: clamp(0, calc((var(--e, 0) - var(--r) * 0.5) / 0.5), 1);
+  opacity: calc(var(--t) * (1 - var(--x)));
+  transform: translate3d(0, calc((1 - var(--t)) * 0.36em - var(--x) * 0.3em), 0);
+  filter: blur(calc((1 - var(--t)) * 9px + var(--x) * 12px));
+}
+html.no-motion .ch {
+  filter: none !important;
+  transform: none !important;
+}
+
+/* lo secundario entra escalonado por su índice (data-k → --k) */
+html.js [data-k] {
+  --t: clamp(0, calc(var(--a, 1) * 1.7 - var(--k, 0) * 0.16), 1);
+  opacity: calc(var(--t) * (1 - var(--e, 0)));
+  transform: translate3d(0, calc((1 - var(--t)) * 18px - var(--e, 0) * 24px), 0);
+  visibility: visible;
+}
+
+/* ---------- la v4 reusa nombres de la v3 (.head, .hero, .ln): aquí no traen su caja ni su sombra ---------- */
+.film .head,
+.film .hero {
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+.film .head::before,
+.film .hero::before {
+  display: none;
+}
+.film .ln {
+  overflow: visible;
+  padding-block: 0;
+  margin-block: 0;
+}
+
+/* ---------- tipografía de la película ---------- */
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+.kicker__n {
+  font-family: var(--display);
+  font-stretch: 70%;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--white);
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+.kicker__n::after {
+  content: '';
+  width: 40px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.hero__title,
+.title {
+  margin: 22px 0 0;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 0.96;
+  color: var(--white);
+  text-wrap: balance;
+}
+.hero__title {
+  font-size: clamp(48px, 8.4vw, 148px);
+}
+.title {
+  font-size: clamp(42px, 6.2vw, 112px);
+}
+.title--xl {
+  font-size: clamp(56px, 9vw, 168px);
+}
+.ln--em {
+  color: var(--mist);
+}
+.deck {
+  margin: 28px 0 0;
+  max-width: 46ch;
+  font-size: clamp(16px, 1.25vw, 19px);
+  line-height: 1.6;
+  color: var(--mist);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 36px;
+}
+.actions--center {
+  justify-content: center;
+}
+.btn--lg {
+  min-height: 56px;
+  padding: 0 30px;
+  font-size: 16px;
+}
+.ico--down {
+  transform: rotate(90deg);
+}
+
+.film .hero {
+  align-self: center;
+  max-width: min(1100px, 100%);
+}
+.where {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 40px;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--haze);
+}
+.where i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.cue {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--mist);
+  opacity: calc(1 - var(--p, 0) * 6);
+}
+.cue i {
+  width: 1px;
+  height: 44px;
+  background: linear-gradient(var(--mist), transparent);
+  transform-origin: top;
+  animation: cue 2.4s var(--ease) infinite;
+}
+@keyframes cue {
+  0% { transform: scaleY(0); opacity: 1; }
+  60% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 0; }
+}
+
+/* cabeceras de capítulo */
+.film .head {
+  max-width: 760px;
+}
+.head--left {
+  justify-self: start;
+}
+.head--right {
+  justify-self: end;
+  text-align: right;
+}
+.head--right .kicker,
+.head--right .actions {
+  justify-content: flex-end;
+}
+.head--right .deck {
+  margin-left: auto;
+}
+.film .head--center {
+  justify-self: center;
+  text-align: center;
+  max-width: 980px;
+}
+.head--center .kicker {
+  justify-content: center;
+}
+.head--center .deck {
+  margin-left: auto;
+  margin-right: auto;
+}
+.head--low {
+  align-self: end;
+}
+.head--high {
+  align-self: start;
+  margin-top: 4vh;
+}
+
+/* la cifra */
+.stat {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-top: 30px;
+}
+.stat b,
+.figs dt {
+  font-family: var(--display);
+  font-stretch: 64%;
+  font-weight: 800;
+  font-size: clamp(56px, 6vw, 96px);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  color: var(--white);
+  font-variant-numeric: tabular-nums;
+}
+.stat > span {
+  font-family: var(--display);
+  font-stretch: 70%;
+  font-weight: 700;
+  font-size: 28px;
+  color: var(--white);
+}
+.stat em {
+  flex-basis: 100%;
+  font-style: normal;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--haze);
+}
+.figs {
+  position: absolute;
+  left: var(--gutter);
+  bottom: 96px;
+  display: flex;
+  gap: clamp(28px, 5vw, 72px);
+  margin: 0;
+}
+.figs dd {
+  margin: 10px 0 0;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+
+/* ---------- los cruces: la frase gigante ---------- */
+.transit .pin {
+  justify-items: center;
+  align-content: center;
+  gap: 2vh;
+  text-align: center;
+}
+.mega {
+  margin: 0;
+  max-width: 16ch;
+  font-family: var(--display);
+  font-weight: 800;
+  font-stretch: 68%;
+  text-transform: uppercase;
+  line-height: 0.86;
+  letter-spacing: -0.01em;
+  color: var(--white);
+  text-wrap: balance;
+}
+.mega--loud {
+  font-size: clamp(54px, 10.5vw, 196px);
+}
+.mega--giant {
+  max-width: none;
+  font-size: clamp(64px, 17vw, 330px);
+  line-height: 0.8;
+}
+.mega--quiet {
+  max-width: 30ch;
+  font-family: var(--font);
+  font-stretch: 100%;
+  text-transform: none;
+  font-weight: 500;
+  font-size: clamp(22px, 2.6vw, 44px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--snow);
+}
+.mega .ln--em {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--white);
+}
+.transit--plunge .mega {
+  mix-blend-mode: difference;
+}
+
+/* ---------- el iceberg: 10 % / 90 % alrededor de la línea de agua ---------- */
+.berg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.berg p {
+  position: absolute;
+  right: calc(var(--gutter) + 130px);
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  margin: 0;
+  text-align: right;
+}
+.berg b {
+  font-family: var(--display);
+  font-stretch: 64%;
+  font-weight: 800;
+  font-size: clamp(72px, 11vw, 200px);
+  line-height: 0.8;
+  color: var(--white);
+}
+.berg span {
+  max-width: 26ch;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--snow);
+}
+.berg__top {
+  bottom: calc(100% - var(--wl, 52%) + 22px);
+}
+.berg__top b {
+  color: var(--abyss);
+  -webkit-text-stroke: 0;
+}
+.berg__top span {
+  color: var(--slate);
+}
+.berg__low {
+  top: calc(var(--wl, 52%) + 22px);
+}
+.berg::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--wl, 52%);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7) 60%, transparent);
+  transform: scaleX(var(--a, 0));
+  opacity: calc(1 - var(--e, 0));
+}
+.chapter--berg .head .kicker {
+  color: var(--snow);
+}
+
+/* ---------- las tarjetas: el contenido pasa por encima de la película ---------- */
+.cards {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  width: min(620px, 100% - 2 * var(--gutter));
+  margin: 70svh var(--gutter) 0 auto;
+  padding: 0 0 26vh;
+}
+.cards > * {
+  min-width: 0;
+}
+.cards--wide {
+  width: min(1180px, 100% - 2 * var(--gutter));
+  margin: 70svh auto 0;
+}
+.card,
+.cards > .live,
+.cards > .work {
+  position: relative;
+  padding: clamp(26px, 3vw, 44px);
+  border: 1px solid rgba(224, 231, 237, 0.12);
+  border-radius: var(--r-l);
+  background: linear-gradient(180deg, rgba(4, 9, 16, 0.86), rgba(4, 9, 16, 0.94));
+  box-shadow: 0 40px 120px -40px rgba(0, 0, 0, 0.8);
+}
+.cards > .live,
+.cards > .work {
+  padding: clamp(28px, 4vw, 64px);
+}
+.card .svc__name {
+  margin-top: 14px;
+}
+.card .svc__desc {
+  color: var(--mist);
+}
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 32px;
+  width: 2px;
+  height: 28px;
+  background: var(--white);
+  border-radius: 2px;
+}
+
+/* ---------- el final en blanco ---------- */
+.whiteout .pin {
+  min-height: 0;
+}
+.snow {
+  background: var(--snow);
+  margin-top: -1px;
+}
+.snow::before {
+  display: none;
+}
+
+/* ---------- la telemetría ---------- */
+.rail {
+  position: fixed;
+  z-index: 30;
+  left: var(--gutter);
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 4px;
+  opacity: var(--hud, 1);
+  transition: opacity 0.6s var(--ease), color 0.6s var(--ease);
+}
+.rail a {
+  --fill: 0;
+  display: grid;
+  grid-template-columns: 24px 22px auto;
+  align-items: center;
+  gap: 8px;
+  height: 22px;
+  color: var(--haze);
+  text-decoration: none;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.rail i {
+  position: relative;
+  height: 1px;
+  background: rgba(178, 192, 204, 0.28);
+  overflow: hidden;
+}
+.rail i::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--white);
+  transform-origin: left;
+  transform: scaleX(var(--fill));
+}
+.rail__n {
+  font-family: var(--display);
+  font-stretch: 70%;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.rail__t {
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+}
+.rail a[aria-current='true'] {
+  color: var(--white);
+}
+.rail a[aria-current='true'] .rail__t {
+  opacity: 1;
+  transform: none;
+}
+@media (hover: hover) {
+  .rail:hover .rail__t {
+    opacity: 1;
+    transform: none;
+  }
+  .rail a:hover {
+    color: var(--white);
+  }
+}
+
+.alti {
+  position: fixed;
+  z-index: 30;
+  right: var(--gutter);
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  opacity: var(--hud, 1);
+  transition: opacity 0.6s var(--ease);
+  pointer-events: none;
+}
+.alti__label {
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--haze);
+}
+.alti__val {
+  font-family: var(--display);
+  font-stretch: 70%;
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  font-variant-numeric: tabular-nums;
+  min-width: 7ch;
+  text-align: right;
+}
+.alti__tape {
+  position: relative;
+  width: 34px;
+  height: 180px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent);
+  mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent);
+}
+.alti__tape::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 34px;
+  height: 1px;
+  background: var(--white);
+}
+.alti__ticks {
+  position: absolute;
+  right: 0;
+  left: 0;
+  top: 0;
+  height: 400%;
+  background: repeating-linear-gradient(to bottom, rgba(178, 192, 204, 0.55) 0 1px, transparent 1px 12px),
+    repeating-linear-gradient(to bottom, rgba(224, 231, 237, 0.9) 0 1px, transparent 1px 60px);
+  background-size: 14px 100%, 26px 100%;
+  background-position: right top, right top;
+  background-repeat: repeat-y;
+  transform: translate3d(0, var(--tape, -40%), 0);
+}
+
+.tc {
+  position: fixed;
+  z-index: 30;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: 22px;
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--haze);
+  opacity: var(--hud, 1);
+  transition: opacity 0.6s var(--ease);
+  pointer-events: none;
+}
+.tc__rec {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--mist);
+}
+.tc__rec i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--white);
+}
+.tc__time {
+  font-family: var(--display);
+  font-stretch: 70%;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--snow);
+  font-variant-numeric: tabular-nums;
+}
+.tc__bar {
+  position: relative;
+  height: 1px;
+  background: rgba(178, 192, 204, 0.2);
+}
+.tc__bar i {
+  position: absolute;
+  inset: 0;
+  background: var(--white);
+  transform-origin: left;
+  transform: scaleX(var(--prog, 0));
+}
+
+/* ---------- rótulos anclados a la película ---------- */
+.callouts {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.co {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: var(--o, 0);
+  transform: translate3d(var(--x, -999px), var(--y, -999px), 0);
+  will-change: transform, opacity;
+}
+.co__dot {
+  position: absolute;
+  left: -5px;
+  top: -5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--white);
+}
+.co__dot::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--white);
+}
+.co__line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--len, 90px) * var(--o, 0));
+  height: 1px;
+  background: rgba(255, 255, 255, 0.8);
+  transform-origin: left;
+  transform: rotate(var(--ang, -32deg));
+}
+.co__label {
+  position: absolute;
+  left: var(--lx, 80px);
+  top: var(--ly, -62px);
+  transform: translate(var(--tx, 0%), -50%);
+  white-space: nowrap;
+  padding: 7px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(3, 6, 12, 0.55);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+/* el final: la telemetría se esconde sobre la nieve */
+html.nav-light .rail,
+html.nav-light .alti,
+html.nav-light .tc {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------- teléfono ---------- */
+@media (max-width: 900px) {
+  .rail,
+  .tc__hint,
+  .tc__rec {
+    display: none;
+  }
+  .tc {
+    grid-template-columns: auto 1fr;
+    bottom: 14px;
+  }
+  .alti {
+    top: auto;
+    bottom: 34px;
+    transform: none;
+    grid-template-columns: auto auto;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .alti__tape {
+    display: none;
+  }
+  .alti__val {
+    font-size: 16px;
+  }
+  .pin {
+    align-items: end;
+    padding-bottom: 118px;
+  }
+  .film .hero {
+    align-self: end;
+  }
+  .where {
+    margin-top: 26px;
+  }
+  .head,
+  .head--right,
+  .head--center {
+    justify-self: stretch;
+    text-align: left;
+  }
+  .head--right .kicker,
+  .head--center .kicker,
+  .actions--center {
+    justify-content: flex-start;
+  }
+  .head--right .deck,
+  .head--center .deck {
+    margin-left: 0;
+  }
+  .head--high {
+    align-self: start;
+    margin-top: 2vh;
+  }
+  .figs {
+    position: static;
+    margin-top: 28px;
+    gap: 22px;
+  }
+  .chapter--maquina .pin {
+    align-content: end;
+  }
+  .cards,
+  .cards--wide {
+    width: calc(100% - 2 * var(--gutter));
+    margin: 60svh auto 0;
+  }
+  .co__label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+  .berg p {
+    left: var(--gutter);
+    right: var(--gutter);
+  }
+  .chapter--berg .head {
+    display: none;
+  }
+}
+
+@media (max-width: 1080px) {
+  .rail {
+    display: none;
+  }
+}
+
+/* ---------- pantallas muy angostas (320–380 px) ---------- */
+@media (max-width: 400px) {
+  .kicker {
+    flex-wrap: wrap;
+    letter-spacing: 0.18em;
+  }
+  .figs {
+    gap: 14px;
+  }
+  .figs dt {
+    font-size: 44px;
+  }
+  .figs dd {
+    letter-spacing: 0.12em;
+  }
+  .mega {
+    max-width: 100%;
+  }
+  .mega--quiet {
+    font-size: 19px;
+  }
+  .mega--giant {
+    font-size: 15.5vw;
+  }
+  .mega--loud {
+    font-size: 13vw;
+  }
+}

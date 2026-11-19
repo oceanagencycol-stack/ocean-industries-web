@@ -350,5 +350,65 @@
   ],
   "apertura": "n2MzQm2aeS502qlaPnun",
   "derivados": "Montaje, etalonaje y señal luminosa en tools/film.py. Retemporización, encuadres de respaldo y ventanas de lectura en tools/film-delivery.py. La edición vertical sigue el mismo reloj."
+ },
+ "public/v4/film-hd.mp4": {
+  "origen": "IA (ElevenLabs, kling-3-pro, 1080p; apertura sobre placa gemini-3-pro-image ER4K2BktzZf6fjfSOc5A)",
+  "generation_ids": {
+   "s0": "CFRjMd4nn3YTkFWcn0v9",
+   "s1": "LIZv8UCNCDqhcKweg9Mt",
+   "s2": "0G9mBxyI25dfjdcIRYRE",
+   "s3": "BzdCCsWfHGjpFBSncThP",
+   "s4": "HQqY9mwWIuwuGXwCK7Xv",
+   "s5": "hcZMAePo5uCwN9n3ndHz",
+   "s6": "Jzmr9D6UhCRMPW2KrOlO"
+  },
+  "flujo": "kSe3q2p9wY9Nvko2DhaG",
+  "fecha": "2026-11-19",
+  "uso": "la película de la web v4 (tools/v4-film.sh); ilustración, no es un lugar ni una persona real"
+ },
+ "public/v4/film-sd.mp4": {
+  "origen": "IA (ElevenLabs, kling-3-pro, 1080p; apertura sobre placa gemini-3-pro-image ER4K2BktzZf6fjfSOc5A)",
+  "generation_ids": {
+   "s0": "CFRjMd4nn3YTkFWcn0v9",
+   "s1": "LIZv8UCNCDqhcKweg9Mt",
+   "s2": "0G9mBxyI25dfjdcIRYRE",
+   "s3": "BzdCCsWfHGjpFBSncThP",
+   "s4": "HQqY9mwWIuwuGXwCK7Xv",
+   "s5": "hcZMAePo5uCwN9n3ndHz",
+   "s6": "Jzmr9D6UhCRMPW2KrOlO"
+  },
+  "flujo": "kSe3q2p9wY9Nvko2DhaG",
+  "fecha": "2026-11-19",
+  "uso": "la película de la web v4 (tools/v4-film.sh); ilustración, no es un lugar ni una persona real"
+ },
+ "public/v4/poster.webp": {
+  "origen": "IA (ElevenLabs, kling-3-pro, 1080p; apertura sobre placa gemini-3-pro-image ER4K2BktzZf6fjfSOc5A)",
+  "generation_ids": {
+   "s0": "CFRjMd4nn3YTkFWcn0v9",
+   "s1": "LIZv8UCNCDqhcKweg9Mt",
+   "s2": "0G9mBxyI25dfjdcIRYRE",
+   "s3": "BzdCCsWfHGjpFBSncThP",
+   "s4": "HQqY9mwWIuwuGXwCK7Xv",
+   "s5": "hcZMAePo5uCwN9n3ndHz",
+   "s6": "Jzmr9D6UhCRMPW2KrOlO"
+  },
+  "flujo": "kSe3q2p9wY9Nvko2DhaG",
+  "fecha": "2026-11-19",
+  "uso": "la película de la web v4 (tools/v4-film.sh); ilustración, no es un lugar ni una persona real"
+ },
+ "public/v4/poster-v.webp": {
+  "origen": "IA (ElevenLabs, kling-3-pro, 1080p; apertura sobre placa gemini-3-pro-image ER4K2BktzZf6fjfSOc5A)",
+  "generation_ids": {
+   "s0": "CFRjMd4nn3YTkFWcn0v9",
+   "s1": "LIZv8UCNCDqhcKweg9Mt",
+   "s2": "0G9mBxyI25dfjdcIRYRE",
+   "s3": "BzdCCsWfHGjpFBSncThP",
+   "s4": "HQqY9mwWIuwuGXwCK7Xv",
+   "s5": "hcZMAePo5uCwN9n3ndHz",
+   "s6": "Jzmr9D6UhCRMPW2KrOlO"
+  },
+  "flujo": "kSe3q2p9wY9Nvko2DhaG",
+  "fecha": "2026-11-19",
+  "uso": "la película de la web v4 (tools/v4-film.sh); ilustración, no es un lugar ni una persona real"
  }
 }

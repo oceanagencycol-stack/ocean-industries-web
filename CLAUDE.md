@@ -4,6 +4,11 @@ Web oficial de OCEAN (nombre legal: Ocean Industries; oceanindustries.com.co). C
 Contenido: **ES por defecto, EN y PT** (cada elemento lleva `data-es` / `data-en` / `data-pt`, y `data-*-aria` /
 `data-*-ph` para nombres accesibles y placeholders).
 
+**v4 (rama `v4-pelicula`)**: la web como una sola toma. `index.html` + `src/main.ts` → `src/v4/` (`stage.ts` el
+escenario WebGL2, `film.ts` la línea de tiempo, `script.ts` el guion técnico: gradación, medio, foco, altímetro,
+rótulos) y `src/styles/v4.css` sobre `v3.css`. Película en `public/v4/` (`tools/v4-film.sh`, cortes en
+`src/v4/film.json`). Todo en `docs/v4/PELICULA.md`. Las demos de cuatro pasos de la v3 no están en la portada v4.
+
 La rama de montaje `v3-cine` usa `src/v3/film.ts` y el máster de `public/v3/film/` en la portada. Los detalles de producción y el recorrido actual están en `docs/v3/CINE.md`. El lienzo de `src/world/` sigue disponible en la maqueta de desarrollo.
 
 ## Antes de tocar nada
