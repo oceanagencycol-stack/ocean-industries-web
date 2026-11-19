@@ -25,12 +25,13 @@ el 18-nov) con su movimiento de cámara y un cruce propio entre cada par, en un 
 const { mountWorld } = await import('./world/plates') // dinámico: fuera del primer bundle
 const world = await mountWorld({
   canvas: document.getElementById('world') as HTMLCanvasElement,
-  sections: [...document.querySelectorAll<HTMLElement>('[data-tramo]')],
+  sections: document.querySelectorAll<HTMLElement>('[data-tramo]'), // NodeList o array
   lenis, // opcional, escritorio, creado con autoRaf: false (el mundo lo mueve y duerme con él)
 })
-world.live // false: versión quieta (sin WebGL2, movimiento reducido, ahorro de datos o WebGL por software)
-world.setProgress(0.5) // fija la toma (intro, QA); setProgress(null) la devuelve al scroll
-world.dispose() // suelta GL, listeners y observadores
+// null: versión quieta (sin WebGL2, movimiento reducido, ahorro de datos, WebGL por software); la razón queda en
+// html[data-world-still]. Si no es null, el primer cuadro ya está pintado: la página puede encender el lienzo.
+world?.setProgress(0.5) // fija la toma (intro, QA); setProgress(null) la devuelve al scroll
+world?.dispose() // suelta GL, listeners y observadores
 ```
 
 - **Clases en `<html>`**: `world-on` cuando el primer cuadro ya está pintado (el lienzo entra con un fundido de CSS);

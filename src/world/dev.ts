@@ -20,7 +20,7 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
 interface QAHook {
   ready: boolean
   error?: string
-  world?: WorldHandle
+  world?: WorldHandle | null
   [k: string]: unknown
 }
 const hook: QAHook = { ready: false }
@@ -46,10 +46,13 @@ async function boot(): Promise<void> {
   }
   const { mountWorld } = await import('./plates')
   const canvas = document.getElementById('world') as HTMLCanvasElement
-  const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-tramo]'))
+  // como la página real: un NodeList
+  const sections = document.querySelectorAll<HTMLElement>('[data-tramo]')
   const world = await mountWorld({ canvas, sections, lenis, seek, trace: /trace/.test(qa) })
   hook.world = world
-  hook.track = (world as unknown as { scrollTrack?: unknown }).scrollTrack
+  hook.track = (world as unknown as { scrollTrack?: unknown } | null)?.scrollTrack
+  // en la versión quieta Lenis sobra (y no tendría quién lo mueva)
+  if (!world) lenis?.destroy()
   hook.ready = true
 }
 

@@ -15,6 +15,7 @@
 //      cuadro a cuadro (seek + ffmpeg) que muestra la coreografía sin el atraso de SwiftShader.
 // Todo queda en qa/out/maqueta/. Termina en «maqueta en verde» o lista los fallos.
 const { chromium, devices } = require('playwright')
+const sharp = require('sharp')
 const { spawn, execSync } = require('node:child_process')
 const fs = require('node:fs')
 const path = require('node:path')
@@ -87,21 +88,38 @@ async function captures(browser) {
       for (let i = 0; i < POINTS.length; i++) {
         const s = POINTS[i]
         const page = await open(ctx, `qa=seek=${s}`, errors)
-        await page.screenshot({ path: path.join(dirs[run], `${String(i).padStart(2, '0')}-p${(s * 6).toFixed(2)}.png`) })
+        await page.screenshot({ path: path.join(dirs[run], `${String(i).padStart(2, '0')}-p${(s * 6).toFixed(2)}.png`), timeout: 120000 })
         if (run === 0 && (i === 0 || i % 3 === 2)) bench[`${dev.name} p=${(s * 6).toFixed(2)}`] = await page.evaluate(() => window.__world.world.bench(5))
         if (run === 0 && i === 0) bench[`${dev.name} dpr`] = await page.evaluate(() => window.__world.world.pixelRatio)
         await page.close()
       }
       await ctx.close()
     }
+    // idéntica byte a byte; o, donde SwiftShader redondea distinto un borde animado (la línea del agua), a lo sumo
+    // 3/255 en a lo sumo el 0,05 % de los píxeles (se informa)
     let same = 0
+    const near = []
     for (const f of fs.readdirSync(dirs[0])) {
       const a = fs.readFileSync(path.join(dirs[0], f))
       const b = fs.readFileSync(path.join(dirs[1], f))
-      if (a.equals(b)) same++
-      else fail(`${dev.name}: ${f} no es idéntica entre corridas`)
+      if (a.equals(b)) {
+        same++
+        continue
+      }
+      const [ra, rb] = await Promise.all([sharp(a).raw().toBuffer({ resolveWithObject: true }), sharp(b).raw().toBuffer({ resolveWithObject: true })])
+      let n = 0
+      let max = 0
+      for (let j = 0; j < ra.data.length; j += ra.info.channels) {
+        const d = Math.max(Math.abs(ra.data[j] - rb.data[j]), Math.abs(ra.data[j + 1] - rb.data[j + 1]), Math.abs(ra.data[j + 2] - rb.data[j + 2]))
+        if (d) n++
+        if (d > max) max = d
+      }
+      const share = n / (ra.info.width * ra.info.height)
+      if (max <= 3 && share <= 0.0005) near.push(`${f} (${n} px, ≤ ${max}/255)`)
+      else fail(`${dev.name}: ${f} cambia entre corridas (${n} px, hasta ${max}/255)`)
     }
-    if (same === POINTS.length) ok(`${dev.name}: ${same}/${POINTS.length} capturas idénticas en las dos corridas`)
+    if (same + near.length === POINTS.length)
+      ok(`${dev.name}: ${same}/${POINTS.length} capturas idénticas byte a byte${near.length ? `; ${near.length} con ruido de redondeo de SwiftShader en la línea del agua: ${near.join(', ')}` : ''}`)
     if (errors.length) fail(`${dev.name}: errores en la consola: ${[...new Set(errors)].slice(0, 3).join(' | ')}`)
   }
   return bench
@@ -126,6 +144,15 @@ async function settle(page, timeout = 60000) {
   }
   await page.waitForTimeout(250)
 }
+
+/** cuánto de la toma vale 1 px de scroll (la pendiente mayor entre anclas): el navegador redondea el scroll */
+const pxTolerance = (page) =>
+  page.evaluate(() => {
+    const A = window.__world.track.anchors()
+    let m = 0
+    for (let i = 1; i < A.length; i++) if (A[i].y > A[i - 1].y) m = Math.max(m, (A[i].s - A[i - 1].s) / (A[i].y - A[i - 1].y))
+    return m
+  })
 
 const mark = (page) => page.evaluate(() => window.__world.world.samples.length)
 
@@ -165,6 +192,7 @@ async function wheelTrip(browser) {
   await ctx.addInitScript(RAF_COUNTER)
   // la ida y vuelta mide la toma, no la imagen: un lienzo chico va más rápido en SwiftShader y no cambia s
   const page = await open(ctx, 'qa=trace&dpr=0.5', errors)
+  const pxTol = await pxTolerance(page)
   const maxScroll = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight)
   await page.mouse.move(720, 450)
 
@@ -178,7 +206,7 @@ async function wheelTrip(browser) {
   await settle(page)
   let m1 = await mark(page)
   let S = await page.evaluate(([a, b]) => window.__world.world.samples.slice(a, b), [m0, m1])
-  analyze('rueda, ida', S, +1, 1)
+  analyze('rueda, ida', S, +1, 1, pxTol)
 
   // vuelta
   m0 = m1
@@ -190,7 +218,7 @@ async function wheelTrip(browser) {
   await settle(page)
   m1 = await mark(page)
   S = await page.evaluate(([a, b]) => window.__world.world.samples.slice(a, b), [m0, m1])
-  analyze('rueda, vuelta', S, -1, 0)
+  analyze('rueda, vuelta', S, -1, 0, pxTol)
 
   // el teclado necesita el foco en la página (la rueda no lo da): un clic en un lugar sin enlaces
   await page.mouse.click(1300, 120)
@@ -209,7 +237,7 @@ async function wheelTrip(browser) {
     await settle(page)
     m1 = await mark(page)
     S = await page.evaluate(([a, b]) => window.__world.world.samples.slice(a, b), [m0, m1])
-    analyze(`teclado ${key}${times > 1 ? ` ×${times}` : ''}`, S, dir, end)
+    analyze(`teclado ${key}${times > 1 ? ` ×${times}` : ''}`, S, dir, end, pxTol)
   }
 
   await rest(page, 'escritorio')
@@ -234,13 +262,7 @@ async function touchTrip(browser) {
   await ctx.addInitScript(RAF_COUNTER)
   const page = await open(ctx, 'qa=trace&dpr=0.5', errors)
   const cdp = await ctx.newCDPSession(page)
-  // cuánto de la toma vale 1 px de scroll (la pendiente mayor entre anclas)
-  const pxTol = await page.evaluate(() => {
-    const A = window.__world.track.anchors()
-    let m = 0
-    for (let i = 1; i < A.length; i++) if (A[i].y > A[i - 1].y) m = Math.max(m, (A[i].s - A[i - 1].s) / (A[i].y - A[i - 1].y))
-    return m
-  })
+  const pxTol = await pxTolerance(page)
   const maxScroll = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight)
 
   let m0 = await mark(page)

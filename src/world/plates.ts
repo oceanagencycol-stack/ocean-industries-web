@@ -387,8 +387,8 @@ export function stillReason(): string | null {
 export interface MountOptions {
   /** el lienzo fijo (100vw × 100lvh, `aria-hidden`) */
   canvas: HTMLCanvasElement
-  /** las secciones `[data-tramo]` de la página, en el orden de PLATES; su tope ancla la toma */
-  sections: HTMLElement[]
+  /** las secciones `[data-tramo]` de la página, en el orden de PLATES (array o NodeList); su tope ancla la toma */
+  sections: ArrayLike<HTMLElement>
   /** Lenis en escritorio, con `autoRaf: false` (el bucle del mundo lo mueve y duerme con él) */
   lenis?: { raf(t: number): void; isScrolling: unknown } | null
   /** carpeta de las placas (por defecto `/v3/world/`) */
@@ -399,9 +399,7 @@ export interface MountOptions {
 }
 
 export interface WorldHandle {
-  /** false: la página está en la versión quieta (`html.world-still`) */
   readonly live: boolean
-  readonly reason: string | null
   /** Fija la toma en `s` (0–1) sin resorte, o la devuelve al scroll con null. Se resuelve con el cuadro pintado. */
   setProgress(s: number | null): Promise<void>
   /** algo pasó (lo llaman solos scroll, rueda, puntero, toques y tamaño) */
@@ -420,7 +418,6 @@ type Tex = { tex: WebGLTexture; full: boolean; loading: boolean; aspect: number 
 
 export class World implements WorldHandle {
   readonly live = true
-  readonly reason = null
   private gl: WebGL2RenderingContext
   private canvas: HTMLCanvasElement
   private opts: MountOptions
@@ -482,10 +479,11 @@ export class World implements WorldHandle {
     this.base = opts.base ?? '/v3/world/'
     this.seekValue = opts.seek === undefined ? seekParam() : opts.seek
     // la toma: el tope de cada tramo (salvo el primero) llega cuando su placa ya entró (p = k − 0,3)
-    opts.sections.forEach((el, k) => {
+    const sections = Array.from(opts.sections)
+    sections.forEach((el, k) => {
       if (el.dataset.shot === undefined) el.dataset.shot = String(k === 0 ? 0 : (k - 0.3) / SEGS)
     })
-    this.track = new ScrollTrack(opts.sections)
+    this.track = new ScrollTrack(sections)
     if (this.seekValue !== null) this.spring.reset(this.seekValue)
 
     for (let t = -1; t < 6; t++) this.quads.push(compile(gl, QUAD_VS, quadFS(t)))
@@ -850,6 +848,12 @@ export class World implements WorldHandle {
       this.seed = (this.frame * 0.6180339) % 1
     }
     this.draw()
+    // posada (seek/setProgress): nada cambia hasta el próximo pedido; el bucle duerme ya
+    if (this.seekValue !== null) {
+      cancelAnimationFrame(this.raf)
+      this.raf = 0
+      this.sleeping = true
+    }
     if (this.opts.trace) this.samples.push({ t: now, s: this.spring.s, target, y: scrollY })
     if (this.waiters.length) {
       const w = this.waiters
@@ -947,16 +951,18 @@ function idle(fn: () => void): void {
 }
 
 /**
- * Monta el mundo sobre un lienzo fijo y las secciones `[data-tramo]` de la página. Si no hay mundo (sin WebGL2,
- * movimiento reducido, ahorro de datos, WebGL por software), pone `html.world-still` y devuelve un manejador quieto:
- * la página muestra sus `<picture>`. Con mundo, pone `html.world-on` cuando el primer cuadro ya está pintado.
+ * Monta el mundo sobre un lienzo fijo y las secciones `[data-tramo]` de la página y se resuelve cuando el primer cuadro
+ * ya está pintado (pone `html.world-on`). Si no hay mundo (sin WebGL2, movimiento reducido, ahorro de datos, WebGL por
+ * software o un shader que no compila), pone `html.world-still` y devuelve **null**: la página se queda con sus
+ * `<picture>`.
  */
-export async function mountWorld(opts: MountOptions): Promise<WorldHandle> {
+export async function mountWorld(opts: MountOptions): Promise<WorldHandle | null> {
   const reason = stillReason()
   const root = document.documentElement
-  const still = (why: string): WorldHandle => {
+  const still = (why: string): null => {
     root.classList.add('world-still')
-    return { live: false, reason: why, setProgress: () => Promise.resolve(), wake: () => {}, dispose: () => root.classList.remove('world-still') }
+    root.dataset.worldStill = why
+    return null
   }
   if (reason) return still(reason)
   const gl = opts.canvas.getContext('webgl2', { antialias: false, alpha: false, depth: false, stencil: false, premultipliedAlpha: false, powerPreference: 'high-performance' })
