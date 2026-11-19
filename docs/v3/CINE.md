@@ -12,9 +12,9 @@ Vercel protegía esa vista previa con acceso del equipo. Se inspeccionó localme
 | Elemento | Decisión |
 | --- | --- |
 | Siete tramos y cambio de oscuridad a nieve | Mantener el arco y darle movimiento real a las imágenes, con un encuadre propio para teléfono. |
-| Titular de la v3 y marca original | Conservar el logotipo. Abrir a sangre con «Todo empieza bajo la superficie» y poner los tres servicios principales y el contacto en una columna desplazada. |
-| Placas más parallax de WebGL2 | Componer los fotogramas dentro de una sola cámara, con cruces de atmósfera, lente submarina y nubes. |
-| Servicios antes que casos | Alternar texto y demostraciones en la retícula editorial. Usar las imágenes publicadas de los tres proyectos y dar a Valeria una conversación que avanza al hacer scroll. |
+| Titular de la v3 y marca original | Conservar el logotipo. Abrir con «Una señal.» sobre la curva de la Tierra, con espacio para la cámara y dos entradas al recorrido, reproducir o desplazarse. |
+| Placas más parallax de WebGL2 | Rodar las transiciones entre placas y montar una película con un encuadre horizontal y otro vertical. |
+| Servicios antes que casos | Seguir una sola compra. Cada paso enlaza con la demostración o el proyecto que lo explica. Al cerrar, la persona vuelve al mismo capítulo. |
 | Tres idiomas, WhatsApp contextual, sonido, agenda y pagos | Mantener los flujos existentes y añadir un control de movimiento en la barra. |
 
 ## Referencias y decisiones
@@ -65,3 +65,5 @@ presentan fotogramas fijos. La apertura orbital tiene movimiento propio. La proy
 
 `node qa/cine.cjs http://localhost:4175/` comprueba la reproducción, las búsquedas en ambas direcciones, el encuadre vertical,
 la pausa y los enlaces profundos. Los flujos comerciales se prueban con `qa/flows.cjs`.
+
+La [grabación del recorrido en Chromium](../../public/v3/recorrido.mp4) muestra la proyección desde el hero hasta la cumbre, con los títulos y los controles de la página.
