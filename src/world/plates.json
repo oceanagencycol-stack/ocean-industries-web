@@ -1,0 +1,75 @@
+{
+  "$comment": "Las placas de la toma (v3), en orden. Coordenadas en la imagen fuente (0–1, y hacia abajo). focal: lo que no se puede perder al recortar; vx: centro del recorte vertical 1080×1920 del teléfono; move: zoom y paneo a lo largo de la vida de la placa (de u = −1, cuando entra, a u = 1, cuando sale; la última descansa en u = 0); depth: hacia dónde está lo cercano (la paralaje fingida mueve más lo cercano); into: el cruce que lleva a la siguiente. tools/placas.mjs lee este archivo.",
+  "plates": [
+    {
+      "id": "espacio",
+      "src": "M1a",
+      "alt": "La Tierra de noche desde el espacio, con la luna creciente y una estrella de cuatro puntas",
+      "focal": [0.45, 0.42],
+      "vx": 0.4,
+      "star": [0.266, 0.264],
+      "move": { "zoom": [1.05, 1.13], "pan": [0.018, 0.012] },
+      "depth": [0.55, 0.65],
+      "into": "destello"
+    },
+    {
+      "id": "satelite",
+      "src": "M1sb",
+      "alt": "Un satélite plateado en órbita sobre el borde de la Tierra",
+      "focal": [0.62, 0.3],
+      "vx": 0.6,
+      "move": { "zoom": [1.06, 1.11], "pan": [-0.026, 0.004] },
+      "depth": [0.25, -0.8],
+      "into": "atmosfera"
+    },
+    {
+      "id": "mar",
+      "src": "M2b",
+      "alt": "El mar de noche visto desde muy arriba, con un velero solo",
+      "focal": [0.49, 0.74],
+      "vx": 0.49,
+      "move": { "zoom": [1.04, 1.2], "pan": [0.0, 0.03] },
+      "depth": [0.0, 1.0],
+      "into": "superficie"
+    },
+    {
+      "id": "agua",
+      "src": "M3b",
+      "alt": "Bajo el agua, un buzo desciende por un haz de luz que entra desde la superficie",
+      "focal": [0.66, 0.5],
+      "vx": 0.6,
+      "move": { "zoom": [1.05, 1.13], "pan": [0.006, -0.04] },
+      "depth": [0.2, 0.9],
+      "into": "enciende"
+    },
+    {
+      "id": "maquina",
+      "src": "M4v2a",
+      "alt": "Un sumergible ilumina con sus faros la pared de una montaña submarina",
+      "focal": [0.42, 0.45],
+      "vx": 0.5,
+      "move": { "zoom": [1.05, 1.11], "pan": [0.03, 0.004] },
+      "depth": [-0.9, 0.1],
+      "into": "emerge"
+    },
+    {
+      "id": "emerge",
+      "src": "M5a",
+      "alt": "Una montaña de hielo partida por la línea del agua: arriba la cumbre, abajo su base",
+      "focal": [0.72, 0.42],
+      "vx": 0.7,
+      "move": { "zoom": [1.12, 1.04], "pan": [0.0, 0.035] },
+      "depth": [0.0, 1.0],
+      "into": "nubes"
+    },
+    {
+      "id": "cumbre",
+      "src": "M6a",
+      "alt": "Una cumbre de hielo sobre un mar de nubes al amanecer, con un caminante en la arista",
+      "focal": [0.62, 0.36],
+      "vx": 0.62,
+      "move": { "zoom": [1.12, 1.04], "pan": [0.0, 0.025] },
+      "depth": [-0.6, 0.8]
+    }
+  ]
+}

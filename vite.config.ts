@@ -14,7 +14,7 @@ const SITE_URL = (process.env.SITE_URL || 'https://www.oceanindustries.com.co').
 const PAGES = ['index', 'privacidad', '404'] as const
 
 /** Páginas de desarrollo (noindex, fuera del sitemap): la intro v3 sola, sobre el espacio de M1a. */
-const DEV_PAGES = ['dev-intro'] as const
+const DEV_PAGES = ['dev-intro', 'dev-world'] as const
 
 /** Identificador del build (va en un <meta>: sirve para saber qué versión está viendo alguien). */
 const BUILD_ID = Date.now().toString(36)
@@ -215,7 +215,10 @@ export default defineConfig({
     assetsInlineLimit: 0,
     chunkSizeWarningLimit: 900,
     rolldownOptions: {
-      input: Object.fromEntries([...PAGES, ...DEV_PAGES].map((p) => [p === 'index' ? 'main' : p, resolve(ROOT, `${p}.html`)])),
+      // Páginas de desarrollo (noindex) solo en las vistas previas; nunca en producción
+      input: Object.fromEntries(
+        [...PAGES, ...(process.env.VERCEL_ENV === 'production' ? [] : DEV_PAGES)].map((p) => [p === 'index' ? 'main' : p, resolve(ROOT, `${p}.html`)]),
+      ),
     },
   },
 })
