@@ -84,4 +84,5 @@ privacidad) · `api/` (agente, firma de Wompi, reels) · `public/v3/` (placas, g
 - `node qa/intro-pagina.cjs http://localhost:4175/ <carpeta>`: primera visita real con la intro, capturas en el tiempo.
 - `node qa/intro-v3.cjs` (del paquete de la intro).
 - Lighthouse móvil contra el preview (`CHROME_PATH` al Chromium de Playwright, `/opt/pw-browsers/.../chrome`):
-  19-nov-2026, primera visita con intro: rendimiento 97–98; accesibilidad, buenas prácticas y SEO 100; LCP 2,2 s, CLS 0.
+  19-nov-2026, primera visita con intro, 7 corridas: rendimiento 93–99 (mediana 98); accesibilidad, buenas prácticas y
+  SEO 100; LCP 2,0–2,4 s, TBT 30–250 ms, CLS 0. La tarea larga mayor es el análisis del HTML (≈ 150 ms, CSS en línea).
