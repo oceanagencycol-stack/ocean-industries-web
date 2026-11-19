@@ -64,7 +64,8 @@
    tamaño según el dpr), desplazada a saltos de cuadro. */
 .oi-grain {
   position: absolute;
-  inset: -256px;
+  /* lo justo para desplazarla hasta una tesela hacia arriba y a la izquierda (intro.ts): menos área que mezclar */
+  inset: 0 -256px -256px 0;
   background: url('/v3/grano.png') repeat 0 0 / 256px 256px;
   mix-blend-mode: soft-light;
   opacity: 0.07;
