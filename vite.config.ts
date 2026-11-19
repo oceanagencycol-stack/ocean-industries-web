@@ -10,8 +10,8 @@ const ROOT = fileURLToPath(new URL('.', import.meta.url))
 /** Dominio canónico (producción). Se puede forzar con SITE_URL. */
 const SITE_URL = (process.env.SITE_URL || 'https://www.oceanindustries.com.co').replace(/\/$/, '')
 
-/** Páginas: la web es una sola (index) y la 404 que Vercel sirve en cualquier ruta que no existe. */
-const PAGES = ['index', '404'] as const
+/** Páginas: la web es una sola (index), la privacidad y la 404 que Vercel sirve en cualquier ruta que no existe. */
+const PAGES = ['index', 'privacidad', '404'] as const
 
 /** Identificador del build (va en un <meta>: sirve para saber qué versión está viendo alguien). */
 const BUILD_ID = Date.now().toString(36)
@@ -22,20 +22,47 @@ const BUILD_ID = Date.now().toString(36)
  */
 const DEMO_TOGGLE =
   '<button class="demo__toggle" type="button" data-demo-toggle data-state="paused" aria-label="Reproducir el ejemplo">' +
-  '<svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="3.5" y="3" width="3" height="10" rx="1" fill="currentColor"/><rect x="9.5" y="3" width="3" height="10" rx="1" fill="currentColor"/></svg>' +
+  '<svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="4" y="3" width="2.4" height="10" rx=".6" fill="currentColor"/><rect x="9.6" y="3" width="2.4" height="10" rx=".6" fill="currentColor"/></svg>' +
   '<svg class="i-play" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5 3.2v9.6a.6.6 0 0 0 .92.5l7.3-4.8a.6.6 0 0 0 0-1L5.92 2.7a.6.6 0 0 0-.92.5Z" fill="currentColor"/></svg>' +
-  '<svg class="i-replay" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.3 8.2A4.8 4.8 0 1 0 4.8 4.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M3.1 2.6v3.2h3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+  '<svg class="i-replay" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.3 8.2A4.8 4.8 0 1 0 4.8 4.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M3.1 2.6v3.2h3.2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
   '</button>'
 
-/** El logo (src/brand/wordmark.svg) en línea, con la clase y el título que pida cada lugar. */
-function wordmarkInline(cls: string, title = 'Ocean Industries'): string {
-  const svg = readFileSync(resolve(ROOT, 'src/brand/wordmark.svg'), 'utf8').trim()
+/**
+ * La marca v3 sale de marca/v3/ tal cual (no se redibuja ni se copia): el logotipo con ® (pie), sin ® (barra) y el
+ * símbolo simétrico. En línea, decorativa (el enlace que la lleva tiene el nombre accesible) y con la clase pedida.
+ */
+const BRAND = { LOGO: 'logo-sin-r.svg', LOGO_R: 'logo.svg', SIMBOLO: 'simbolo-simetrico.svg' } as const
+function brandInline(file: string, cls: string): string {
+  const svg = readFileSync(resolve(ROOT, 'marca/v3', file), 'utf8').trim()
   return svg
-    .replace('<svg xmlns="http://www.w3.org/2000/svg"', `<svg xmlns="http://www.w3.org/2000/svg" class="${cls}" role="img" aria-label="${title}" fill="currentColor"`)
-    .replace(/\n/g, '')
+    .replace(/<title>[^<]*<\/title>/, '')
+    .replace('<svg xmlns="http://www.w3.org/2000/svg"', `<svg xmlns="http://www.w3.org/2000/svg" class="${cls}" aria-hidden="true" focusable="false"`)
+    .replace(/\n\s*/g, '')
 }
 
-/** Marcadores del HTML: barra, pie, logo y botones de las escenas salen de una sola fuente. */
+/**
+ * Las placas de respaldo de cada tramo (tools/medios_pagina.py → public/v3/pagina/): vertical en pantallas altas,
+ * 16:9 en las demás, AVIF con WebP de respaldo. La de la portada va sin `lazy` y con prioridad; las demás, perezosas.
+ * Cuando el mundo (src/world/) monta, la página las esconde (html.has-world).
+ */
+function plate(name: string, first: boolean): string {
+  const b = `/v3/pagina/${name}`
+  const wide = (ext: string) => `${b}-960.${ext} 960w, ${b}-1600.${ext} 1600w, ${b}-2400.${ext} 2400w`
+  const sizes = '(min-aspect-ratio: 16/9) 100vw, 179vh'
+  const tall = '(max-aspect-ratio: 4/5)'
+  const load = first ? 'fetchpriority="high"' : 'loading="lazy"'
+  return (
+    `<div class="plate plate--${name}" aria-hidden="true"><picture>` +
+    `<source media="${tall}" type="image/avif" srcset="${b}-v.avif">` +
+    `<source media="${tall}" type="image/webp" srcset="${b}-v.webp">` +
+    `<source type="image/avif" srcset="${wide('avif')}" sizes="${sizes}">` +
+    `<source type="image/webp" srcset="${wide('webp')}" sizes="${sizes}">` +
+    `<img src="${b}-1600.webp" alt="" width="1600" height="893" decoding="async" ${load}>` +
+    `</picture></div>`
+  )
+}
+
+/** Marcadores del HTML: la marca, las placas y los botones de las escenas salen de una sola fuente. */
 function oceanBrand(): Plugin {
   return {
     name: 'ocean-brand',
@@ -43,15 +70,16 @@ function oceanBrand(): Plugin {
       return html
         .replace('<meta charset="utf-8" />', `<meta charset="utf-8" />\n    <meta name="ocean-build" content="${BUILD_ID}" />`)
         .replaceAll('__SITE_URL__', SITE_URL)
-        .replace(/<!--WORDMARK:([\w-]+)-->/g, (_m, cls: string) => wordmarkInline(cls))
+        .replace(/<!--(LOGO_R|LOGO|SIMBOLO):([\w-]+)-->/g, (_m, k: keyof typeof BRAND, cls: string) => brandInline(BRAND[k], cls))
+        .replace(/<!--PLACA:([\w]+)(:first)?-->/g, (_m, name: string, first?: string) => plate(name, !!first))
         .replaceAll('<!--DEMO_TOGGLE-->', DEMO_TOGGLE)
     },
   }
 }
 
-/** Precarga la fuente de la primera pantalla (Archivo variable, latín): sin esto el titular se dibuja con otra y salta. */
+/** Precarga la fuente de la primera pantalla (Geist variable, latín): sin esto el titular se dibuja con otra y salta. */
 function preloadFonts(): Plugin {
-  const wanted = [/archivo-latin-wdth-normal-[\w-]+\.woff2$/]
+  const wanted = [/geist-latin-wght-normal-[\w-]+\.woff2$/]
   return {
     name: 'ocean-preload-fonts',
     transformIndexHtml: {
@@ -61,26 +89,6 @@ function preloadFonts(): Plugin {
         const files = Object.keys(ctx.bundle).filter((f) => wanted.some((re) => re.test(f)))
         const links = files.map((f) => `<link rel="preload" href="/${f}" as="font" type="font/woff2" crossorigin>`).join('\n    ')
         return links ? html.replace('</title>', `</title>\n    ${links}`) : html
-      },
-    },
-  }
-}
-
-/**
- * Precarga los trozos chicos que la página necesita pronto (las escenas por scroll y los de la intro): bajan en
- * paralelo con main.js. El del mar (three.js, ~170 kB comprimido) NO se precarga: en el teléfono competía con la
- * fuente del titular y retrasaba el primer pintado; main.ts lo pide en cuanto sabe que lo va a usar.
- */
-function preloadIntro(): Plugin {
-  return {
-    name: 'ocean-preload-intro',
-    transformIndexHtml: {
-      order: 'post',
-      handler(html, ctx) {
-        if (!ctx.bundle || !/index\.html$/.test(ctx.filename)) return html
-        const chunks = Object.keys(ctx.bundle).filter((f) => /^assets\/(scenes|splash|timeline)-[\w-]+\.js$/.test(f))
-        const links = chunks.map((f) => `<link rel="modulepreload" crossorigin href="/${f}">`)
-        return links.length ? html.replace('</head>', `  ${links.join('\n    ')}\n  </head>`) : html
       },
     },
   }
@@ -174,7 +182,7 @@ function devApiMocks(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [devApiMocks(), oceanBrand(), preloadFonts(), preloadIntro(), inlineCSS(), bootScriptCSP()],
+  plugins: [devApiMocks(), oceanBrand(), preloadFonts(), inlineCSS(), bootScriptCSP()],
   server: { port: 5175 },
   build: {
     target: 'es2022',

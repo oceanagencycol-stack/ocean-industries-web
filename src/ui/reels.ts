@@ -2,9 +2,8 @@
  * The reels: Ocean's own production, from Instagram. The page carries the three latest as served from our own domain
  * (no JavaScript needed to see them); /api/reels may bring newer ones (Instagram Graph API, when its token is set).
  * Each video downloads only when it comes near the view, plays muted in view and pauses out of it; the sound button
- * plays one with sound at a time (and the site's own sound steps back meanwhile).
+ * plays one with sound at a time.
  */
-import { sound } from '../core/audio'
 import { t } from './i18n'
 
 interface Reel {
@@ -86,7 +85,6 @@ export function initReels(): void {
       loud.closest('.reel')?.querySelector('.reel__sound')?.setAttribute('aria-pressed', 'false')
     }
     loud = v
-    sound.duck(!!v)
   }
 
   const near = new IntersectionObserver(

@@ -1,7 +1,8 @@
 /* ==========================================================================
    ESCENAS QUE EXPLICAN (src/ui/demos.ts): la web muestra a Ocean trabajando.
-   Una sola gramática: la persona pide (blanco) → la máquina ejecuta (azul) →
-   una persona decide (blanco) → el resultado llega (verde, solo el resultado).
+   Una sola gramática, por tono y forma (v3, monocromo): la persona = nieve
+   sólida; la IA = línea fina de luz fría, sin relleno; el resultado = blanco
+   pleno que se enciende (lo único que pasa a --white).
    Nombres y cifras de las escenas son de ejemplo. Mientras carga el JS se ve
    el cuadro inicial; sin JS, el <noscript> muestra el cuadro final completo.
    Rendimiento: nada de selectores que terminen en * ni en :is(); solo
@@ -55,8 +56,8 @@
   border-radius: var(--r-l);
   border: 1px solid var(--line);
   background:
-    radial-gradient(70% 60% at 50% 100%, rgba(0, 0, 255, 0.2), transparent 70%),
-    var(--deep);
+    radial-gradient(70% 60% at 50% 100%, rgba(178, 192, 204, 0.08), transparent 70%),
+    rgba(6, 20, 29, 0.74);
   overflow: hidden;
   overflow: clip;
   display: grid;
@@ -102,23 +103,29 @@
 }
 
 .demo__steps li::before {
-  background: rgba(244, 245, 240, 0.12);
+  background: rgba(178, 192, 204, 0.16);
 }
 
 .demo__steps li::after {
-  background: var(--c, var(--foam));
+  background: var(--c, var(--snow));
   transform: scaleX(0);
   transform-origin: 0 50%;
 }
 
 .demo__steps li[data-who='person'] {
-  --c: var(--foam);
+  --c: var(--snow);
 }
-.demo__steps li[data-who='machine'] {
-  --c: var(--blue);
+/* la IA: una línea más fina, de luz fría */
+.demo__steps li[data-who='machine']::after {
+  top: 0.5px;
+  height: 1px;
+  --c: var(--mist);
 }
 .demo__steps li[data-who='result'] {
-  --c: var(--green);
+  --c: var(--white);
+}
+.demo__steps li[data-who='result']::after {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
 }
 
 .demo.is-armed:not(.is-still) .demo__steps li.is-now::after {
@@ -141,7 +148,7 @@
   text-align: left;
   font-size: 13.5px;
   line-height: 1.4;
-  color: var(--mist-2);
+  color: var(--haze);
   transition: color 0.4s var(--ease);
 }
 
@@ -152,12 +159,12 @@
 }
 
 .demo__steps li.is-now button {
-  color: var(--foam);
+  color: var(--snow);
 }
 
 @media (hover: hover) {
   .demo__steps button:hover {
-    color: var(--foam);
+    color: var(--snow);
   }
 }
 
@@ -190,14 +197,14 @@
   height: 40px;
   border-radius: 50%;
   border: 1px solid var(--line-2);
-  background: rgba(5, 10, 20, 0.82);
-  color: var(--foam);
+  background: rgba(3, 6, 12, 0.82);
+  color: var(--snow);
   transition: border-color 0.25s;
 }
 
 @media (hover: hover) {
   .demo__toggle:hover {
-    border-color: rgba(244, 245, 240, 0.45);
+    border-color: var(--snow);
   }
 }
 
@@ -218,7 +225,9 @@
 }
 
 /* ==========================================================================
-   Las piezas de las escenas
+   Las piezas de las escenas (monocromo: la forma dice quién es)
+   persona = nieve sólida · IA = contorno --mist de 1 px, sin relleno ·
+   resultado = blanco pleno con su luz (.chip--ok, en v3.css)
    ========================================================================== */
 
 /* ---------- un teléfono ---------- */
@@ -228,8 +237,8 @@
   aspect-ratio: 9 / 17;
   max-width: 100%;
   border-radius: 28px;
-  border: 1px solid rgba(244, 245, 240, 0.18);
-  background: #070d1c;
+  border: 1px solid rgba(178, 192, 204, 0.22);
+  background: var(--space);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -264,7 +273,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.86;
+  filter: grayscale(1) contrast(1.05);
+  opacity: 0.8;
 }
 
 .reel__tag {
@@ -273,11 +283,12 @@
   top: 12px;
   padding: 3px 9px;
   border-radius: 999px;
-  background: rgba(5, 10, 20, 0.7);
+  background: rgba(3, 6, 12, 0.72);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 560;
 }
 
+/* el comentario lo escribe una persona: nieve sólida */
 .reel__comment {
   position: absolute;
   left: 10px;
@@ -285,13 +296,13 @@
   top: 44%;
   padding: 8px 10px;
   border-radius: 12px;
-  background: rgba(244, 245, 240, 0.92);
-  color: #0a1020;
+  background: var(--snow);
+  color: var(--abyss);
   font-size: 12px;
 }
 
 .reel__comment b {
-  font-weight: 650;
+  font-weight: 620;
 }
 
 .sheet {
@@ -302,43 +313,53 @@
   display: flex;
   flex-direction: column;
   gap: 7px;
-  padding: 14px 10px 14px;
+  padding: 14px 10px;
   border-radius: 20px 20px 0 0;
-  background: #070d1c;
-  border-top: 1px solid rgba(244, 245, 240, 0.14);
+  background: var(--space);
+  border-top: 1px solid rgba(178, 192, 204, 0.2);
 }
 
 .sheet .chip {
   margin-top: 4px;
 }
 
-/* el chat */
+/* el chat (el teléfono del negocio: la clienta escribe a la izquierda) */
 .chat-top {
   display: flex;
   align-items: center;
   gap: 8px;
-  /* the conversation sits at the bottom, as in a real chat */
   margin: 0 0 auto;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(244, 245, 240, 0.1);
+  border-bottom: 1px solid rgba(178, 192, 204, 0.14);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 560;
 }
 
 .chat-top__av {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  /* the customer: a person, white */
-  background: linear-gradient(135deg, var(--foam), var(--mist-2));
+  background: var(--snow);
   flex: none;
 }
 
 .chat-top__time {
   margin-left: auto;
-  font-weight: 500;
-  color: var(--mist-2);
+  font-weight: 450;
+  color: var(--mist);
   font-variant-numeric: tabular-nums;
+}
+
+.phone--chat .msg--in {
+  align-self: flex-start;
+  border-bottom-right-radius: 14px;
+  border-bottom-left-radius: 5px;
+}
+
+.phone--chat .msg--out {
+  align-self: flex-end;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 5px;
 }
 
 /* la tienda */
@@ -346,13 +367,12 @@
   margin: 0;
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(244, 245, 240, 0.08);
+  border: 1px solid rgba(178, 192, 204, 0.22);
   font-size: 12px;
   color: var(--mist);
   text-align: center;
 }
 
-/* «llegando desde Instagram…» flota sobre la página vacía (no ocupa sitio cuando ya cargó) */
 .shop__from {
   position: absolute;
   inset: 0;
@@ -366,7 +386,7 @@
   pointer-events: none;
 }
 
-/* la página se encoge para dejar sitio al cobro y al resultado: como una tienda que hizo scroll */
+/* la tienda la carga la máquina: contornos, sin relleno */
 .shop__page {
   flex: 1 1 0;
   min-height: 0;
@@ -384,7 +404,6 @@
   flex: none;
 }
 
-/* pagado: los medios de pago se van y en su lugar queda la confirmación de la tienda */
 .phone--shop .chip {
   position: absolute;
   left: 50%;
@@ -392,20 +411,19 @@
   margin: 0;
   translate: -50% 0;
   white-space: nowrap;
-  background: #04261a;
-  box-shadow: 0 10px 24px -12px rgba(0, 255, 127, 0.5);
 }
 
 .shop__hero {
   height: 64px;
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(61, 99, 255, 0.9), rgba(0, 0, 255, 0.55));
+  border: 1px solid var(--mist);
+  background: linear-gradient(135deg, rgba(178, 192, 204, 0.14), rgba(178, 192, 204, 0));
 }
 
 .shop__title {
   font-size: 13px;
-  font-weight: 650;
-  font-stretch: 112%;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .shop__grid {
@@ -417,22 +435,22 @@
 .shop__grid i {
   aspect-ratio: 1;
   border-radius: 10px;
-  background: rgba(61, 99, 255, 0.28);
-  border: 1px solid rgba(61, 99, 255, 0.5);
+  border: 1px solid rgba(178, 192, 204, 0.55);
 }
 
+/* pagar lo hace una persona: nieve sólida */
 .shop__pay {
   display: grid;
   gap: 8px;
   padding: 10px;
   border-radius: 14px;
-  background: rgba(244, 245, 240, 0.08);
-  border: 1px solid rgba(244, 245, 240, 0.16);
+  background: var(--snow);
+  color: var(--abyss);
 }
 
 .shop__total {
   font-size: 12.5px;
-  font-weight: 650;
+  font-weight: 620;
 }
 
 .shop__methods {
@@ -444,9 +462,9 @@
   flex: 1;
   padding: 6px 0;
   border-radius: 8px;
-  background: rgba(244, 245, 240, 0.12);
+  border: 1px solid rgba(6, 20, 29, 0.22);
   font-size: 11.5px;
-  font-weight: 600;
+  font-weight: 560;
   text-align: center;
 }
 
@@ -457,8 +475,8 @@
   gap: 10px;
   padding: 14px;
   border-radius: 18px;
-  border: 1px solid rgba(244, 245, 240, 0.14);
-  background: #070d1c;
+  border: 1px solid rgba(178, 192, 204, 0.2);
+  background: var(--space);
   box-shadow: 0 30px 60px -30px #000;
   font-size: 13px;
 }
@@ -481,7 +499,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: rgba(244, 245, 240, 0.2);
+  border: 1px solid rgba(178, 192, 204, 0.4);
 }
 
 .screen .chip {
@@ -501,14 +519,15 @@
   gap: 10px;
   padding: 7px 8px;
   border-radius: 10px;
-  background: rgba(244, 245, 240, 0.05);
+  border: 1px solid rgba(178, 192, 204, 0.1);
 }
 
+/* los anuncios los aprueba una persona: nieve */
 .ad__thumb {
   width: 26px;
   height: 26px;
   border-radius: 7px;
-  background: linear-gradient(135deg, rgba(244, 245, 240, 0.4), rgba(244, 245, 240, 0.1));
+  background: linear-gradient(135deg, var(--snow), var(--mist));
 }
 
 .ad__name {
@@ -519,20 +538,24 @@
 .ad__meter {
   height: 6px;
   border-radius: 3px;
-  background: rgba(244, 245, 240, 0.08);
+  border: 1px solid rgba(178, 192, 204, 0.2);
   overflow: hidden;
 }
 
+/* la medición es de la máquina: barras de luz fría */
 .ad__meter i {
   display: block;
   height: 100%;
-  width: calc(var(--v, 0.5) * 100%);
-  border-radius: 3px;
-  background: rgba(244, 245, 240, 0.4);
+  width: 20%;
+  background: rgba(178, 192, 204, 0.4);
 }
 
-.ad--win .ad__meter i {
-  background: var(--blue);
+.ad__meter--a i {
+  width: 14%;
+}
+.ad__meter--b i {
+  width: 84%;
+  background: var(--mist);
 }
 
 .ad__tag {
@@ -540,14 +563,13 @@
   white-space: nowrap;
   padding: 3px 7px;
   border-radius: 999px;
-  border: 1px solid rgba(244, 245, 240, 0.18);
-  color: var(--mist);
+  border: 1px solid rgba(178, 192, 204, 0.22);
+  color: var(--haze);
 }
 
 .ad__tag--talk {
-  border-color: rgba(61, 99, 255, 0.7);
-  background: rgba(0, 0, 255, 0.3);
-  color: #fff;
+  border-color: var(--mist);
+  color: var(--snow);
 }
 
 .card {
@@ -558,11 +580,11 @@
 }
 
 .card--machine {
-  background: rgba(0, 0, 255, 0.24);
-  border: 1px solid rgba(61, 99, 255, 0.6);
-  color: #e6ebff;
+  border: 1px solid var(--mist);
+  color: var(--snow);
 }
 
+/* la decisión es de una persona: nieve sólida */
 .decide {
   display: flex;
   align-items: center;
@@ -570,9 +592,10 @@
   margin: 0;
   padding: 9px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(244, 245, 240, 0.22);
-  background: rgba(244, 245, 240, 0.06);
+  background: var(--snow);
+  color: var(--abyss);
   font-size: 12.5px;
+  font-weight: 520;
 }
 
 .switch {
@@ -580,7 +603,7 @@
   width: 30px;
   height: 18px;
   border-radius: 9px;
-  background: var(--foam);
+  background: var(--abyss);
   flex: none;
 }
 
@@ -592,19 +615,19 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--night);
+  background: var(--snow);
 }
 
 .decide__btn {
   padding: 6px 14px;
   border-radius: 999px;
-  background: var(--foam);
-  color: var(--night);
-  font-weight: 650;
+  background: var(--abyss);
+  color: var(--snow);
+  font-weight: 600;
   font-size: 12px;
 }
 
-/* el documento */
+/* el documento llega de una persona */
 .doc {
   display: flex;
   align-items: center;
@@ -612,27 +635,27 @@
   margin: 0;
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(244, 245, 240, 0.2);
-  background: rgba(244, 245, 240, 0.06);
+  background: var(--snow);
+  color: var(--abyss);
   font-size: 12.5px;
 }
 
 .doc__ico {
-  width: 22px;
-  height: 26px;
-  border-radius: 4px;
-  background: linear-gradient(160deg, var(--foam) 0 70%, rgba(244, 245, 240, 0.5) 70%);
+  width: 20px;
+  height: 24px;
+  border-radius: 3px;
+  border: 1.4px solid var(--abyss);
   flex: none;
 }
 
+/* lo que lee la máquina: contorno */
 .fields {
   display: grid;
   gap: 6px;
   margin: 0;
   padding: 10px 12px;
   border-radius: 12px;
-  background: rgba(0, 0, 255, 0.22);
-  border: 1px solid rgba(61, 99, 255, 0.6);
+  border: 1px solid var(--mist);
 }
 
 .fields div {
@@ -643,12 +666,12 @@
 }
 
 .fields dt {
-  color: #b9c6ff;
+  color: var(--mist);
 }
 
 .fields dd {
   margin: 0;
-  color: #fff;
+  color: var(--snow);
   font-variant-numeric: tabular-nums;
 }
 
@@ -674,26 +697,26 @@
   height: 8px;
   margin-top: -4px;
   border-radius: 50%;
+  box-sizing: border-box;
 }
 
 .node--person {
-  border: 1px solid rgba(244, 245, 240, 0.22);
-  background: rgba(244, 245, 240, 0.06);
+  background: var(--snow);
+  color: var(--abyss);
 }
 
 .node--person::before {
-  background: var(--foam);
+  background: var(--abyss);
 }
 
 .node--machine {
-  border: 1px solid rgba(61, 99, 255, 0.6);
-  background: rgba(0, 0, 255, 0.2);
-  color: #e6ebff;
+  border: 1px solid var(--mist);
+  color: var(--snow);
   margin-left: 18px;
 }
 
 .node--machine::before {
-  background: var(--blue);
+  border: 1px solid var(--mist);
 }
 
 .node--machine:nth-of-type(3) {
@@ -709,4 +732,21 @@
 
 .phone--chat .chip {
   margin-top: 6px;
+}
+
+/* el resultado se enciende al llegar: un destello que se asienta */
+.demo.is-armed:not(.is-still) .chip--ok.is-on {
+  animation: lit 1.4s var(--ease) both;
+}
+
+@keyframes lit {
+  0% {
+    box-shadow: 0 0 0 1px var(--white), 0 0 0 0 rgba(255, 255, 255, 0.9);
+  }
+  35% {
+    box-shadow: 0 0 0 1px var(--white), 0 0 46px 6px rgba(255, 255, 255, 0.75);
+  }
+  100% {
+    box-shadow: 0 0 0 1px var(--white), 0 0 28px -4px rgba(255, 255, 255, 0.65);
+  }
 }

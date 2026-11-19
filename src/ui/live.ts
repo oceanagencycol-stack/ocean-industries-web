@@ -4,7 +4,6 @@
  * conversation. With reduced motion, the whole conversation shows at once: never an empty box.
  */
 import { lang, onLang, type Lang } from './i18n'
-import { sound } from '../core/audio'
 
 type Line = ['cli' | 'bot', string]
 
@@ -45,13 +44,12 @@ export function initLive(): void {
   let runs = 0
   let inView = false
 
-  const bubble = (who: 'cli' | 'bot', text: string, quiet = false) => {
+  const bubble = (who: 'cli' | 'bot', text: string) => {
     const p = document.createElement('p')
     p.className = `msg ${who === 'cli' ? 'msg--in' : 'msg--out'}`
     p.textContent = text
     box.appendChild(p)
     while (box.children.length > 5) box.removeChild(box.firstChild!)
-    if (!quiet) sound.play(who === 'bot' ? 'msgIn' : 'msgOut', { gain: 0.5 })
   }
   const typing = () => {
     const p = document.createElement('p')
@@ -64,7 +62,7 @@ export function initLive(): void {
   const whole = () => {
     window.clearTimeout(timer)
     box.textContent = ''
-    SCRIPT[lang()].forEach(([w, x]) => bubble(w, x, true))
+    SCRIPT[lang()].forEach(([w, x]) => bubble(w, x))
   }
 
   function run(): void {

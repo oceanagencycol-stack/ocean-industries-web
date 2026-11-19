@@ -1,4 +1,4 @@
-/** The 404's boot: the house's type and buttons, no 3D, no sound, nothing else. */
-import '@fontsource-variable/archivo/wdth.css'
-import './styles/main.css'
+/** Las páginas ligeras (la 404 y la privacidad): la tipografía, los tokens y los botones de la casa; nada más. */
+import './styles/fonts.css'
+import './styles/v3.css'
 import './styles/lite.css'

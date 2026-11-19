@@ -11,9 +11,9 @@ const KEY = 'ocean-lang'
 const LANGS: Lang[] = ['es', 'en', 'pt']
 
 const TITLES: Record<Lang, string> = {
-  es: 'Ocean Industries — Agencia de IA y automatización en Cali, Bogotá y Miami',
-  en: 'Ocean Industries — AI and automation agency in Cali, Bogotá and Miami',
-  pt: 'Ocean Industries — Agência de IA e automação em Cali, Bogotá e Miami',
+  es: 'OCEAN — Estudio de tecnología: agentes de IA, automatización y webs',
+  en: 'OCEAN — Technology studio: AI agents, automation and websites',
+  pt: 'OCEAN — Estúdio de tecnologia: agentes de IA, automação e sites',
 }
 
 let current: Lang = 'es'
