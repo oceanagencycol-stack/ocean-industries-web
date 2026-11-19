@@ -513,46 +513,42 @@ html.nav-light .nav.is-scrolled {
   overflow: visible;
 }
 
-/* la E del logotipo son tres horizontes: el tramo actual enciende su barra; en la cumbre, las tres. Un riel quieto
-   al borde izquierdo (computador), del tamaño del texto; nunca se anima por su cuenta */
+/* la E del logotipo son tres horizontes (sus barras, tal cual, de marca/v3/logo.svg): el tramo actual enciende su
+   barra; en la cumbre, las tres. Quieta al borde izquierdo (computador), del tamaño del texto; nunca se anima sola */
 .horizon {
   position: fixed;
   z-index: 40;
-  left: max(22px, calc((100vw - var(--max)) / 2 - 40px));
+  left: max(24px, calc((100vw - var(--max)) / 2 - 44px));
   top: 50%;
-  display: grid;
-  gap: 4px;
-  width: 16px;
-  margin-top: -8px;
+  width: 17px;
+  height: auto;
+  margin-top: -9px;
+  overflow: visible;
   color: var(--snow);
   pointer-events: none;
-  transition: color 0.5s var(--ease), opacity 0.5s var(--ease);
+  transition: color 0.5s var(--ease);
 }
 
 html.nav-light .horizon {
   color: var(--abyss);
 }
 
-.horizon i {
-  display: block;
-  height: 2px;
-  border-radius: 1px;
-  background: currentColor;
-  opacity: 0.24;
+.horizon path {
+  opacity: 0.2;
   transition: opacity 0.6s var(--ease);
+}
+
+.horizon[data-horizon='1'] path:nth-child(1),
+.horizon[data-horizon='2'] path:nth-child(2),
+.horizon[data-horizon='3'] path:nth-child(3),
+.horizon[data-horizon='4'] path {
+  opacity: 1;
 }
 
 @media (max-width: 1240px) {
   .horizon {
     display: none;
   }
-}
-
-.horizon[data-horizon='1'] i:nth-child(1),
-.horizon[data-horizon='2'] i:nth-child(2),
-.horizon[data-horizon='3'] i:nth-child(3),
-.horizon[data-horizon='4'] i {
-  opacity: 1;
 }
 
 .nav__links {
@@ -631,6 +627,17 @@ html.nav-light .horizon {
   .lang button:hover {
     opacity: 1;
   }
+}
+
+/* sobre la nieve, lo no elegido sigue con contraste AA (abisal al 80 % sobre nieve ≈ 9:1) */
+[data-light] .lang button,
+html.nav-light .nav.is-scrolled .lang button {
+  opacity: 0.8;
+}
+
+[data-light] .lang button[aria-pressed='true'],
+html.nav-light .nav.is-scrolled .lang button[aria-pressed='true'] {
+  opacity: 1;
 }
 
 html.nav-light .nav.is-scrolled .btn--primary {
@@ -796,6 +803,12 @@ main {
   top: 0;
   -webkit-mask-image: none;
   mask-image: none;
+}
+
+/* la placa que sigue a la portada no la invade: si entrara en la primera pantalla, sería una imagen perezosa más
+   grande que nada (el LCP); se funde dentro de su propio tramo */
+.tramo--satelite .plate {
+  top: 0;
 }
 
 .plate picture {

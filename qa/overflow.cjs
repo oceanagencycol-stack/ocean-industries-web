@@ -1,4 +1,4 @@
-// QA de anchos: nada se sale por el borde de la pantalla, en 320–1440 px y en ES/EN/PT. html lleva overflow-x: clip,
+// QA de anchos (v3): nada se sale por el borde de la pantalla, en 320–1440 px y en ES/EN/PT. html lleva overflow-x: clip,
 // así que scrollWidth no lo delata (el titular en portugués se salía en el teléfono: 2-nov-2026).
 // node qa/overflow.cjs <url>
 const { chromium } = require('playwright')
@@ -10,15 +10,17 @@ const { chromium } = require('playwright')
     for (const lang of ['es', 'en', 'pt']) {
       const m = w < 800
       const ctx = await b.newContext({ viewport: { width: w, height: m ? 800 : 900 }, isMobile: m, hasTouch: m })
-      await ctx.addInitScript((l) => { try { localStorage.setItem('ocean-intro-at', String(Date.now())); localStorage.setItem('ocean-lang', l) } catch (e) {} }, lang)
+      await ctx.addInitScript((l) => { try { localStorage.setItem('ocean-v3-intro-at', String(Date.now())); localStorage.setItem('ocean-lang', l) } catch (e) {} }, lang)
       const p = await ctx.newPage()
-      await p.goto(url + '?qa=1&noglass', { waitUntil: 'load' })
-      await p.waitForTimeout(400)
+      await p.goto(url + '?qa=1&noworld', { waitUntil: 'load' })
+      await p.waitForTimeout(500)
+      // la entrada mueve las líneas desde su máscara: se mide con todo entrado
+      await p.evaluate(() => document.querySelectorAll('[data-reveal], [data-rv]').forEach((e) => e.classList.add('is-in')))
       const out = await p.evaluate(() => {
         const W = document.documentElement.clientWidth
         const res = []
         document.querySelectorAll('body *').forEach((el) => {
-          if (el.closest('.reels__grid, .menu, .chat, .intro, svg, .still, .sprite, [hidden]')) return
+          if (el.closest('.reels__grid, .menu, .chat, svg, .sprite, .plate, [hidden]')) return
           const cs = getComputedStyle(el)
           if (cs.display === 'none' || cs.visibility === 'hidden' || cs.position === 'fixed') return
           const r = el.getBoundingClientRect()

@@ -33,7 +33,7 @@ ABYSS = '#06141D'
 
 # placa → (tramo, foco horizontal del encuadre vertical 0..1)
 PLACAS = {
-    'M1a': ('espacio', 0.50),
+    'M1a': ('espacio', 0.30),  # la estrella de cuatro puntas arriba; la luna queda fuera (no cruza el texto)
     'M1sb': ('satelite', 0.60),
     'M2b': ('mar', 0.49),
     'M3b': ('agua', 0.66),
