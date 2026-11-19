@@ -75,11 +75,12 @@ en negros), y se congela cuando el render duerme. En la versión quieta y en el 
 (PNG de ≈ 20 KB, generada por código) sobre los degradados CSS, con `mix-blend-mode: soft-light` y opacidad 0,06–0,10.
 Los degradados se tramean (dither) para que nunca haya bandas. El grano es parte de la luz, no un efecto aparte.
 
-## Tipografía
-El logotipo es un dibujo propio (no una fuente). El texto usa **Outfit** variable (OFL): geométrica, O redonda, pariente
-del logotipo sin imitarlo. Servida propia, recortada con fontTools a pesos 300–800 y latín + latín extendido (ES/PT),
-≈ 30 KB. Titulares 600–700 en oración, interletra negativa; etiquetas en mayúsculas pequeñas con aire (el eco del
-logotipo); texto 400 a 17 px, interlineado 1,6, < 60 caracteres por línea; cifras `tabular-nums`. Una sola familia.
+## Tipografía (Juan eligió Geist, 18-nov, entre Geist, Manrope, Outfit e Inter Tight puestas sobre la marca real)
+El logotipo es un dibujo propio (no una fuente). El texto usa **Geist** variable (OFL): técnica, nítida, con
+autoridad de empresa de tecnología. Servida propia, recortada a latín + latín extendido (ES/PT), pesos 300–700.
+Titulares 600 en oración, interletra −0,035 em; etiquetas en mayúsculas pequeñas con interletra 0,24 em (el eco del
+logotipo); texto 400 a 17–18 px, interlineado 1,6, < 60 caracteres por línea; cifras `tabular-nums`. Una sola familia.
+La muestra está en `media/v3/direccion/tipografias.jpg`.
 
 ## Movimiento y sonido (Juan, 18-nov 16:51: «hasta el logo y todo se anime o entre épicamente… lo más épico y premium posible»)
 **Una sola gramática de entrada para todo**, para que lo épico se sienta caro y no ruidoso: la luz revela la forma.
