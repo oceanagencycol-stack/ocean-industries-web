@@ -4,7 +4,7 @@
  * Each video downloads only when it comes near the view, plays muted in view and pauses out of it; the sound button
  * plays one with sound at a time.
  */
-import { t } from './i18n'
+import { t, type Lang } from './i18n'
 
 interface Reel {
   id: string
@@ -13,6 +13,16 @@ interface Reel {
   media_webm?: string
   thumbnail_url?: string
   caption?: string
+}
+
+const audioOn = { es: 'Activar el sonido del reel', en: 'Turn on reel audio', pt: 'Ativar o som do reel' }
+const audioOff = { es: 'Silenciar el reel', en: 'Mute the reel', pt: 'Silenciar o reel' }
+const instagram = { es: 'Ver en Instagram', en: 'See on Instagram', pt: 'Ver no Instagram' }
+
+function localize(el: HTMLElement, words: Record<Lang, string>, aria = false) {
+  for (const l of ['es', 'en', 'pt'] as const) el.setAttribute('data-' + l + (aria ? '-aria' : ''), words[l])
+  if (aria) el.setAttribute('aria-label', t(words))
+  else el.textContent = t(words)
 }
 
 function card(r: Reel): HTMLElement {
@@ -33,18 +43,19 @@ function card(r: Reel): HTMLElement {
   b.className = 'reel__sound'
   b.type = 'button'
   b.setAttribute('aria-pressed', 'false')
-  b.setAttribute('aria-label', t({ es: 'Activar el sonido del reel', en: "Turn on the reel's sound", pt: 'Ativar o som do reel' }))
+  localize(b, audioOn, true)
   b.innerHTML = '<svg class="ico i-off" aria-hidden="true"><use href="#i-muted"/></svg><svg class="ico i-on" aria-hidden="true"><use href="#i-loud"/></svg>'
   phone.append(v, b)
   const cap = document.createElement('figcaption')
   const s = document.createElement('span')
   s.className = 'reel__cap'
   s.textContent = (r.caption || '').split('\n')[0].slice(0, 120)
+  if (!s.textContent) localize(s, { es: 'Reel de OCEAN', en: 'OCEAN reel', pt: 'Reel da OCEAN' })
   const a = document.createElement('a')
   a.href = r.permalink
   a.target = '_blank'
   a.rel = 'noopener'
-  a.textContent = t({ es: 'Ver en Instagram', en: 'See on Instagram', pt: 'Ver no Instagram' })
+  localize(a, instagram)
   cap.append(s, a)
   fig.append(phone, cap)
   return fig
@@ -82,7 +93,11 @@ export function initReels(): void {
   const setLoud = (v: HTMLVideoElement | null) => {
     if (loud && loud !== v) {
       loud.muted = true
-      loud.closest('.reel')?.querySelector('.reel__sound')?.setAttribute('aria-pressed', 'false')
+      const previous = loud.closest('.reel')?.querySelector<HTMLElement>('.reel__sound')
+      if (previous) {
+        previous.setAttribute('aria-pressed', 'false')
+        localize(previous, audioOn, true)
+      }
     }
     loud = v
   }
@@ -157,7 +172,7 @@ export function initReels(): void {
       const on = v.muted
       v.muted = !on
       b.setAttribute('aria-pressed', String(on))
-      b.setAttribute('aria-label', on ? t({ es: 'Silenciar el reel', en: 'Mute the reel', pt: 'Silenciar o reel' }) : t({ es: 'Activar el sonido del reel', en: "Turn on the reel's sound", pt: 'Ativar o som do reel' }))
+      localize(b, on ? audioOff : audioOn, true)
       setLoud(on ? v : null)
       void v.play().catch(() => {})
     } else if (reduced) {
