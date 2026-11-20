@@ -137,7 +137,9 @@ export function initChat(hooks: ChatHooks = {}): void {
         entries.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)))
         paintFab()
       },
-      { threshold: 0.25 },
+      // A long section may never reach a quarter of its own area. Observe the
+      // bottom of the viewport, where the floating button actually sits.
+      { rootMargin: '-78% 0px 0px', threshold: 0 },
     )
     zones.forEach((z) => io.observe(z))
   }
