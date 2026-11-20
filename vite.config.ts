@@ -111,9 +111,9 @@ function signatureLogo(): string {
   const strokes = source.match(/<(?:circle|path) data-l="[^"]+"[^>]*\/>/g)
   if (strokes?.length !== 7) throw new Error('[ocean-brand] Se esperaban siete ejes en logo-trazos.svg')
   const axes = strokes.map(stroke => stroke.replace(' data-l=', ' pathLength="1" data-l=')).join('')
-  const mask = '<mask id="pre-ink" maskUnits="userSpaceOnUse" x="-20" y="-24" width="600" height="156">' +
+  const mask = '<mask id="pre-ink" maskUnits="userSpaceOnUse" x="-30" y="-40" width="700" height="200">' +
     '<use href="#pre-master" color="white" /></mask>'
-  const pen = '<g class="pre__pen" fill="none" stroke="currentColor" stroke-width="32" ' +
+  const pen = '<g class="pre__pen" fill="none" stroke="currentColor" stroke-width="46" ' +
     'stroke-linecap="round" stroke-linejoin="round" mask="url(#pre-ink)">' + axes + '</g>'
   return brandInline(BRAND.LOGO, 'pre__logo')
     .replace('>', '><defs><g id="pre-master">')

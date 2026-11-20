@@ -1,0 +1,49 @@
+{
+ "_": "Logotipo robusto (20-nov-2026): ajuste por IoU a la foto del logotipo que compartió Juan Diego (fuente/logotipo-ocean-robusto-foto.png). Medidas en px de esa foto; robusta.py las limpia y las lleva a unidades (alto de la N = 100).",
+ "top": 17.2,
+ "base": 120.2,
+ "O": {
+  "cx": 69.305,
+  "cy": 72.479,
+  "a": 57.315,
+  "b": 54.401,
+  "n": 2.024,
+  "w": 26.016
+ },
+ "C": {
+  "cx": 189.231,
+  "gap": 13.498,
+  "w": 26.362,
+  "rc": 2.129
+ },
+ "E": {
+  "x0": 264.411,
+  "x1": 357.031,
+  "yt": 31.49,
+  "yb": 108.079,
+  "we": 20.407
+ },
+ "A": {
+  "L": 373.226,
+  "R": 500.111,
+  "t": 13.969,
+  "f": 27.861,
+  "hi": 31.486,
+  "rc": 2.234
+ },
+ "N": {
+  "nx0": 518.779,
+  "nx1": 606.422,
+  "top": 17.159,
+  "base": 120.126,
+  "w": 28.38,
+  "rc": 1.892
+ },
+ "iou": {
+  "O": 0.952,
+  "C": 0.882,
+  "E": 0.954,
+  "A": 0.967,
+  "N": 0.913
+ }
+}

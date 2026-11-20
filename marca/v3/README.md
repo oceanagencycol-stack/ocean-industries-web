@@ -5,9 +5,10 @@ fluida («el simbolo si se quedo igual»). Aquí están en vector, con `fill="cu
 
 | Archivo | Qué es |
 |---|---|
-| `logo.svg` | OCEAN® · **dibujo maestro geométrico** del logotipo final (5 kB) |
-| `logo-trazos.svg` | Los ejes de cada letra, para la animación de entrada |
-| `logo-sin-r.svg` | OCEAN sin ® (la barra, y en toda la web mientras la marca no esté registrada) |
+| `logo.svg` | OCEAN® · **logotipo robusto** (20-nov): más grueso, más ancho, terminales planos (`tools/marca/robusta.py`) |
+| `logo-trazos.svg` | Los ejes de cada letra, para la firma animada de la apertura |
+| `logo-sin-r.svg` | OCEAN sin ® (la barra y la apertura) |
+| `anterior/` | El maestro del 18-nov (monolínea delgada con remates redondos), para volver atrás o comparar |
 | `simbolo.svg` | La estrella fluida, **fiel** al archivo de Juan (calcada, ×4 y suavizada) |
 | `simbolo-simetrico.svg` | Propuesta: la misma estrella exactamente simétrica por giro de 180° (el original lo es al 97 %). Solo entra si Juan la aprueba |
 | `simbolo-cuadrado.svg` | El mismo símbolo en lienzo cuadrado: favicon (desde 32 px), íconos y PWA |
@@ -15,7 +16,18 @@ fluida («el simbolo si se quedo igual»). Aquí están en vector, con `fill="cu
 | `comparacion-maestro-vs-fuente.png` | El maestro sobre el archivo de Juan: gris = coinciden; rojo = solo el original; cian = solo el maestro |
 | `fuente/` | Los archivos que entregó Juan (logotipo 2576×1438, símbolo 1254×1254) |
 
-## Cómo está construido el logotipo (final de Juan, 18-nov 20:56; `tools/marca/maestro2.py`, `maestro3.py`, `armar2.py`)
+## El logotipo robusto (20-nov-2026, `tools/marca/robusta.py`)
+Pedido del 20-nov: «la letra debe ser más robusta, más cuadrada, más fuerte un poquito, igual a la de la foto»
+(`fuente/logotipo-ocean-robusto-foto.png`, recorte de la foto que compartió Juan Diego). Cada letra se ajustó por IoU a
+esa foto (`tools/marca/robusta.json`: O 0,952 · C 0,882 · E 0,954 · Λ 0,967 · N 0,913; la foto es de una pantalla, con
+ruido de luz) y después se limpió: centros alineados y un solo grosor. Alto de las letras planas = 100 unidades.
+- **Trazo** 25,6 (antes 22,2): un 15 % más grueso. **Barras de la E** 19,8, con remates redondos.
+- **O**: anillo elíptico, más ancho que alto, como en la foto. **C**: el mismo anillo con cortes horizontales.
+- **Λ**: cumbre plana y pies planos sobre la línea de base. **N**: terminales planos, uniones en inglete.
+- **®**: la misma del maestro anterior, a la misma distancia de la N. Proporción 5,55 : 1 (antes 5,09 : 1).
+- Pendiente: las tarjetas en PDF (`tarjetas/`) y `public/og.jpg` siguen con el maestro anterior.
+
+## Cómo estaba construido el logotipo anterior (final de Juan, 18-nov 20:56; `tools/marca/maestro2.py`, `maestro3.py`, `armar2.py`)
 Monolínea de grosor constante (40,8 px en la fuente) con remates redondos. Altura de la E = 100 unidades.
 - **O**: círculo trazado (radio 78,8 px en la fuente). **C**: el mismo círculo abierto ±42° a la derecha.
 - **E**: tres barras iguales con remates redondos, sin asta.

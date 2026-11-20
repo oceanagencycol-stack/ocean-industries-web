@@ -172,11 +172,11 @@ body .footer {
   border-bottom: 1px solid var(--line-2);
 }
 /* La firma completa: isotipo y logotipo en metal claro; una franja de luz los cruza cuando el pie entra (brand.ts)
-   y otra vez al pasar el puntero. El isotipo mide 1,25 veces la altura del logotipo. */
+   y otra vez al pasar el puntero. El isotipo mide 1,25 veces la altura del logotipo (0,263 de su ancho). */
 .footer { --lw: min(36vw, 465px); }
-.footer__lockup { display: flex; align-items: center; gap: calc(var(--lw) * 0.07); min-width: 0; }
+.footer__lockup { display: flex; align-items: center; gap: calc(var(--lw) * 0.065); min-width: 0; }
 .footer .footer__logo { display: block; width: var(--lw); height: auto; }
-.footer .footer__mark { display: block; flex: none; width: calc(var(--lw) * 0.287); height: auto; }
+.footer .footer__mark { display: block; flex: none; width: calc(var(--lw) * 0.263); height: auto; }
 .steel__sheen { transform: translateX(0); }
 .footer.is-lit .steel__sheen { animation: steel-sheen 2.4s cubic-bezier(.45, 0, .2, 1) both; }
 .footer.is-lit .footer__logo .steel__sheen { animation-delay: .16s; }
