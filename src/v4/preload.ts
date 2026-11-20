@@ -142,7 +142,7 @@ export function preload(src: string, project: Project, opts: { reduced: boolean;
     requestAnimationFrame(frame)
   }
   html.classList.add('pre-on')
-  if (opts.reduced) {
+  if (opts.reduced || opts.quick) {
     // sin dibujo: el número y luego un fundido
     opts.decoded.then(() => {
       root.classList.add('is-done')
@@ -152,7 +152,7 @@ export function preload(src: string, project: Project, opts: { reduced: boolean;
         root.remove()
         removeEventListener('resize', geometry)
         html.classList.remove('pre-on')
-      }, 450)
+      }, opts.quick ? 280 : 450)
     })
     return { url, opened }
   }

@@ -332,6 +332,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   let prev = performance.now()
   let clock = 0
   let started = false
+  let pastFilm = false
   const setv = (el: HTMLElement, k: string, v: number, p: number) => {
     if (Math.abs(v - p) > 0.002 || ((v === 0 || v === 1) && v !== p)) {
       el.style.setProperty(k, v.toFixed(4))
@@ -369,7 +370,9 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     const m = frame.medium.w
     for (let k = 0; k < 4; k++) m[k] = mtmp[k] * on
     frame.flash = opts.reduced ? 0 : flash(u) * 0.8
-    if (stage!.ready && (y <= reelTop + DUR * sps + V || !started)) stage!.render(frame, mouse, dt)
+    const past = y > reelTop + DUR * sps + V
+    if (stage!.ready && (!past || !pastFilm || !started)) stage!.render(frame, mouse, dt)
+    pastFilm = past
     if (!started && stage!.ready) {
       started = true
       html.classList.add('has-stage')

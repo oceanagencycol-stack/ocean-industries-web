@@ -708,6 +708,7 @@ html.js .phone-ov[data-k] {
   position: relative;
   z-index: 2;
   color: var(--abyss);
+  background: var(--snow);
   padding: 0 var(--gutter) clamp(80px, 10vw, 140px);
   display: grid;
   gap: clamp(96px, 12vw, 180px);
@@ -1099,3 +1100,10 @@ html.no-stage .beat--hero .beat__in { min-height: 100svh; }
 
 html.has-stage .grain { display: none; }
 html.js .ln.is-set .ch { filter: none; transform: none; opacity: 1; }
+
+.beat--plunge .mega { mix-blend-mode: normal; text-shadow: 0 2px 26px rgba(3,6,12,.75); }
+@media (max-width: 900px) {
+  .beat--left .title, .beat--low .title { text-shadow: 0 2px 16px rgba(3,6,12,.8); }
+}
+.pre--quick .pre__count, .pre--quick .pre__status, .pre--quick .pre__head,
+.pre--quick .pre__svg, .pre--quick .pre__top { visibility: hidden; }
