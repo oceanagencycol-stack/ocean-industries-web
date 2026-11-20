@@ -218,6 +218,11 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   }
   measure()
   focusAt(0)
+  // Update the projection before the SVG rebuilds its path on rotation.
+  addEventListener('resize', () => {
+    measure()
+    if (html.classList.contains('pre-on')) focusAt(0)
+  })
 
   // ---- el preloader: la película entera en memoria y el borde de la Tierra dibujado ----
   const src = sd ? timing.src.sd : timing.src.hd
@@ -280,6 +285,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     addEventListener(
       'pointermove',
       (e) => {
+        if (html.classList.contains('pre-on')) return
         mouse[0] = (e.clientX / W) * 2 - 1
         mouse[1] = (e.clientY / V) * 2 - 1
       },
@@ -512,7 +518,6 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     requestAnimationFrame(tick)
   }
 
-  addEventListener('resize', () => requestAnimationFrame(measure))
   new ResizeObserver(() => measure()).observe(document.querySelector('main')!)
   document.fonts?.ready.then(measure)
   tS = clamp((scrollY - reelTop) / sps, 0, DUR)

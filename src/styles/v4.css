@@ -42,7 +42,7 @@ html::-webkit-scrollbar {
 .stage {
   position: fixed;
   inset: 0;
-  height: 100lvh;
+  height: 100dvh;
   z-index: 0;
   background: var(--space);
   overflow: hidden;
