@@ -1096,3 +1096,6 @@ html.no-stage .beat--hero .beat__in { min-height: 100svh; }
   .beat--berg .lt .svc__name, .beat--berg .lt .svc__desc { display: none; }
 }
 @media (min-width: 901px) { .fab { bottom: 58px; } }
+
+html.has-stage .grain { display: none; }
+html.js .ln.is-set .ch { filter: none; transform: none; opacity: 1; }

@@ -393,6 +393,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
       for (const l of b.lines) {
         const lt = first ? clamp(intro * 1.7 - 0.45 - l.at * 4) : clamp((tS - b.t0 + .28 - l.at * span) / 0.63)
         l.last = setv(l.el, '--l', lt, l.last)
+        l.el.classList.toggle('is-set', lt === 1 && e === 0)
       }
       const vis = a * (1 - e)
       const visible = vis > 0.001
@@ -447,9 +448,12 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     for (const c of chapters) if (tS >= c.t0 - 0.3) ch = c.ch
     if (ch !== lastNow) {
       lastNow = ch
-      ticks.forEach((a) => (Number(a.dataset.ch) === ch ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')))
-      const cur = ticks.find((a) => Number(a.dataset.ch) === ch)
-      if (nowEl && cur) nowEl.textContent = cur.textContent
+      for (const link of ticks) {
+        if (Number(link.dataset.ch) === ch) {
+          link.setAttribute('aria-current', 'true')
+          if (nowEl) nowEl.textContent = link.textContent
+        } else link.removeAttribute('aria-current')
+      }
     }
 
     // rótulos anclados a los sujetos

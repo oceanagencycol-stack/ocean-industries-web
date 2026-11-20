@@ -47,7 +47,8 @@ const FRAG = `#version 300 es
 precision highp float;
 in vec2 vUv;
 out vec4 o;
-uniform sampler2D uTex;
+uniform sampler2D uTex, uNext;
+uniform float uMix;
 uniform vec2 uRes, uVid, uFocus, uShift;
 uniform float uZoom, uVel, uTime, uExposure, uContrast, uSat, uVig, uGrain, uFade, uFlash, uReady;
 uniform vec3 uTint;
@@ -70,6 +71,7 @@ void main(){
   vec3 col;
   if (v < 0.012) {
     col = texture(uTex, uv).rgb;
+    if (uMix > 0.) col = mix(col, texture(uNext, uv).rgb, uMix);
   } else {
     vec3 acc = vec3(0.); float wsum = 0.;
     for (int i = 0; i < 5; i++){
@@ -239,18 +241,22 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
   gl.vertexAttribPointer(aEnd, 1, gl.FLOAT, false, 20, 16)
   gl.bindVertexArray(null)
 
-  const tex = gl.createTexture()
-  gl.bindTexture(gl.TEXTURE_2D, tex)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+  function frameTexture() {
+    const texture = gl.createTexture()
+    gl.bindTexture(gl.TEXTURE_2D, texture)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+    return { texture, frame: -1, width: 1, height: 1 }
+  }
+  const pair = [frameTexture(), frameTexture()]
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([3, 6, 12, 255]))
 
   const U = (p: WebGLProgram, n: string) => gl.getUniformLocation(p, n)
   const u = {
-    tex: U(prog, 'uTex'), res: U(prog, 'uRes'), vid: U(prog, 'uVid'), focus: U(prog, 'uFocus'), shift: U(prog, 'uShift'),
+    tex: U(prog, 'uTex'), next: U(prog, 'uNext'), mix: U(prog, 'uMix'), res: U(prog, 'uRes'), vid: U(prog, 'uVid'), focus: U(prog, 'uFocus'), shift: U(prog, 'uShift'),
     zoom: U(prog, 'uZoom'), vel: U(prog, 'uVel'), time: U(prog, 'uTime'), exposure: U(prog, 'uExposure'),
     contrast: U(prog, 'uContrast'), sat: U(prog, 'uSat'), vig: U(prog, 'uVig'), grain: U(prog, 'uGrain'),
     fade: U(prog, 'uFade'), flash: U(prog, 'uFlash'), tint: U(prog, 'uTint'), ready: U(prog, 'uReady'),
@@ -275,9 +281,15 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
   let shiftX = 0, shiftY = 0
 
   const upload = (src: TexImageSource, w: number, h: number) => {
-    gl.bindTexture(gl.TEXTURE_2D, tex)
-    if (hasFrame && vidW === w && vidH === h) gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, src)
+    // Preserve the neighbour closest to the sample we are about to upload.
+    const slot = pair[0].frame < 0 ? pair[0] : pair[1].frame < 0 ? pair[1]
+      : Math.abs(pair[0].frame - requested) >= Math.abs(pair[1].frame - requested) ? pair[0] : pair[1]
+    gl.bindTexture(gl.TEXTURE_2D, slot.texture)
+    if (slot.width === w && slot.height === h) gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, src)
     else gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src)
+    slot.width = w
+    slot.height = h
+    slot.frame = src === video ? requested : -1
     vidW = w
     vidH = h
     hasFrame = true
@@ -309,8 +321,13 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
 
   function seek() {
     if (!Number.isFinite(video.duration) || video.readyState < 1 || seeking) return
-    const target = Math.min(Math.round(want * 24), Math.ceil(video.duration * 24) - 1)
-    if (target === requested) return
+    const last = Math.ceil(video.duration * 24) - 1
+    const position = Math.min(want * 24, last)
+    let target = Math.round(position)
+    if (pair[0].frame === target || pair[1].frame === target) {
+      target = target > position ? Math.floor(position) : Math.ceil(position)
+      if (pair[0].frame === target || pair[1].frame === target) return
+    }
     requested = target
     seeking = true
     video.currentTime = Math.min(video.duration - 0.001, (target + 0.25) / 24)
@@ -352,8 +369,18 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
     gl.useProgram(prog)
     gl.bindVertexArray(vao)
     gl.activeTexture(gl.TEXTURE0)
-    gl.bindTexture(gl.TEXTURE_2D, tex)
+    const sample = want * 24
+    const nearest = pair[1].frame >= 0 && Math.abs(pair[1].frame - sample) < Math.abs(pair[0].frame - sample) ? 1 : 0
+    const first = pair[nearest], second = pair[1 - nearest]
+    const step = second.frame - first.frame
+    const blend = second.frame >= 0 && Math.abs(step) === 1
+      ? Math.max(0, Math.min(1, (sample - first.frame) / step)) : 0
+    gl.bindTexture(gl.TEXTURE_2D, first.texture)
+    gl.activeTexture(gl.TEXTURE1)
+    gl.bindTexture(gl.TEXTURE_2D, second.texture)
     gl.uniform1i(u.tex, 0)
+    gl.uniform1i(u.next, 1)
+    gl.uniform1f(u.mix, blend)
     gl.uniform2f(u.res, W, H)
     gl.uniform2f(u.vid, vidW, vidH)
     gl.uniform2f(u.focus, f.focus[0], 1 - f.focus[1])
