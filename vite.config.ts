@@ -44,11 +44,18 @@ function brandInline(file: string, cls: string): string {
 }
 
 /** Los siete ejes del maestro revelan la tinta del logo sin modificar su silueta. */
-function brandPen(): string {
+function signatureLogo(): string {
   const source = readFileSync(resolve(ROOT, 'marca/v3/logo-trazos.svg'), 'utf8')
   const strokes = source.match(/<(?:circle|path) data-l="[^"]+"[^>]*\/>/g)
   if (strokes?.length !== 7) throw new Error('[ocean-brand] Se esperaban siete ejes en logo-trazos.svg')
-  return strokes.map(stroke => stroke.replace(' data-l=', ' pathLength="1" data-l=')).join('')
+  const axes = strokes.map(stroke => stroke.replace(' data-l=', ' pathLength="1" data-l=')).join('')
+  const mask = '<mask id="pre-ink" maskUnits="userSpaceOnUse" x="-20" y="-24" width="600" height="156">' +
+    '<use href="#pre-master" color="white" /></mask>'
+  const pen = '<g class="pre__pen" fill="none" stroke="currentColor" stroke-width="32" ' +
+    'stroke-linecap="round" stroke-linejoin="round" mask="url(#pre-ink)">' + axes + '</g>'
+  return brandInline(BRAND.LOGO, 'pre__logo')
+    .replace('>', '><defs><g id="pre-master">')
+    .replace('</svg>', '</g>' + mask + '</defs>' + pen + '<use class="pre__solid" href="#pre-master" /></svg>')
 }
 
 /** Fallback frames and the first paint use the same grade and crop as the movie. */
@@ -92,7 +99,7 @@ function oceanBrand(): Plugin {
       return html
         .replace('<meta charset="utf-8" />', `<meta charset="utf-8" />\n    <meta name="ocean-build" content="${BUILD_ID}" />`)
         .replaceAll('__SITE_URL__', SITE_URL)
-        .replace('<!--EJES:pre-->', brandPen)
+        .replace('<!--LOGO:pre__logo-->', signatureLogo)
         .replace(/<!--(LOGO_R|LOGO|SIMBOLO):([\w-]+)-->/g, (_m, k: keyof typeof BRAND, cls: string) => brandInline(BRAND[k], cls))
         .replace(/<!--PLACA:([\w]+)(:first)?-->/g, (_m, name: string, first?: string) => plate(name, !!first))
         .replaceAll('<!--DEMO_TOGGLE-->', DEMO_TOGGLE)

@@ -132,9 +132,10 @@ html.pre-on .nav__logo { visibility: hidden; }
 .pre__lockup { position: relative; width: clamp(185px, 33vw, 510px); }
 .pre__brand, .pre__logo { display: block; width: 100%; height: auto; }
 .pre__brand { transform-origin: left top; }
-/* La máscara recorre los ejes oficiales. La tinta que aparece es el maestro de la cabecera. */
-.pre:not(.pre--still):not(.pre--signed) .pre__logo > :is(g, path, circle) { mask: url(#pre-ink); }
-#pre-ink [data-l] { stroke-dasharray: 1 2; stroke-dashoffset: 1.28; opacity: 0; }
+/* Los trazos se escriben dentro de la silueta exacta de la marca de la cabecera. */
+.pre:not(.pre--still):not(.pre--signed) .pre__solid,
+.pre--still .pre__pen, .pre--signed .pre__pen { visibility: hidden; }
+.pre__pen [data-l] { stroke-dasharray: 1 2; stroke-dashoffset: 1.28; opacity: 0; }
 .pre__track {
   position: absolute;
   top: calc(100% + clamp(24px, 3vw, 42px));

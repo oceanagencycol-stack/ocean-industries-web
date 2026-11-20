@@ -8,7 +8,7 @@ const PEN: Record<string, readonly [number, number]> = {
 
 async function writeWord(root: HTMLElement, speed: number): Promise<void> {
   const drawing: Promise<Animation>[] = []
-  for (const stroke of root.querySelectorAll<SVGGeometryElement>('#pre-ink [data-l]')) {
+  for (const stroke of root.querySelectorAll<SVGGeometryElement>('.pre__pen [data-l]')) {
     const [delay, duration] = PEN[stroke.dataset.l!]
     const pen = stroke.animate([
       { strokeDashoffset: '1.28', opacity: 0 },

@@ -118,7 +118,9 @@ Se ejecutaron instalación, comprobación TypeScript y compilación de Vite desp
 
 ### v5 · Apertura de marca y epílogo editorial
 
-La primera imagen es el logotipo final de OCEAN sobre el color del espacio. Un trazo fino bajo la marca indica el avance de la descarga. Al llegar el primer cuadro decodificado, el logotipo se desplaza desde el centro hasta su posición medida en la cabecera. La Tierra y el titular aparecen durante ese mismo movimiento. Las visitas repetidas y la preferencia de movimiento reducido usan un fundido corto.
+Sobre el color del espacio, la O abre la firma con un giro, la C continúa el movimiento y la E traza sus tres horizontes en sucesión. La A y la N cierran la palabra mientras aparece el borde de la Tierra. Los siete ejes salen de `marca/v3/logo-trazos.svg` y se pintan dentro de la silueta de `logo-sin-r.svg`. Al terminar la firma y disponer del primer cuadro decodificado, el mismo logo viaja a la cabecera y entra el hero. La línea inferior indica el avance de la descarga.
+
+La escritura dura 1,925 s en la primera visita y 550 ms al volver en la misma sesión. Con movimiento reducido se muestra la marca completa y se abre el hero con un fundido de 220 ms. Se inspeccionaron 33 instantes de escritura en escritorio y móvil para comprobar que cada letra aparece a su turno. [Ver la animación capturada en Chromium](qa-v5/firma-ocean.webp)
 
 En las pruebas a 1440 × 900, 1280 × 800, 2360 × 900 y 390 × 844, el rectángulo final de la animación coincidió con el logo de navegación con un error inferior a 0,004 píxeles CSS. El primer fotograma estaba decodificado en los cuatro tamaños. El arco tenue de la apertura quedó a menos de 0,14 píxeles del círculo de referencia. También se ensayaron el fallo de descarga, la lectura con portada estática y el movimiento reducido.
 
