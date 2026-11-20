@@ -68,6 +68,7 @@ void main(){
   float v = clamp(abs(uVel), 0., 1.);
   // desenfoque radial: la cámara corre hacia (o se aleja de) el centro
   vec2 dir = (uv - ctr) * (0.027 * v) * sign(uVel + 1e-4);
+  vec2 e = (vUv - 0.5);
   vec3 col;
   if (v < 0.012) {
     col = texture(uTex, uv).rgb;
@@ -81,12 +82,10 @@ void main(){
       wsum += w;
     }
     col = acc / wsum;
+    float ca = dot(e,e) * (0.002*v);
+    col.r = mix(col.r, texture(uTex, uv + e*ca).r, 0.5);
+    col.b = mix(col.b, texture(uTex, uv - e*ca).b, 0.5);
   }
-  // aberración cromática solo en los bordes y solo cuando hay movimiento
-  vec2 e = (vUv - 0.5);
-  float ca = dot(e,e) * (0.004*v);
-  col.r = mix(col.r, texture(uTex, uv + e*ca).r, 0.85);
-  col.b = mix(col.b, texture(uTex, uv - e*ca).b, 0.85);
   // brillo suave: lo que pasa de 0.72 se abre un poco
   vec3 hi = max(col - 0.72, 0.);
   col += hi * (0.55 + 0.9*v);

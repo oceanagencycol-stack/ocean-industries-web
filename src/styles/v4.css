@@ -222,7 +222,7 @@ html.js .ch {
   --x: clamp(0, calc((var(--e, 0) - var(--r) * 0.5) / 0.5), 1);
   opacity: calc(var(--t) * (1 - var(--x)));
   transform: translate3d(0, calc((1 - var(--t)) * 0.32em - var(--x) * 0.26em), 0);
-  filter: blur(calc((1 - var(--t)) * 10px + var(--x) * 12px));
+
 }
 html.no-motion .ch {
   filter: none !important;

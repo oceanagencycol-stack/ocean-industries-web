@@ -154,7 +154,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   onLang(() => {
     split(document)
     translateChat()
-    if (!html.classList.contains('no-stage')) requestAnimationFrame(refreshBounds)
+    if (!html.classList.contains('no-stage')) requestAnimationFrame(refresh)
     for (const b of beats) for (const l of b.lines) l.last = -1
     lastAlt = ''
     lastNow = -2
@@ -327,9 +327,25 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
       size.h = size.label?.offsetHeight ?? 0
     }
   }
-  refreshBounds()
-  addEventListener('resize', () => requestAnimationFrame(refreshBounds))
-  document.fonts?.ready.then(refreshBounds)
+  function refresh() { refreshBounds(); dirty = true; wake() }
+  addEventListener('resize', () => requestAnimationFrame(refresh))
+  document.fonts?.ready.then(refresh)
+  // El decorado conserva su movimiento ambiental. La tipografía solo cambia con el guion.
+  let dirty = true
+  let scheduled = false
+  let lastIntro = -1
+  function wake() {
+    if (!scheduled && !failed && !document.hidden) {
+      scheduled = true
+      requestAnimationFrame(tick)
+    }
+  }
+  addEventListener('scroll', wake, { passive: true })
+  document.addEventListener('visibilitychange', wake)
+  const counters = [...document.querySelectorAll<HTMLElement>('[data-count]')].map(el => ({
+    el, to: Number(el.dataset.count), beat: beats.find(b => b.el.contains(el)), shown: -1,
+  }))
+  const shadows = [-1, -1, -1, -1]
   // ---- el reloj ----
 
   let tS = 0
@@ -349,7 +365,11 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   }
 
   function tick(now: number) {
-    if (failed) return
+    scheduled = false
+    if (failed || document.hidden) return
+    const past = scrollY > reelTop + DUR * sps + V
+    if (past && pastFilm && intro === 1 && !dirty) return
+    if (!past || intro < 1) wake()
     const elapsed = (now - prev) / 1000
     const dt = Math.min(0.05, elapsed)
     prev = now
@@ -377,13 +397,15 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     const m = frame.medium.w
     for (let k = 0; k < 4; k++) m[k] = mtmp[k] * on
     frame.flash = opts.reduced ? 0 : flash(u) * 0.8
-    const past = y > reelTop + DUR * sps + V
     if (stage!.ready && (!past || !pastFilm || !started)) stage!.render(frame, mouse, dt)
     pastFilm = past
     if (!started && stage!.ready) {
       started = true
       html.classList.add('has-stage')
     }
+    if (!dirty && tS === tPrev && intro === lastIntro) return
+    dirty = false
+    lastIntro = intro
     const hud = (introE * (1 - clamp(L.fade * 2.2))).toFixed(3)
     if (hud !== lastHud) {
       html.style.setProperty('--hud', hud)
@@ -393,6 +415,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     // los rótulos de la película
     let sl = 0, sb = 0, sc = 0, sr = 0
     for (const b of beats) {
+      if (!b.on && (tS < b.t0 - .28 || tS > b.t1 + .28)) continue
       const first = b.t0 <= 0
       // el primero entra con el amanecer; los demás con su tiempo
       const a = first ? clamp(intro * 1.6 - 0.35) : clamp((tS - b.t0 + .28) / FADE)
@@ -421,10 +444,10 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
       }
     }
     if (shadeEl) {
-      shadeEl.style.setProperty('--shade-l', Math.min(1, sl).toFixed(3))
-      shadeEl.style.setProperty('--shade-b', Math.min(1, sb).toFixed(3))
-      shadeEl.style.setProperty('--shade-c', Math.min(1, sc).toFixed(3))
-      shadeEl.style.setProperty('--shade-r', Math.min(1, sr).toFixed(3))
+      shadows[0] = setv(shadeEl, '--shade-l', Math.min(1, sl), shadows[0])
+      shadows[1] = setv(shadeEl, '--shade-b', Math.min(1, sb), shadows[1])
+      shadows[2] = setv(shadeEl, '--shade-c', Math.min(1, sc), shadows[2])
+      shadows[3] = setv(shadeEl, '--shade-r', Math.min(1, sr), shadows[3])
     }
 
     // Valeria: la conversación avanza con su tramo
@@ -515,30 +538,22 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
       berg.style.setProperty('--wl', `${((pos[1] / V) * 100).toFixed(2)}%`)
     }
 
-    requestAnimationFrame(tick)
-  }
-
-  new ResizeObserver(() => measure()).observe(document.querySelector('main')!)
-  document.fonts?.ready.then(measure)
-  tS = clamp((scrollY - reelTop) / sps, 0, DUR)
-  requestAnimationFrame(tick)
-
-  // cifras que cuentan con la entrada de su rótulo
-  const counters = [...document.querySelectorAll<HTMLElement>('[data-count]')].map((el) => ({ el, to: Number(el.dataset.count), beat: beats.find((b) => b.el.contains(el)), shown: -1 }))
-  if (!opts.reduced) {
-    const loop = () => {
+    if (!opts.reduced) {
       for (const c of counters) {
-        const a = c.beat ? Math.max(0, c.beat.a) : 1
-        const v = Math.round(c.to * clamp(a * 1.25))
-        if (v !== c.shown) {
-          c.el.textContent = String(v)
-          c.shown = v
+        const value = Math.round(c.to * clamp((c.beat?.a ?? 1) * 1.25))
+        if (value !== c.shown) {
+          c.el.textContent = String(value)
+          c.shown = value
         }
       }
-      requestAnimationFrame(loop)
     }
-    requestAnimationFrame(loop)
   }
+
+  new ResizeObserver(() => { measure(); dirty = true; wake() }).observe(document.querySelector('main')!)
+  document.fonts?.ready.then(measure)
+  refresh()
+  tS = clamp((scrollY - reelTop) / sps, 0, DUR)
+  wake()
 
   if (new URLSearchParams(location.search).has('qa')) {
     ;(window as Window & { __film?: unknown }).__film = {
