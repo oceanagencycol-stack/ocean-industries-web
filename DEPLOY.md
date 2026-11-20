@@ -39,6 +39,7 @@ Ojo: la vista previa usa las mismas llaves de Wompi que producción. **Nunca se 
    y en el navegador: sin errores de consola ni violaciones de CSP, la agenda de Cal.com carga, el script de Wompi
    carga (sin pagar), los reels corren, GA4 carga solo en el dominio real.
 5. Si algo falla: en Vercel, «Promote» el despliegue anterior de `main` (vuelve en segundos) y se arregla en una rama.
+   La v2 (antes de la v5) es `dpl_DhkVanu9RLzNPmZ2ynUvrGbP2tkA` (commit `2f12397`); la v5 entró con `27953b7` el 20-nov-2026.
    La última versión de la v1 es `dpl_4eeUPUZNYtEx1pmfF9DUn7ZZvFFQ` (commit `1f92216`, «GA4 en produccion», 8-sep-2026).
 
 ## Regenerar lo que sale de un script
