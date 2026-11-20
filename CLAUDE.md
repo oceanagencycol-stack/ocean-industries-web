@@ -1,15 +1,29 @@
-# CLAUDE.md — ocean-industries-web (v3)
+# CLAUDE.md — ocean-industries-web (v5)
 
 Web oficial de OCEAN (nombre legal: Ocean Industries; oceanindustries.com.co). Comunicación con Juan: **español**.
 Contenido: **ES por defecto, EN y PT** (cada elemento lleva `data-es` / `data-en` / `data-pt`, y `data-*-aria` /
 `data-*-ph` para nombres accesibles y placeholders).
 
-**v4 (rama `v4-pelicula`)**: la web como una sola toma. `index.html` + `src/main.ts` → `src/v4/` (`stage.ts` el
-escenario WebGL2, `film.ts` la línea de tiempo, `script.ts` el guion técnico: gradación, medio, foco, altímetro,
-rótulos) y `src/styles/v4.css` sobre `v3.css`. Película en `public/v4/` (`tools/v4-film.sh`, cortes en
-`src/v4/film.json`). Todo en `docs/v4/PELICULA.md`. Las demos de cuatro pasos de la v3 no están en la portada v4.
+**v5 (ramas `v5-secuencia` → `v5-cierre`, 20-nov-2026) es la web vigente en desarrollo**: una sola película que
+avanza con el scroll. `index.html` + `src/main.ts` → `src/v4/` (`stage.ts` el escenario WebGL2, `film.ts` la línea de
+tiempo, `script.ts` el guion técnico, `preload.ts` la apertura con la marca) y `src/styles/v4.css` + `epilogue.css`
+sobre `v3.css`. Película en `public/v4/`, cortes en `src/v4/film.json`. Todo en `docs/v4/PELICULA.md`.
+`main` sigue con la v2 en producción. `v3-cine` y `v4-pelicula` quedan como historia.
 
-La rama de montaje `v3-cine` usa `src/v3/film.ts` y el máster de `public/v3/film/` en la portada. Los detalles de producción y el recorrido actual están en `docs/v3/CINE.md`. El lienzo de `src/world/` sigue disponible en la maqueta de desarrollo.
+### Reglas propias de la v5
+- **Legibilidad sobre la película**: el texto nunca lleva caja; el shader recoge la luz detrás de las cajas medidas
+  del texto visible (`READ` en `film.ts`, fuerza por rótulo con `data-scrim`; 0 = sin recoger). Texto oscuro sobre
+  cielo claro («Arriba») no entra en `READ`.
+- **Cada rótulo cabe**: `fit()` en `film.ts` recoge aire (`.is-snug`), luego lo secundario entero (`.is-tight`) y por
+  último baja la tipografía grande (`--fit`, bisección). Nunca se corta texto a media palabra. Prueba:
+  `node qa/ajuste-rotulos.cjs http://localhost:4175/ [--lang=en]`.
+- **Rótulos anclados**: se esconden si la etiqueta, la línea o el punto cruzan texto o telemetría.
+- **La marca en la película**: apertura (estrella → dos mitades del isotipo → el logotipo se escribe y vuela a la
+  barra), sello en la luz de la cumbre (`.beat--seal`, `data-fade`) y firma del pie en metal claro con franja de luz
+  (`brand.ts`). Todo sale de `marca/v3/` por marcadores del build: `<!--SIMBOLO_APERTURA:…-->`,
+  `<!--SIMBOLO_PARTES:…-->`, `<!--LOGO_R_METAL:…-->`, `<!--SIMBOLO_METAL:…-->` (`vite.config.ts`).
+- **Logotipo robusto** (20-nov): `tools/marca/robusta.py` desde `robusta.json`; el maestro del 18-nov en
+  `marca/v3/anterior/`.
 
 ## Antes de tocar nada
 1. Lee `DESIGN.md` (el sistema v3), `docs/v3/CONCEPTO.md`, `docs/v3/ARQUITECTURA.md`, `docs/plan-v3.md` («Decisiones

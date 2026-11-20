@@ -142,3 +142,28 @@ Se compararon el build de `1e32c65` y el nuevo render con `qa/secuencia-v5.cjs` 
 Las luces de lectura se componen en el mismo shader de la película. Los rótulos se actualizan cuando cambia el guion y el render se suspende en el epílogo. El controlador por software reutiliza una superficie para cargar cada cuadro decodificado y reduce el ritmo del ambiente en reposo. El error medido entre el reloj y el objetivo de scroll fue cero en los ocho recorridos. Durante el scroll lento, la intensidad máxima del desenfoque fue 0,060 sobre 1. El límite de 33,3 ms entre cambios de imagen sigue pendiente en este entorno.
 
 Lighthouse móvil local obtuvo 56/100, con LCP de 3,4 s, CLS de 0 y bloqueo total de 6,02 s. El registro anterior de la rama marcaba 44/100. Las pruebas funcionales cubrieron los tres idiomas, el chat simulado, Valeria, WhatsApp contextual, los destinos de los casos, el selector de reels y su sonido, la integración de Cal.com y el cálculo previo de Wompi. Se comprobaron 27 combinaciones de idioma y ancho entre 320 y 1440 px.
+
+### v5 · Cierre (rama `v5-cierre`, 20-nov-2026)
+
+**Legibilidad.** Detrás de las cajas medidas del texto visible (palabras, etiquetas, tarjetas, cifras, botones y el
+altímetro) el shader comprime las altas luces con borde suave (`1 / (1 + 2,7·lum)`); las sombras casi no cambian. En el
+cuadro más claro el blanco queda sobre 9:1 y `--mist` sobre 5:1. El hero y las frases gigantes usan menos fuerza
+(`data-scrim` 0,6–0,85).
+
+**Cada rótulo cabe.** En el recorrido original, en 375 × 667 los capítulos 03 y 04 quedaban bajo la barra (hasta
+128 px en 360 × 640) y el hero pisaba la telemetría en 360 × 640 y 1280 × 720. `fit()` lo resuelve en tres pasos y la
+prueba de ajuste (rótulos entre la barra y la telemetría, leyendas del iceberg sin choques) quedó en verde en 360 × 640,
+375 × 667, 390 × 844, 412 × 915, 768 × 1024, 1024 × 768, 1280 × 610, 1280 × 720, 1366 × 657, 1536 × 730, 1440 × 789,
+1440 × 900 y 1920 × 1080, en ES, EN y PT. Las descripciones de los servicios ya no se cortan con «…».
+
+**La marca.** Apertura con el isotipo (una estrella de luz y dos corrientes que se cierran a su alrededor, ≈ 1,3 s,
+mientras la película se descarga), sello en la luz blanca de la cumbre (65–67 s) y firma del pie en metal claro con una
+franja de luz. Logotipo robusto ajustado a la foto del 20-nov (`marca/v3/README.md`).
+
+**Contenido.** El caso de Outstanding dice lo que pasa hoy (agente de voz en operación; WhatsApp en ajuste), como en
+`fix/caso-outstanding-llms`. El botón del índice tiene nombre accesible.
+
+**Cadencia** (`qa/secuencia-v5.cjs`, Chromium con SwiftShader y 2 CPU, el mismo equipo para las dos versiones). Mayor
+espera entre cuadros enviados al compositor, base `7fb660e` → cierre: escritorio 84/86/90/91 ms → 102/91/144/98 ms;
+teléfono 82/86/84/159 ms → 78/69/82/76 ms (12→16, 16→12, 12→50, 50→12 s). Error del reloj: 0 en todas. El escritorio
+por software paga el costo de las luces de lectura; en una GPU es despreciable, pero no se midió aquí.

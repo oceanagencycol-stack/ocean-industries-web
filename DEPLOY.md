@@ -8,6 +8,12 @@
   protección de Vercel del equipo y `noindex`).
 - Build (lo dice `vercel.json`): `npm run build` → `dist/`. Las funciones de `api/` se despliegan solas.
 
+## Estado (20-nov-2026)
+- Producción (`main`): la v2. En desarrollo: la v5, rama `v5-cierre` (sobre `v5-secuencia`).
+- Antes de fusionar la v5 en `main`, con el visto bueno de Juan: revisar la vista previa en un teléfono físico y en un
+  computador con GPU (la cadencia solo se midió con SwiftShader), escuchar el sonido, abrir Cal.com y el widget de
+  Wompi sin pagar, y correr `qa/overflow.cjs`, `qa/secuencia-v5.cjs` y la prueba de ajuste de rótulos.
+
 ## Variables de entorno (solo nombres; los valores viven en Vercel)
 | Variable | Para qué | Entornos |
 |---|---|---|
