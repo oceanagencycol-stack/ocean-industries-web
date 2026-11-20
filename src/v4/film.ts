@@ -1,62 +1,59 @@
 /**
- * La línea de tiempo de la v4. Un solo reloj para todo lo que se mueve:
+ * La línea de tiempo de la v4: UNA secuencia.
  *
- *   scroll (amortiguado) ─→ u (unidades de toma, por los .track[data-film]) ─→ segundo de la película
- *                         ├─→ --a / --e / --p de cada tramo (las letras, lo secundario, la salida)
- *                         ├─→ gradación, medio, destellos, foco (script.ts) ─→ el escenario (stage.ts)
- *                         └─→ telemetría: capítulo, altitud/profundidad, código de tiempo, rótulos anclados
+ * El scroll mueve la película a velocidad CONSTANTE de principio a fin (cada segundo de película cuesta lo mismo de
+ * scroll): no hay capítulos que se detengan ni cruces que corran. Todo lo demás son capas de esa misma toma:
  *
- * Quieto, el cuadro no se congela: la cámara respira (paralaje del puntero, partículas) y, en los capítulos, la
- * película se adelanta unas décimas de segundo («deriva») y vuelve sola al primer movimiento del scroll.
+ *   scroll (amortiguado) → t (segundo del máster) → el cuadro (stage.ts: gradación, medio, foco, destellos)
+ *                                                 → los rótulos .beat[data-t="entra:sale"] (letras, cifras, servicios)
+ *                                                 → telemetría (altímetro, código de tiempo, capítulos) y rótulos anclados
+ *
+ * Cada .beat ocupa en el documento exactamente su tramo de scroll (para el sonido, los anclajes y la analítica), pero
+ * su contenido vive fijo sobre la película: nada sube, nada tapa la imagen, nada cambia de escena.
+ * Al final la película se resuelve en blanco y el epílogo (trabajo, agenda, pagos) sigue sobre esa misma luz.
  */
 import { lang, onLang } from '../ui/i18n'
+import { SCRIPT } from '../ui/live'
 import { createStage, type Look, type Stage, type StageFrame } from './stage'
 import { ALT, CALLOUTS as CALLOUT_DEFS, FOCUS, MEDIA, WATERLINE, flash, formatAlt, look, num, vec } from './script'
+import { preload } from './preload'
 import timing from './film.json'
 
-interface Track {
-  el: HTMLElement
-  f0: number
-  f1: number
-  top: number
-  height: number
-  kind: 'chapter' | 'transit' | 'other'
-  ch: number
-  lines: { el: HTMLElement; at: number; last: number }[]
-  shade: [number, number, number, number]
-  a: number
-  e: number
-  p: number
-  cards: HTMLElement | null
-  cardsTop: number
-}
-
-const CALLOUTS = CALLOUT_DEFS.map((c) => ({ ...c, track: null as Track | null }))
-const clamp = (x: number, a = 0, b = 1) => (x < a ? a : x > b ? b : x)
 const FPS = timing.fps
 const FR = timing.frames
 const SHOTS = FR.length - 1
-const ALT_WORDS = {
-  es: ['Altitud', 'Profundidad'],
-  en: ['Altitude', 'Depth'],
-  pt: ['Altitude', 'Profundidade'],
+const DUR = (FR[SHOTS] - 1) / FPS
+const FADE = 0.75 // s de película para entrar o salir un rótulo
+const clamp = (x: number, a = 0, b = 1) => (x < a ? a : x > b ? b : x)
+const ALT_WORDS = { es: ['Altitud', 'Profundidad'], en: ['Altitude', 'Depth'], pt: ['Altitude', 'Profundidade'] }
+
+/** segundo del máster → unidades de toma (el guion técnico está en tomas) */
+function toU(t: number): number {
+  const f = clamp(t, 0, DUR) * FPS
+  let i = 0
+  while (i < SHOTS - 1 && FR[i + 1] <= f) i++
+  return i + clamp((f - FR[i]) / (FR[i + 1] - FR[i] - 1))
 }
 
-/** u → segundo del máster */
-export function seconds(u: number): number {
-  const i = Math.min(SHOTS - 1, Math.max(0, Math.floor(u)))
-  const f = clamp(u - i, 0, 1)
-  const frame = FR[i] + f * (FR[i + 1] - FR[i] - 1)
-  return frame / FPS
+interface Beat {
+  el: HTMLElement
+  inner: HTMLElement
+  t0: number
+  t1: number
+  ch: number
+  lines: { el: HTMLElement; at: number; last: number }[]
+  shade: number[]
+  a: number
+  e: number
+  on: boolean
 }
 
-/** parte cada [data-split] en palabras y letras; cada letra con su azar */
 function split(root: ParentNode) {
   root.querySelectorAll<HTMLElement>('[data-split]').forEach((el) => {
     const text = el.textContent ?? ''
     el.setAttribute('aria-label', text)
     el.textContent = ''
-    let seed = 0
+    let seed = 7
     for (const word of text.split(/(\s+)/)) {
       if (!word) continue
       if (/^\s+$/.test(word)) {
@@ -70,7 +67,7 @@ function split(root: ParentNode) {
         const s = document.createElement('span')
         s.className = 'ch'
         seed = (seed * 9301 + 49297 + c.charCodeAt(0) * 7) % 233280
-        s.style.setProperty('--r', (0.15 + (seed / 233280) * 0.85).toFixed(3))
+        s.style.setProperty('--r', (0.1 + (seed / 233280) * 0.9).toFixed(3))
         s.textContent = c
         w.append(s)
       }
@@ -85,51 +82,77 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   const video = document.querySelector<HTMLVideoElement>('.stage__src')
   const poster = document.querySelector<HTMLImageElement>('.stage__poster img')
   const shadeEl = document.querySelector<HTMLElement>('.stage__shade')
-  const railLinks = [...document.querySelectorAll<HTMLAnchorElement>('.rail a[data-ch]')]
+  const reel = document.querySelector<HTMLElement>('.reel')
   const altiVal = document.querySelector<HTMLElement>('[data-alti]')
   const altiLabel = document.querySelector<HTMLElement>('[data-alti-label]')
   const altiBox = document.querySelector<HTMLElement>('.alti')
-  const tcTime = document.querySelector<HTMLElement>('[data-tc]')
-  const tcBox = document.querySelector<HTMLElement>('.tc')
+  const tcEl = document.querySelector<HTMLElement>('[data-tc]')
+  const nowEl = document.querySelector<HTMLElement>('[data-now]')
+  const scrub = document.querySelector<HTMLElement>('.scrub')
+  const ticks = [...document.querySelectorAll<HTMLAnchorElement>('.scrub a[data-ch]')]
   const berg = document.querySelector<HTMLElement>('.berg')
-  if (!canvas || !video) return
+  const chatBox = document.querySelector<HTMLElement>('[data-chat]')
+  if (!canvas || !video || !reel) return
 
-  // ---- los tramos ----
   split(document)
-  onLang(() => {
-    split(document)
-    lastAlt = ''
-  })
   document.querySelectorAll<HTMLElement>('[data-k]').forEach((el) => el.style.setProperty('--k', el.dataset.k ?? '0'))
 
-  const tracks: Track[] = [...document.querySelectorAll<HTMLElement>('.track[data-film]')].map((el) => {
-    const [f0, f1] = (el.dataset.film ?? '0:0').split(':').map(Number)
-    el.style.setProperty('--h', el.dataset.vh ?? '100')
-    const kind = el.classList.contains('chapter') ? 'chapter' : el.classList.contains('transit') ? 'transit' : 'other'
-    const lines = [...el.querySelectorAll<HTMLElement>('.ln[data-at]')].map((l) => ({ el: l, at: Number(l.dataset.at), last: -1 }))
-    const sh = SHADES[el.id] ?? (kind === 'transit' ? [0, 0.35, 0.75, 0] : [0, 0, 0, 0])
-    return { el, f0, f1, top: 0, height: 0, kind, ch: Number(el.dataset.ch ?? -1), lines, shade: sh as Track['shade'], a: -1, e: -1, p: -1, cards: el.querySelector<HTMLElement>('.cards'), cardsTop: 0 }
+  const beats: Beat[] = [...document.querySelectorAll<HTMLElement>('.beat[data-t]')].map((el) => {
+    const [t0, t1] = (el.dataset.t ?? '0:0').split(':').map(Number)
+    el.style.setProperty('--t0', String(t0))
+    el.style.setProperty('--t1', String(t1))
+    const lines = [...el.querySelectorAll<HTMLElement>('.ln')].map((l) => ({ el: l, at: Number(l.dataset.at ?? 0), last: -1 }))
+    return {
+      el,
+      inner: el.querySelector<HTMLElement>('.beat__in') ?? el,
+      t0,
+      t1,
+      ch: Number(el.dataset.ch ?? -1),
+      lines,
+      shade: (el.dataset.shade ?? '0,0,0,0').split(',').map(Number),
+      a: -1,
+      e: -1,
+      on: true,
+    }
   })
-  const chapters = tracks.filter((t) => t.kind === 'chapter')
+  const chapters = beats.filter((b) => b.ch >= 0)
+  const agentes = beats.find((b) => b.el.id === 'agentes')
+  ticks.forEach((a) => {
+    const c = chapters.find((b) => b.ch === Number(a.dataset.ch))
+    if (c) a.style.setProperty('--at', (c.t0 / DUR).toFixed(4))
+  })
 
+  let lastAlt = ''
+  let lastTc = ''
+  let lastNow = -2
+  let lastHud = ''
+  let lastChat = -1
+  onLang(() => {
+    split(document)
+    for (const b of beats) for (const l of b.lines) l.last = -1
+    lastAlt = ''
+    lastNow = -2
+    lastChat = -1
+  })
+
+  // ---- el largo del recorrido: cada segundo de película cuesta lo mismo ----
   let V = innerHeight
   let W = innerWidth
+  let sps = 1 // px de scroll por segundo de película
+  let reelTop = 0
+  let stage: Stage | null = null
   function measure() {
     V = innerHeight
     W = innerWidth
+    sps = Math.round(V * (W < 700 ? 0.5 : 0.62))
+    html.style.setProperty('--sps', `${sps}px`)
     html.style.setProperty('--vh', `${V / 100}px`)
-    for (const t of tracks) {
-      const r = t.el.getBoundingClientRect()
-      t.top = r.top + scrollY
-      t.height = t.el.offsetHeight
-      t.cardsTop = t.cards ? t.cards.offsetTop : 0
-    }
+    reelTop = reel!.getBoundingClientRect().top + scrollY
     stage?.resize()
   }
 
   // ---- el escenario ----
   const sd = opts.lite || W < 900
-  let stage: Stage | null = null
   try {
     stage = createStage(canvas, video, poster, sd)
   } catch {
@@ -137,15 +160,70 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   }
   if (!stage) {
     html.classList.add('no-stage')
-    return // sin WebGL2: la portada quieta y el texto; todo se lee
+    document.querySelector('.pre')?.remove()
+    return
   }
-  const startVideo = () => {
-    video.src = sd ? timing.src.sd : timing.src.hd
+
+  const L: Look = { exposure: 1, contrast: 1, saturation: 1, tint: [1, 1, 1], vignette: 0, grain: 0, fade: 0 }
+  const frame: StageFrame = { t: 0, vel: 0, focus: [0.5, 0.5], zoom: 1.045, look: L, medium: { w: [0, 0, 0, 0] }, flash: 0 }
+  const fpos: [number, number] = [0.5, 0.5]
+
+  /** del video a la pantalla con el encuadre actual (el mismo cálculo del shader) */
+  function project(vx: number, vy: number, out: [number, number]): [number, number] {
+    const vidA = 1928 / 1072
+    const sa = W / V
+    let sx = 1, sy = 1
+    if (sa > vidA) sy = vidA / sa
+    else sx = sa / vidA
+    sx /= frame.zoom
+    sy /= frame.zoom
+    const cx = clamp(frame.focus[0], sx / 2, 1 - sx / 2)
+    const cy = clamp(1 - frame.focus[1], sy / 2, 1 - sy / 2)
+    out[0] = ((vx - cx) / sx + 0.5) * W
+    out[1] = (1 - ((1 - vy - cy) / sy + 0.5)) * V
+    return out
+  }
+  function focusAt(u: number) {
+    vec(FOCUS, u, fpos)
+    const portrait = W / V < 1
+    frame.focus[0] = portrait ? fpos[0] : 0.5 + (fpos[0] - 0.5) * 0.35
+    frame.focus[1] = portrait ? fpos[1] : 0.5 + (fpos[1] - 0.5) * 0.35
+  }
+  measure()
+  focusAt(0)
+
+  // ---- el preloader: la película entera en memoria y el borde de la Tierra dibujado ----
+  const src = sd ? timing.src.sd : timing.src.hd
+  let quick = false
+  try {
+    quick = sessionStorage.getItem('ocean-v4-film') === '1'
+  } catch {
+    /* noop */
+  }
+  // el preloader dibuja el borde con el encuadre del primer cuadro tal como lo verá el hero (zoom de llegada incluido)
+  const projectHero = (vx: number, vy: number, out: [number, number]) => {
+    const z = frame.zoom
+    frame.zoom = 1.045
+    project(vx, vy, out)
+    frame.zoom = z
+    return out
+  }
+  const pre = preload(src, projectHero, { reduced: opts.reduced, quick })
+  pre.url.then((blob) => {
+    video.src = blob ?? src
     video.preload = 'auto'
     video.load()
-  }
-  if (document.readyState === 'complete') setTimeout(startVideo, 200)
-  else addEventListener('load', () => setTimeout(startVideo, 200), { once: true })
+    try {
+      sessionStorage.setItem('ocean-v4-film', '1')
+    } catch {
+      /* noop */
+    }
+  })
+  let intro = 0 // 0 → 1 cuando el negro se abre
+  let introStart = -1
+  pre.opened.then(() => {
+    introStart = performance.now()
+  })
 
   // ---- el puntero ----
   const mouse: [number, number] = [0, 0]
@@ -160,81 +238,36 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     )
   }
 
-  // ---- el reloj ----
-  const L: Look = { exposure: 1, contrast: 1, saturation: 1, tint: [1, 1, 1], vignette: 0, grain: 0, fade: 0 }
-  const frame: StageFrame = { t: 0, vel: 0, focus: [0.5, 0.5], zoom: 1.04, look: L, medium: { w: [0, 0, 0, 0] }, flash: 0 }
-  const fpos: [number, number] = [0, 0]
+  const CALLOUTS = CALLOUT_DEFS.map((c) => ({ ...c, el: document.querySelector<HTMLElement>(`.co[data-co="${c.id}"]`), side: 0 }))
+  function geometry(el: HTMLElement, ang: number, len: number) {
+    const rad = (ang * Math.PI) / 180
+    const ex = Math.cos(rad) * len
+    const ey = Math.sin(rad) * len
+    el.style.setProperty('--ang', `${ang}deg`)
+    el.style.setProperty('--len', `${len}px`)
+    el.style.setProperty('--lx', `${ex + (ex < 0 ? -8 : 8)}px`)
+    el.style.setProperty('--ly', `${ey}px`)
+    el.style.setProperty('--tx', ex < 0 ? '-100%' : '0%')
+  }
+  for (const c of CALLOUTS) if (c.el) geometry(c.el, c.ang ?? -32, c.len ?? 90)
+  const pos: [number, number] = [0, 0]
   const mtmp: [number, number, number, number] = [0, 0, 0, 0]
+
+  // ---- el reloj ----
   let yS = scrollY
-  let uS = 0
+  let tS = 0
   let drift = 0
   let lastY = scrollY
   let still = 0
   let prev = performance.now()
   let clock = 0
-  let lastAlt = ''
-  let lastCh = -2
-  let lastTc = ''
-  let lastHud = ''
   let started = false
-
-  function uAt(y: number): { u: number; transit: boolean } {
-    let u = tracks[0].f0
-    let transit = false
-    for (const t of tracks) {
-      const y0 = t.top
-      const span = Math.max(1, t.height - V)
-      if (y < y0) break
-      const x = clamp((y - y0) / span)
-      const k = t.kind === 'transit' ? 0.5 - 0.5 * Math.cos(Math.PI * x) : x
-      u = t.f0 + (t.f1 - t.f0) * k
-      transit = t.kind === 'transit' && x > 0 && x < 1
-    }
-    return { u, transit }
-  }
-
-  // la cubierta del shader, en JS: del video a la pantalla
-  function toScreen(vx: number, vy: number, out: [number, number]) {
-    const vidA = 1928 / 1072
-    const sa = W / V
-    let sx = 1, sy = 1
-    if (sa > vidA) sy = vidA / sa
-    else sx = sa / vidA
-    sx /= frame.zoom
-    sy /= frame.zoom
-    const cx = clamp(frame.focus[0], sx / 2, 1 - sx / 2)
-    const cy = clamp(1 - frame.focus[1], sy / 2, 1 - sy / 2)
-    out[0] = ((vx - cx) / sx + 0.5) * W
-    out[1] = (1 - ((1 - vy - cy) / sy + 0.5)) * V
-    return out
-  }
-
-  const coEls = new Map<string, HTMLElement>()
-  document.querySelectorAll<HTMLElement>('.co[data-co]').forEach((el) => coEls.set(el.dataset.co!, el))
-  /** la geometría del rótulo; en el teléfono, hacia el lado con más aire (la etiqueta no se sale de la pantalla) */
-  const coSide = new Map<string, number>()
-  function geometry(el: HTMLElement, ang: number, len: number) {
-    const rad = (ang * Math.PI) / 180
-    el.style.setProperty('--ang', `${ang}deg`)
-    el.style.setProperty('--len', `${len}px`)
-    const ex = Math.cos(rad) * len
-    const ey = Math.sin(rad) * len
-    el.style.setProperty('--lx', `${ex + (ex < 0 ? -8 : 8)}px`)
-    el.style.setProperty('--ly', `${ey}px`)
-    el.style.setProperty('--tx', ex < 0 ? '-100%' : '0%')
-  }
-  for (const c of CALLOUTS) {
-    const el = coEls.get(c.id)
-    if (el) geometry(el, c.ang ?? -32, c.len ?? 90)
-  }
-  const coPos: [number, number] = [0, 0]
-
-  function setVar(el: HTMLElement, name: string, v: number, prevV: number): number {
-    if (Math.abs(v - prevV) > 0.0015 || (v === 0 && prevV !== 0) || (v === 1 && prevV !== 1)) {
-      el.style.setProperty(name, v.toFixed(4))
+  const setv = (el: HTMLElement, k: string, v: number, p: number) => {
+    if (Math.abs(v - p) > 0.002 || ((v === 0 || v === 1) && v !== p)) {
+      el.style.setProperty(k, v.toFixed(4))
       return v
     }
-    return prevV
+    return p
   }
 
   function tick(now: number) {
@@ -242,82 +275,104 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     prev = now
     clock += dt
 
-    // scroll amortiguado
+    // el negro se abre: la exposición sube como un amanecer
+    if (introStart >= 0) intro = clamp((now - introStart) / 1900)
+    const introE = intro * intro * (3 - 2 * intro)
+
     const y = scrollY
-    yS += (y - yS) * (1 - Math.exp(-dt * 9))
+    yS += (y - yS) * (1 - Math.exp(-dt * 7))
     if (Math.abs(y - yS) < 0.3) yS = y
     still = Math.abs(y - lastY) > 0.5 ? 0 : still + dt
     lastY = y
 
-    // u: el relato; la deriva en los capítulos cuando nadie se mueve
-    const { u: uT, transit } = uAt(yS)
-    const wantDrift = !opts.reduced && still > 0.9 && !transit && uT < 6.6 ? 0.045 : 0
-    drift += (wantDrift - drift) * (1 - Math.exp(-dt * (wantDrift > drift ? 0.35 : 6)))
-    const target = uT + drift
-    const uPrev = uS
-    uS += (target - uS) * (1 - Math.exp(-dt * 7))
-    const vel = opts.reduced ? 0 : clamp(((uS - uPrev) / Math.max(dt, 1e-3)) / 1.1, -1, 1)
-    frame.vel += (vel - frame.vel) * (1 - Math.exp(-dt * 10))
+    const tT = clamp((yS - reelTop) / sps, 0, DUR)
+    // quieto, la película respira: deriva unas décimas hacia adelante y vuelve al primer movimiento
+    const wantDrift = !opts.reduced && still > 1.2 && tT < DUR - 3 && intro >= 1 ? 0.45 : 0
+    drift += (wantDrift - drift) * (1 - Math.exp(-dt * (wantDrift > drift ? 0.5 : 5)))
+    const tPrev = tS
+    tS = Math.min(DUR, tT + drift)
+    const rate = Math.abs(tS - tPrev) / Math.max(dt, 1e-3) // segundos de película por segundo
+    const vel = opts.reduced ? 0 : clamp((rate - 2.2) / 9) * Math.sign(tS - tPrev || 1)
+    frame.vel += (vel - frame.vel) * (1 - Math.exp(-dt * 8))
 
-    // los tramos: entrada, salida y recorrido
-    let shL = 0, shR = 0, shB = 0, shC = 0
-    for (const t of tracks) {
-      const yy = yS - t.top
-      const span = Math.max(1, t.height - V)
-      const p = clamp(yy / span)
-      const a = t.ch === 0 ? clamp(1 - Math.max(0, -yy) / V) : clamp((yy + V * (t.kind === 'transit' ? 0.5 : 0.14)) / (V * 0.62))
-      let e: number
-      if (t.cards) e = clamp((yy - (t.cardsTop - V * 0.85)) / (V * 0.45))
-      else e = t.kind === 'transit' ? clamp((p - 0.86) / 0.14) : clamp((yy - span + V * 0.05) / (V * 0.5))
-      t.a = setVar(t.el, '--a', a, t.a)
-      t.e = setVar(t.el, '--e', e, t.e)
-      t.p = setVar(t.el, '--p', p, t.p)
-      for (const ln of t.lines) ln.last = setVar(ln.el, '--l', clamp((p - ln.at) / 0.16), ln.last)
-      const vis = a * (1 - e)
-      if (vis > 0) {
-        shL += t.shade[0] * vis
-        shB += t.shade[1] * vis
-        shC += t.shade[2] * vis
-        shR += t.shade[3] * vis
-      }
-    }
-    if (shadeEl) {
-      shadeEl.style.setProperty('--shade-l', Math.min(1, shL).toFixed(3))
-      shadeEl.style.setProperty('--shade-b', Math.min(1, shB).toFixed(3))
-      shadeEl.style.setProperty('--shade-c', Math.min(1, shC).toFixed(3))
-      shadeEl.style.setProperty('--shade-r', Math.min(1, shR).toFixed(3))
-    }
-
-    // el cuadro
-    frame.t = seconds(uS)
-    look(uS, L)
-    vec(FOCUS, uS, fpos)
-    // en pantallas anchas el encuadre es casi el del video; el foco pesa en el teléfono
-    const portrait = W / V < 1
-    frame.focus[0] = portrait ? fpos[0] : 0.5 + (fpos[0] - 0.5) * 0.35
-    frame.focus[1] = portrait ? fpos[1] : 0.5 + (fpos[1] - 0.5) * 0.35
-    frame.zoom = 1.045 + (opts.reduced ? 0 : Math.sin(clock * 0.21) * 0.006) + Math.abs(frame.vel) * 0.03
-    vec(MEDIA, uS, mtmp)
+    const u = toU(tS)
+    frame.t = tS
+    look(u, L)
+    L.exposure *= 0.05 + 0.95 * introE
+    focusAt(u)
+    frame.zoom = 1.045 + (opts.reduced ? 0 : Math.sin(clock * 0.21) * 0.006) + Math.abs(frame.vel) * 0.025
+    vec(MEDIA, u, mtmp)
+    const on = opts.reduced ? 0 : introE
     const m = frame.medium.w
-    const on = opts.reduced ? 0 : 1
-    m[0] = mtmp[0] * on
-    m[1] = mtmp[1] * on
-    m[2] = mtmp[2] * on
-    m[3] = mtmp[3] * on
-    frame.flash = opts.reduced ? 0 : flash(uS) * Math.min(1, Math.abs(frame.vel) * 3 + 0.25)
+    for (let k = 0; k < 4; k++) m[k] = mtmp[k] * on
+    frame.flash = opts.reduced ? 0 : flash(u) * 0.8
     stage!.render(frame, mouse, dt)
-    const hud = (1 - clamp(L.fade * 2.2)).toFixed(3)
+    if (!started && stage!.ready && intro > 0) {
+      started = true
+      html.classList.add('has-stage')
+    }
+    const hud = (introE * (1 - clamp(L.fade * 2.2))).toFixed(3)
     if (hud !== lastHud) {
       html.style.setProperty('--hud', hud)
       lastHud = hud
     }
-    if (!started && stage!.ready) {
-      started = true
-      html.classList.add('has-stage')
+
+    // los rótulos de la película
+    let sl = 0, sb = 0, sc = 0, sr = 0
+    for (const b of beats) {
+      const first = b.t0 <= 0
+      // el primero entra con el amanecer; los demás con su tiempo
+      const a = first ? clamp(intro * 1.6 - 0.35) : clamp((tS - b.t0) / FADE)
+      const e = clamp((tS - (b.t1 - FADE)) / FADE)
+      b.a = setv(b.inner, '--a', a, b.a)
+      b.e = setv(b.inner, '--e', e, b.e)
+      const span = b.t1 - b.t0
+      for (const l of b.lines) {
+        const lt = first ? clamp(intro * 1.7 - 0.45 - l.at * 4) : clamp((tS - b.t0 - l.at * span) / 0.9)
+        l.last = setv(l.el, '--l', lt, l.last)
+      }
+      const vis = a * (1 - e)
+      const visible = vis > 0.001
+      if (visible !== b.on) {
+        b.on = visible
+        b.inner.classList.toggle('is-on', visible)
+        if (visible) b.inner.removeAttribute('inert')
+        else b.inner.setAttribute('inert', '')
+      }
+      if (visible) {
+        sl += b.shade[0] * vis
+        sb += b.shade[1] * vis
+        sc += b.shade[2] * vis
+        sr += b.shade[3] * vis
+      }
+    }
+    if (shadeEl) {
+      shadeEl.style.setProperty('--shade-l', Math.min(1, sl).toFixed(3))
+      shadeEl.style.setProperty('--shade-b', Math.min(1, sb).toFixed(3))
+      shadeEl.style.setProperty('--shade-c', Math.min(1, sc).toFixed(3))
+      shadeEl.style.setProperty('--shade-r', Math.min(1, sr).toFixed(3))
+    }
+
+    // Valeria: la conversación avanza con su tramo
+    if (chatBox && agentes) {
+      const lines = SCRIPT[lang()]
+      const p = clamp((tS - agentes.t0 - 0.4) / (agentes.t1 - agentes.t0 - 1.6))
+      const n = opts.reduced ? lines.length : Math.max(1, Math.min(lines.length, 1 + Math.floor(p * lines.length)))
+      if (n !== lastChat) {
+        lastChat = n
+        chatBox.replaceChildren(
+          ...lines.slice(0, n).map(([who, body]) => {
+            const msg = document.createElement('p')
+            msg.className = `msg ${who === 'cli' ? 'msg--in' : 'msg--out'}`
+            msg.textContent = body
+            return msg
+          }),
+        )
+      }
     }
 
     // telemetría
-    const altM = num(ALT, uS)
+    const altM = num(ALT, u)
     const l = lang()
     const altTxt = formatAlt(altM, l)
     if (altTxt !== lastAlt && altiVal) {
@@ -325,114 +380,102 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
       if (altiLabel) altiLabel.textContent = ALT_WORDS[l][altM < 0 ? 1 : 0]
       lastAlt = altTxt
     }
-    altiBox?.style.setProperty('--tape', `${(-40 - ((uS * 61) % 25)).toFixed(2)}%`)
-    const s = frame.t
-    const tc = `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}:${String(Math.floor((s % 1) * FPS)).padStart(2, '0')}`
-    if (tc !== lastTc && tcTime) {
-      tcTime.textContent = tc
+    altiBox?.style.setProperty('--tape', `${(-40 - ((tS * 6.1) % 25)).toFixed(2)}%`)
+    const tc = `${String(Math.floor(tS / 60)).padStart(2, '0')}:${String(Math.floor(tS % 60)).padStart(2, '0')}:${String(Math.floor((tS % 1) * FPS)).padStart(2, '0')}`
+    if (tc !== lastTc && tcEl) {
+      tcEl.textContent = tc
       lastTc = tc
     }
-    tcBox?.style.setProperty('--prog', (uS / SHOTS).toFixed(4))
-
-    // capítulo actual y su avance en el índice
+    scrub?.style.setProperty('--prog', (tS / DUR).toFixed(4))
     let ch = 0
-    for (const c of chapters) if (uS >= c.f0 - 0.02) ch = c.ch
-    if (ch !== lastCh) {
-      railLinks.forEach((a) => (Number(a.dataset.ch) === ch ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')))
-      lastCh = ch
-    }
-    for (let i = 0; i < railLinks.length; i++) {
-      const c0 = chapters[i]?.f0 ?? 0
-      const c1 = chapters[i + 1]?.f0 ?? SHOTS
-      railLinks[i].style.setProperty('--fill', clamp((uS - c0) / (c1 - c0)).toFixed(3))
+    for (const c of chapters) if (tS >= c.t0 - 0.3) ch = c.ch
+    if (ch !== lastNow) {
+      lastNow = ch
+      ticks.forEach((a) => (Number(a.dataset.ch) === ch ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')))
+      const cur = ticks.find((a) => Number(a.dataset.ch) === ch)
+      if (nowEl && cur) nowEl.textContent = cur.textContent
     }
 
-    // rótulos anclados
-    const wide = W >= 900
+    // rótulos anclados a los sujetos
     for (const c of CALLOUTS) {
-      const el = coEls.get(c.id)
+      const el = c.el
       if (!el) continue
-      const owner = c.track ?? (c.track = chapters.find((t) => c.from >= t.f0 - 0.05 && c.from <= t.f1) ?? null)
-      const o = (c.wide && !wide ? 0 : clamp((uS - c.from) / 0.025) * clamp((c.to - uS) / 0.025)) * (owner ? 1 - clamp(owner.e * 1.6) : 1)
+      const o = (c.wide && W < 900 ? 0 : clamp((u - c.from) / 0.03) * clamp((c.to - u) / 0.03)) * introE
       if (o <= 0.001) {
         if (el.style.getPropertyValue('--o') !== '0') el.style.setProperty('--o', '0')
         continue
       }
-      vec(c.path, uS, coPos)
-      toScreen(coPos[0], coPos[1], coPos)
+      vec(c.path, u, pos)
+      project(pos[0], pos[1], pos)
       if (W < 700) {
-        const side = coPos[0] > W * 0.5 ? -1 : 1
-        if (coSide.get(c.id) !== side) {
-          coSide.set(c.id, side)
+        const side = pos[0] > W * 0.5 ? -1 : 1
+        if (c.side !== side) {
+          c.side = side
           geometry(el, side < 0 ? 205 : -25, 44)
         }
-      } else if (coSide.has(c.id)) {
-        coSide.delete(c.id)
+      } else if (c.side !== 0) {
+        c.side = 0
         geometry(el, c.ang ?? -32, c.len ?? 90)
       }
       el.style.setProperty('--o', o.toFixed(3))
-      el.style.setProperty('--x', `${coPos[0].toFixed(1)}px`)
-      el.style.setProperty('--y', `${coPos[1].toFixed(1)}px`)
+      el.style.setProperty('--x', `${pos[0].toFixed(1)}px`)
+      el.style.setProperty('--y', `${pos[1].toFixed(1)}px`)
     }
     if (berg) {
-      toScreen(0.5, num(WATERLINE, uS), coPos)
-      berg.style.setProperty('--wl', `${((coPos[1] / V) * 100).toFixed(2)}%`)
+      project(0.5, num(WATERLINE, u), pos)
+      berg.style.setProperty('--wl', `${((pos[1] / V) * 100).toFixed(2)}%`)
     }
 
     requestAnimationFrame(tick)
   }
 
-  measure()
   addEventListener('resize', () => requestAnimationFrame(measure))
   new ResizeObserver(() => measure()).observe(document.querySelector('main')!)
   document.fonts?.ready.then(measure)
-  const { u } = uAt(scrollY)
-  uS = u
+  tS = clamp((scrollY - reelTop) / sps, 0, DUR)
   requestAnimationFrame(tick)
 
-  // cifras que cuentan con la entrada de su tramo
-  const counters = [...document.querySelectorAll<HTMLElement>('[data-count]')].map((el) => ({ el, to: Number(el.dataset.count), track: el.closest<HTMLElement>('.track'), shown: -1 }))
+  // cifras que cuentan con la entrada de su rótulo
+  const counters = [...document.querySelectorAll<HTMLElement>('[data-count]')].map((el) => ({ el, to: Number(el.dataset.count), beat: beats.find((b) => b.el.contains(el)), shown: -1 }))
   if (!opts.reduced) {
-    const countLoop = () => {
+    const loop = () => {
       for (const c of counters) {
-        const a = Number(c.track?.style.getPropertyValue('--a') || 1)
-        const v = Math.round(c.to * clamp(a * 1.4 - 0.2))
+        const a = c.beat ? Math.max(0, c.beat.a) : 1
+        const v = Math.round(c.to * clamp(a * 1.25))
         if (v !== c.shown) {
           c.el.textContent = String(v)
           c.shown = v
         }
       }
-      requestAnimationFrame(countLoop)
+      requestAnimationFrame(loop)
     }
-    requestAnimationFrame(countLoop)
+    requestAnimationFrame(loop)
   }
 
   if (new URLSearchParams(location.search).has('qa')) {
     ;(window as Window & { __film?: unknown }).__film = {
-      get u() {
-        return uS
-      },
       get t() {
-        return frame.t
+        return tS
+      },
+      get u() {
+        return toU(tS)
       },
       get ready() {
         return stage!.ready
       },
+      get intro() {
+        return intro
+      },
+      get sps() {
+        return sps
+      },
+      get reelTop() {
+        return reelTop
+      },
       get video() {
-        return { rs: video.readyState, ct: video.currentTime, src: video.currentSrc }
+        return { rs: video.readyState, ct: video.currentTime, src: video.currentSrc, seeking: video.seeking }
       },
       measure,
     }
   }
-}
-
-/** sombra de lectura por capítulo: [izquierda, abajo, centro, derecha] */
-const SHADES: Record<string, [number, number, number, number]> = {
-  inicio: [0.95, 0.75, 0, 0],
-  senal: [0.9, 0.3, 0, 0],
-  superficie: [0, 0.2, 0.75, 0],
-  agentes: [0.9, 0.3, 0, 0],
-  maquina: [0, 0.65, 0, 0.9],
-  trabajo: [0.55, 0.35, 0, 0],
-  hablemos: [1, 0.5, 0, 0],
 }

@@ -3,7 +3,7 @@ import { lang, onLang, type Lang } from './i18n'
 
 type Line = ['cli' | 'bot', string]
 
-const SCRIPT: Record<Lang, Line[]> = {
+export const SCRIPT: Record<Lang, Line[]> = {
   es: [
     ['cli', 'Hola, ¿ustedes hacen agentes para WhatsApp?'],
     ['bot', 'Sí. Lo montamos sobre tu número actual y responde solo, 24/7.'],

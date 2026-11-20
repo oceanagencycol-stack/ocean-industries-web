@@ -1,8 +1,8 @@
 /* ==========================================================================
    OCEAN v4 · la web como una sola toma
-   La película vive detrás de todo (.stage). La página es una línea de tiempo: cada .track define su tramo de película
-   (data-film) y expone su progreso a CSS (--a entrada, --e salida, --p recorrido). Todo lo que entra y sale se dibuja
-   con esas variables: se puede ir hacia atrás y hacia adelante como en un video.
+   Una sola secuencia a pantalla completa. La película vive detrás de todo (.stage) y avanza a velocidad constante con
+   el scroll. Cada .beat es un rótulo de esa película: ocupa su tramo de scroll en el documento (--t0/--t1 × --sps)
+   pero su contenido (.beat__in) está fijo sobre la imagen y entra/sale con --a/--e. Nada sube, nada tapa la imagen.
    ========================================================================== */
 
 @font-face {
@@ -107,37 +107,204 @@ html.nav-light .nav.is-scrolled {
   border-bottom-color: var(--ink-line);
 }
 
-/* ---------- la línea de tiempo ---------- */
+
+
+/* ---------- el preloader ---------- */
+.pre {
+  display: none;
+}
+html.js .pre {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #000;
+  color: var(--snow);
+  pointer-events: none;
+  transition: background-color 1.6s cubic-bezier(0.6, 0, 0.2, 1);
+}
+html.pre-on {
+  overflow: hidden;
+}
+.pre__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.pre__rim,
+.pre__halo {
+  fill: none;
+  stroke-linecap: round;
+}
+.pre__rim {
+  stroke: #cfe7ff;
+  stroke-width: 1.5;
+}
+.pre__halo {
+  stroke: #2f86ff;
+  stroke-width: 9;
+  filter: url(#preGlow);
+  opacity: 0.85;
+}
+.pre__head {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  will-change: transform;
+}
+.pre__sym {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  left: -13px;
+  top: -13px;
+  color: #fff;
+  fill: currentColor;
+  filter: drop-shadow(0 0 10px rgba(140, 200, 255, 0.9)) drop-shadow(0 0 26px rgba(70, 140, 255, 0.6));
+  transition: transform 1.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 1.4s ease;
+}
+.pre__top {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 22px);
+  left: var(--gutter);
+  right: var(--gutter);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--haze);
+}
+.pre__logo {
+  width: 104px;
+  height: auto;
+  color: var(--snow);
+  fill: currentColor;
+}
+.pre__count {
+  position: absolute;
+  left: var(--gutter);
+  top: 14vh;
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  font-family: var(--display);
+  font-size: clamp(110px, 22vw, 380px);
+  line-height: 0.78;
+  /* la cifra gana peso y ancho mientras llega la película */
+  font-weight: calc(120 + var(--k, 0) * 700);
+  font-stretch: calc(62% + var(--k, 0) * 38%);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: #fff;
+  transition: opacity 0.9s ease, transform 1.4s cubic-bezier(0.6, 0, 0.2, 1), filter 1.2s ease;
+}
+.pre__count small {
+  margin-left: 0.06em;
+  font-size: 0.22em;
+  font-weight: 500;
+  font-stretch: 80%;
+  color: var(--mist);
+}
+.pre__status {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: calc(env(safe-area-inset-bottom) + 26px);
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 10px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--haze);
+  transition: opacity 0.8s ease;
+}
+.pre__status b {
+  font-weight: 500;
+  color: var(--mist);
+  font-variant-numeric: tabular-nums;
+}
+/* al 100 %: el negro se abre, la cifra se va, el símbolo se vuelve el sol en el borde; la línea queda sobre el borde real */
+.pre.is-done {
+  background: rgba(0, 0, 0, 0);
+}
+.pre.is-done .pre__count {
+  opacity: 0;
+  transform: translate3d(0, -6vh, 0);
+  filter: blur(14px);
+}
+.pre.is-done .pre__status,
+.pre.is-done .pre__top {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.pre.is-done .pre__sym {
+  transform: scale(3.2);
+  opacity: 0;
+}
+.pre.is-done .pre__svg {
+  opacity: 0;
+  transition: opacity 2.6s ease 0.6s;
+}
+
+/* ---------- la secuencia ---------- */
 .film {
   position: relative;
   z-index: 2;
 }
-html.js .track {
+html.js .reel {
   position: relative;
-  min-height: calc(var(--h, 100) * var(--vh));
+  /* la película entera + una pantalla de luz blanca antes del epílogo */
+  height: calc(67.5 * var(--sps, 560px) + 70lvh);
 }
-.pin {
-  position: relative;
-  min-height: 100svh;
-  display: grid;
-  align-items: center;
-  padding: calc(var(--nav-h) + 24px) var(--gutter) 96px;
+html.js .beat {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--t0) * var(--sps, 560px));
+  height: calc((var(--t1) - var(--t0)) * var(--sps, 560px));
+  /* un ancla lleva al momento en que el rótulo ya está entero */
+  scroll-margin-top: calc(-0.9 * var(--sps, 560px));
   pointer-events: none;
 }
-.pin a,
-.pin button {
+.beat__in {
+  position: relative;
+  padding: calc(var(--nav-h) + 40px) var(--gutter) 120px;
+}
+html.js .beat__in {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  align-content: center;
+  padding: calc(var(--nav-h) + 24px) calc(var(--gutter) + 72px) 110px;
+  visibility: hidden;
+  pointer-events: none;
+}
+html.js .beat__in.is-on {
+  visibility: visible;
+}
+html.js .beat__in.is-on a,
+html.js .beat__in.is-on button {
   pointer-events: auto;
 }
-html.js .pin {
-  position: sticky;
-  top: 0;
-  height: 100svh;
-  min-height: 0;
+.beat__in > * {
+  max-width: 100%;
 }
 
-/* ---------- las letras: cada carácter tiene su azar (--r) y vive de la variable de su línea (--l) ---------- */
-.ln {
+/* ---------- las letras: cada carácter con su azar (--r) vive de la variable de su línea (--l) ---------- */
+.film .ln {
   display: block;
+  overflow: visible;
+  padding-block: 0;
+  margin-block: 0;
 }
 .ch {
   display: inline-block;
@@ -151,45 +318,26 @@ html.js .ch {
   --t: clamp(0, calc((var(--l, 1) - var(--r) * 0.55) / 0.45), 1);
   --x: clamp(0, calc((var(--e, 0) - var(--r) * 0.5) / 0.5), 1);
   opacity: calc(var(--t) * (1 - var(--x)));
-  transform: translate3d(0, calc((1 - var(--t)) * 0.36em - var(--x) * 0.3em), 0);
-  filter: blur(calc((1 - var(--t)) * 9px + var(--x) * 12px));
+  transform: translate3d(0, calc((1 - var(--t)) * 0.32em - var(--x) * 0.26em), 0);
+  filter: blur(calc((1 - var(--t)) * 10px + var(--x) * 12px));
 }
 html.no-motion .ch {
   filter: none !important;
   transform: none !important;
 }
-
-/* lo secundario entra escalonado por su índice (data-k → --k) */
 html.js [data-k] {
   --t: clamp(0, calc(var(--a, 1) * 1.7 - var(--k, 0) * 0.16), 1);
   opacity: calc(var(--t) * (1 - var(--e, 0)));
-  transform: translate3d(0, calc((1 - var(--t)) * 18px - var(--e, 0) * 24px), 0);
-  visibility: visible;
+  transform: translate3d(0, calc((1 - var(--t)) * 16px - var(--e, 0) * 20px), 0);
 }
 
-/* ---------- la v4 reusa nombres de la v3 (.head, .hero, .ln): aquí no traen su caja ni su sombra ---------- */
-.film .head,
-.film .hero {
-  min-height: 0;
-  margin: 0;
-  padding: 0;
-  display: block;
-}
-.film .head::before,
-.film .hero::before {
-  display: none;
-}
-.film .ln {
-  overflow: visible;
-  padding-block: 0;
-  margin-block: 0;
-}
-
-/* ---------- tipografía de la película ---------- */
+/* ---------- tipografía ---------- */
 .kicker {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 14px;
+  margin: 0;
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.24em;
@@ -197,15 +345,15 @@ html.js [data-k] {
   color: var(--mist);
 }
 .kicker__n {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
   font-family: var(--display);
   font-stretch: 70%;
   font-weight: 700;
   font-size: 13px;
   letter-spacing: 0.08em;
   color: var(--white);
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
 }
 .kicker__n::after {
   content: '';
@@ -214,43 +362,36 @@ html.js [data-k] {
   background: currentColor;
   opacity: 0.6;
 }
-
-.hero__title,
-.title {
-  margin: 22px 0 0;
+.film .title,
+.film .hero__title {
+  margin: 20px 0 0;
   font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 0.96;
   color: var(--white);
   text-wrap: balance;
 }
-.hero__title {
-  font-size: clamp(48px, 8.4vw, 148px);
+.film .title {
+  font-size: clamp(40px, 5.6vw, 104px);
 }
-.title {
-  font-size: clamp(42px, 6.2vw, 112px);
-}
-.title--xl {
-  font-size: clamp(56px, 9vw, 168px);
+.film .title--xl {
+  font-size: clamp(54px, 8.4vw, 156px);
 }
 .ln--em {
   color: var(--mist);
 }
 .deck {
-  margin: 28px 0 0;
-  max-width: 46ch;
-  font-size: clamp(16px, 1.25vw, 19px);
+  margin: 24px 0 0;
+  max-width: 44ch;
+  font-size: clamp(15px, 1.2vw, 18px);
   line-height: 1.6;
-  color: var(--mist);
+  color: var(--snow);
 }
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 36px;
-}
-.actions--center {
-  justify-content: center;
+  margin-top: 30px;
 }
 .btn--lg {
   min-height: 56px;
@@ -261,15 +402,48 @@ html.js [data-k] {
   transform: rotate(90deg);
 }
 
-.film .hero {
-  align-self: center;
-  max-width: min(1100px, 100%);
+/* ---------- 00 · el hero: a sangre, el título a todo lo ancho ---------- */
+html.js .beat--hero .beat__in {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: calc(var(--nav-h) + 3vh);
+  padding-bottom: 96px;
+}
+.film .hero__title {
+  margin: 2.2vh 0 0;
+  font-family: var(--display);
+  font-weight: 800;
+  font-stretch: 66%;
+  text-transform: uppercase;
+  letter-spacing: -0.012em;
+  line-height: 0.84;
+  font-size: clamp(60px, 11.2vw, 220px);
+}
+.beat--hero .hero__title .ln--em {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.92);
+}
+.hero__foot {
+  max-width: 560px;
+}
+.hero__foot .deck {
+  margin-top: 0;
+}
+.where {
+  grid-row: 3;
+}
+.beat--hero .hero__foot {
+  grid-row: 3;
+}
+.beat--hero .deck {
+  align-self: end;
 }
 .where {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-top: 40px;
+  margin: 26px 0 0;
   font-size: 11px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
@@ -281,69 +455,39 @@ html.js [data-k] {
   border-radius: 50%;
   background: currentColor;
 }
-.cue {
-  position: absolute;
-  left: 50%;
-  bottom: 28px;
-  transform: translateX(-50%);
-  display: grid;
-  justify-items: center;
-  gap: 10px;
-  font-size: 10px;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: var(--mist);
-  opacity: calc(1 - var(--p, 0) * 6);
-}
-.cue i {
-  width: 1px;
-  height: 44px;
-  background: linear-gradient(var(--mist), transparent);
-  transform-origin: top;
-  animation: cue 2.4s var(--ease) infinite;
-}
-@keyframes cue {
-  0% { transform: scaleY(0); opacity: 1; }
-  60% { transform: scaleY(1); opacity: 1; }
-  100% { transform: scaleY(1); opacity: 0; }
-}
 
-/* cabeceras de capítulo */
-.film .head {
-  max-width: 760px;
+/* posiciones de los rótulos sobre la imagen */
+.beat--left .beat__in {
+  justify-items: start;
 }
-.head--left {
-  justify-self: start;
+.beat--left .beat__in > :not(.phone-ov) {
+  max-width: min(760px, 100%);
 }
-.head--right {
-  justify-self: end;
-  text-align: right;
-}
-.head--right .kicker,
-.head--right .actions {
-  justify-content: flex-end;
-}
-.head--right .deck {
-  margin-left: auto;
-}
-.film .head--center {
-  justify-self: center;
+html.js .beat--center .beat__in {
+  justify-items: center;
   text-align: center;
-  max-width: 980px;
 }
-.head--center .kicker {
+.beat--center .kicker {
   justify-content: center;
 }
-.head--center .deck {
+.beat--center .deck {
   margin-left: auto;
   margin-right: auto;
 }
-.head--low {
-  align-self: end;
+html.js .beat--low .beat__in,
+html.js .beat--berg .beat__in {
+  align-content: end;
 }
-.head--high {
-  align-self: start;
-  margin-top: 4vh;
+html.js .beat--low .beat__in {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: end;
+  gap: 4vw;
+}
+html.js .beat--mega .beat__in {
+  justify-items: center;
+  align-content: center;
+  gap: 2vh;
+  text-align: center;
 }
 
 /* la cifra */
@@ -351,17 +495,16 @@ html.js [data-k] {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 6px 12px;
-  margin-top: 30px;
+  gap: 4px 10px;
+  margin: 26px 0 0;
 }
 .stat b,
 .figs dt {
   font-family: var(--display);
   font-stretch: 64%;
   font-weight: 800;
-  font-size: clamp(56px, 6vw, 96px);
+  font-size: clamp(52px, 5.4vw, 92px);
   line-height: 0.9;
-  letter-spacing: -0.01em;
   color: var(--white);
   font-variant-numeric: tabular-nums;
 }
@@ -369,40 +512,99 @@ html.js [data-k] {
   font-family: var(--display);
   font-stretch: 70%;
   font-weight: 700;
-  font-size: 28px;
+  font-size: 26px;
   color: var(--white);
 }
 .stat em {
   flex-basis: 100%;
   font-style: normal;
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--haze);
+  color: var(--mist);
 }
 .figs {
-  position: absolute;
-  left: var(--gutter);
-  bottom: 96px;
   display: flex;
-  gap: clamp(28px, 5vw, 72px);
-  margin: 0;
+  flex-wrap: wrap;
+  gap: 18px clamp(24px, 4vw, 60px);
+  margin: 28px 0 0;
+}
+.figs dt {
+  font-size: clamp(40px, 4.2vw, 72px);
 }
 .figs dd {
-  margin: 10px 0 0;
-  font-size: 11px;
+  margin: 8px 0 0;
+  font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--mist);
 }
 
-/* ---------- los cruces: la frase gigante ---------- */
-.transit .pin {
-  justify-items: center;
-  align-content: center;
-  gap: 2vh;
-  text-align: center;
+/* ---------- los servicios: rótulos bajos, sin caja ---------- */
+.lts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px clamp(22px, 3vw, 44px);
+  margin-top: 34px;
+  max-width: 860px;
 }
+.lts--row {
+  margin-top: 0;
+  align-self: end;
+}
+.lt {
+  position: relative;
+  padding-top: 16px;
+  border-top: 1px solid rgba(224, 231, 237, 0.28);
+}
+.lt .svc__text {
+  display: grid;
+  gap: 8px;
+}
+.lt .svc__problem {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--mist);
+}
+.lt .svc__name {
+  margin: 0;
+  font-size: clamp(18px, 1.5vw, 22px);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--white);
+}
+.lt .svc__desc {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--snow);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.lt .svc__link {
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+/* Valeria, como un teléfono que flota en la escena */
+.phone-ov {
+  position: absolute;
+  right: calc(var(--gutter) + 92px);
+  top: 50%;
+  width: min(330px, 26vw);
+  transform: translateY(-50%);
+}
+html.js .phone-ov[data-k] {
+  transform: translate3d(0, calc(-50% + (1 - var(--t)) * 24px - var(--e, 0) * 20px), 0);
+}
+.phone-ov .live__chat {
+  box-shadow: 0 50px 120px -30px rgba(0, 0, 0, 0.85);
+}
+
+/* ---------- los cruces: la frase gigante ---------- */
 .mega {
   margin: 0;
   max-width: 16ch;
@@ -438,9 +640,10 @@ html.js [data-k] {
   color: transparent;
   -webkit-text-stroke: 1.5px var(--white);
 }
-.transit--plunge .mega {
+.beat--plunge .mega {
   mix-blend-mode: difference;
 }
+
 
 /* ---------- el iceberg: 10 % / 90 % alrededor de la línea de agua ---------- */
 .berg {
@@ -496,138 +699,56 @@ html.js [data-k] {
   transform: scaleX(var(--a, 0));
   opacity: calc(1 - var(--e, 0));
 }
-.chapter--berg .head .kicker {
-  color: var(--snow);
-}
 
-/* ---------- las tarjetas: el contenido pasa por encima de la película ---------- */
-.cards {
+
+
+
+/* ---------- el epílogo: sobre la misma luz blanca en que termina la película ---------- */
+.epi {
   position: relative;
-  z-index: 3;
+  z-index: 2;
+  color: var(--abyss);
+  padding: 0 var(--gutter) clamp(80px, 10vw, 140px);
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 18px;
-  width: min(620px, 100% - 2 * var(--gutter));
-  margin: 70svh var(--gutter) 0 auto;
-  padding: 0 0 26vh;
+  gap: clamp(96px, 12vw, 180px);
 }
-.cards > * {
-  min-width: 0;
+.epi > * {
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  scroll-margin-top: calc(var(--nav-h) + 24px);
 }
-.cards--wide {
-  width: min(1180px, 100% - 2 * var(--gutter));
-  margin: 70svh auto 0;
-}
-.card,
-.cards > .live,
-.cards > .work {
-  position: relative;
-  padding: clamp(26px, 3vw, 44px);
-  border: 1px solid rgba(224, 231, 237, 0.12);
-  border-radius: var(--r-l);
-  background: linear-gradient(180deg, rgba(4, 9, 16, 0.86), rgba(4, 9, 16, 0.94));
-  box-shadow: 0 40px 120px -40px rgba(0, 0, 0, 0.8);
-}
-.cards > .live,
-.cards > .work {
-  padding: clamp(28px, 4vw, 64px);
-}
-.card .svc__name {
-  margin-top: 14px;
-}
-.card .svc__desc {
-  color: var(--mist);
-}
-.card::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 32px;
-  width: 2px;
-  height: 28px;
-  background: var(--white);
-  border-radius: 2px;
-}
-
-/* ---------- el final en blanco ---------- */
-.whiteout .pin {
-  min-height: 0;
-}
-.snow {
+html:not(.js) .epi,
+html.no-stage .epi {
   background: var(--snow);
-  margin-top: -1px;
+  padding-top: 120px;
 }
-.snow::before {
-  display: none;
+.epi .work__title,
+.epi .reels__title {
+  color: var(--abyss);
+}
+.epi .work__head p,
+.epi .reels__head p,
+.epi .case__place,
+.epi .case dt,
+.epi figcaption {
+  color: var(--slate);
+}
+.epi .case__name,
+.epi .case dd {
+  color: var(--abyss);
+}
+.epi .case,
+.epi .cases {
+  border-color: var(--ink-line);
+}
+.epi .case__link,
+.epi .reels__ig,
+.epi figcaption a {
+  color: var(--abyss);
 }
 
 /* ---------- la telemetría ---------- */
-.rail {
-  position: fixed;
-  z-index: 30;
-  left: var(--gutter);
-  top: 50%;
-  transform: translateY(-50%);
-  display: grid;
-  gap: 4px;
-  opacity: var(--hud, 1);
-  transition: opacity 0.6s var(--ease), color 0.6s var(--ease);
-}
-.rail a {
-  --fill: 0;
-  display: grid;
-  grid-template-columns: 24px 22px auto;
-  align-items: center;
-  gap: 8px;
-  height: 22px;
-  color: var(--haze);
-  text-decoration: none;
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-}
-.rail i {
-  position: relative;
-  height: 1px;
-  background: rgba(178, 192, 204, 0.28);
-  overflow: hidden;
-}
-.rail i::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--white);
-  transform-origin: left;
-  transform: scaleX(var(--fill));
-}
-.rail__n {
-  font-family: var(--display);
-  font-stretch: 70%;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-}
-.rail__t {
-  opacity: 0;
-  transform: translateX(-6px);
-  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
-}
-.rail a[aria-current='true'] {
-  color: var(--white);
-}
-.rail a[aria-current='true'] .rail__t {
-  opacity: 1;
-  transform: none;
-}
-@media (hover: hover) {
-  .rail:hover .rail__t {
-    opacity: 1;
-    transform: none;
-  }
-  .rail a:hover {
-    color: var(--white);
-  }
-}
-
 .alti {
   position: fixed;
   z-index: 30;
@@ -689,37 +810,31 @@ html.js [data-k] {
   transform: translate3d(0, var(--tape, -40%), 0);
 }
 
-.tc {
+
+
+.scrub {
   position: fixed;
   z-index: 30;
   left: var(--gutter);
   right: var(--gutter);
-  bottom: 22px;
+  bottom: 20px;
   display: grid;
   grid-template-columns: auto auto 1fr auto;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
   font-size: 10px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--haze);
   opacity: var(--hud, 1);
   transition: opacity 0.6s var(--ease);
+}
+html.nav-light .scrub,
+html.nav-light .alti {
+  opacity: 0;
   pointer-events: none;
 }
-.tc__rec {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--mist);
-}
-.tc__rec i {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--white);
-}
-.tc__time {
+.scrub__tc {
   font-family: var(--display);
   font-stretch: 70%;
   font-weight: 600;
@@ -727,17 +842,70 @@ html.js [data-k] {
   color: var(--snow);
   font-variant-numeric: tabular-nums;
 }
-.tc__bar {
-  position: relative;
-  height: 1px;
-  background: rgba(178, 192, 204, 0.2);
+.scrub__now {
+  min-width: 9ch;
+  color: var(--white);
 }
-.tc__bar i {
+.scrub__track {
+  position: relative;
+  height: 22px;
+}
+.scrub__track::before,
+.scrub__fill {
+  content: '';
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(178, 192, 204, 0.22);
+}
+.scrub__fill {
   background: var(--white);
   transform-origin: left;
   transform: scaleX(var(--prog, 0));
+}
+.scrub__track a {
+  position: absolute;
+  left: calc(var(--at, 0) * 100%);
+  top: 0;
+  width: 22px;
+  height: 22px;
+  margin-left: -11px;
+  display: grid;
+  place-items: center;
+  color: var(--haze);
+  text-decoration: none;
+}
+.scrub__track a::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.scrub__track a span {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translate(-50%, 4px);
+  white-space: nowrap;
+  opacity: 0;
+  color: var(--white);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+  pointer-events: none;
+}
+.scrub__track a[aria-current='true'] {
+  color: var(--white);
+}
+@media (hover: hover) {
+  .scrub__track a:hover span {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+.scrub__track a:focus-visible span {
+  opacity: 1;
 }
 
 /* ---------- rótulos anclados a la película ---------- */
@@ -797,28 +965,33 @@ html.js [data-k] {
   color: var(--white);
 }
 
-/* el final: la telemetría se esconde sobre la nieve */
-html.nav-light .rail,
-html.nav-light .alti,
-html.nav-light .tc {
-  opacity: 0;
-  pointer-events: none;
-}
 
 /* ---------- teléfono ---------- */
 @media (max-width: 900px) {
-  .rail,
-  .tc__hint,
-  .tc__rec {
-    display: none;
+  html.js .beat__in {
+    align-content: end;
+    padding: calc(var(--nav-h) + 16px) var(--gutter) 96px;
   }
-  .tc {
-    grid-template-columns: auto 1fr;
-    bottom: 14px;
+  html.js .beat--mega .beat__in {
+    align-content: center;
+  }
+  html.js .beat--center .beat__in {
+    text-align: left;
+    justify-items: start;
+  }
+  .beat--center .kicker {
+    justify-content: flex-start;
+  }
+  html.js .beat--low .beat__in {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+  .phone-ov {
+    display: none;
   }
   .alti {
     top: auto;
-    bottom: 34px;
+    bottom: 46px;
     transform: none;
     grid-template-columns: auto auto;
     align-items: baseline;
@@ -828,83 +1001,52 @@ html.nav-light .tc {
     display: none;
   }
   .alti__val {
-    font-size: 16px;
+    font-size: 15px;
   }
-  .pin {
-    align-items: end;
-    padding-bottom: 118px;
+  .scrub {
+    grid-template-columns: auto 1fr;
+    bottom: 16px;
   }
-  .film .hero {
-    align-self: end;
+  .scrub__now,
+  .scrub__hint {
+    display: none;
   }
-  .where {
-    margin-top: 26px;
+  .lts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    margin-top: 22px;
   }
-  .head,
-  .head--right,
-  .head--center {
-    justify-self: stretch;
-    text-align: left;
+  .lt .svc__desc {
+    -webkit-line-clamp: 2;
   }
-  .head--right .kicker,
-  .head--center .kicker,
-  .actions--center {
-    justify-content: flex-start;
+  .lts--row .lt:nth-child(2) .svc__desc,
+  .lt .svc__problem {
+    display: none;
   }
-  .head--right .deck,
-  .head--center .deck {
-    margin-left: 0;
-  }
-  .head--high {
-    align-self: start;
-    margin-top: 2vh;
-  }
-  .figs {
-    position: static;
-    margin-top: 28px;
-    gap: 22px;
-  }
-  .chapter--maquina .pin {
-    align-content: end;
-  }
-  .cards,
-  .cards--wide {
-    width: calc(100% - 2 * var(--gutter));
-    margin: 60svh auto 0;
-  }
-  .co__label {
-    font-size: 10px;
-    letter-spacing: 0.1em;
+  .film .hero__title {
+    font-size: clamp(52px, 15.5vw, 96px);
   }
   .berg p {
     left: var(--gutter);
     right: var(--gutter);
   }
-  .chapter--berg .head {
+  .beat--berg .low__l .lts {
     display: none;
   }
-}
-
-@media (max-width: 1080px) {
-  .rail {
-    display: none;
+  .co__label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
   }
 }
-
-/* ---------- pantallas muy angostas (320–380 px) ---------- */
 @media (max-width: 400px) {
   .kicker {
-    flex-wrap: wrap;
     letter-spacing: 0.18em;
   }
   .figs {
     gap: 14px;
   }
   .figs dt {
-    font-size: 44px;
-  }
-  .figs dd {
-    letter-spacing: 0.12em;
+    font-size: 40px;
   }
   .mega {
     max-width: 100%;
