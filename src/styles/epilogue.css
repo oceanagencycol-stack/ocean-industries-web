@@ -171,7 +171,23 @@ body .footer {
   padding-bottom: clamp(24px, 3vw, 48px);
   border-bottom: 1px solid var(--line-2);
 }
-.footer .footer__logo { width: min(42%, 465px); }
+/* La firma completa: isotipo y logotipo en metal claro; una franja de luz los cruza cuando el pie entra (brand.ts)
+   y otra vez al pasar el puntero. El isotipo mide 1,25 veces la altura del logotipo. */
+.footer { --lw: min(36vw, 465px); }
+.footer__lockup { display: flex; align-items: center; gap: calc(var(--lw) * 0.07); min-width: 0; }
+.footer .footer__logo { display: block; width: var(--lw); height: auto; }
+.footer .footer__mark { display: block; flex: none; width: calc(var(--lw) * 0.287); height: auto; }
+.steel__sheen { transform: translateX(0); }
+.footer.is-lit .steel__sheen { animation: steel-sheen 2.4s cubic-bezier(.45, 0, .2, 1) both; }
+.footer.is-lit .footer__logo .steel__sheen { animation-delay: .16s; }
+@media (hover: hover) {
+  .footer .footer__brand:hover .steel__sheen { animation: steel-sheen-again 1.5s cubic-bezier(.45, 0, .2, 1) both; }
+  .footer .footer__brand:hover .footer__logo .steel__sheen { animation-delay: .1s; }
+}
+@keyframes steel-sheen { from { transform: translateX(0); } to { transform: translateX(165%); } }
+@keyframes steel-sheen-again { from { transform: translateX(0); } to { transform: translateX(165%); } }
+html.no-motion .steel__sheen { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .steel__sheen { animation: none !important; } }
 .footer__return { display: inline-flex; align-items: center; gap: 14px; font-size: 14px; }
 .footer__return > span:last-child { display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--line-2); border-radius: 50%; }
 .footer__label { color: var(--mist); margin-bottom: 8px; }
@@ -194,6 +210,6 @@ body .footer {
   .footer .footer__cols { grid-template-columns: 1fr 1fr; gap: 20px 12px; }
   .footer .footer__tools { grid-column: 1 / -1; }
   .footer__return { gap: 7px; font-size: 12px; }
-  .footer .footer__logo { width: 45%; }
+  .footer { --lw: 36vw; }
   .footer .footer__legal { padding-bottom: 36px; }
 }

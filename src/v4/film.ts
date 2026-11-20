@@ -47,6 +47,8 @@ interface Beat {
   scrims: number[]
   /** fuerza de esa luz de lectura (data-scrim, 1 por defecto) */
   scrimK: number
+  /** segundos de película que tarda en entrar (data-fade; el sello se arma más despacio) */
+  fade: number
   a: number
   e: number
   on: boolean
@@ -163,6 +165,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
       shade: (el.dataset.shade ?? '0,0,0,0').split(',').map(Number),
       scrims: [],
       scrimK: Number(el.dataset.scrim ?? 1),
+      fade: Number(el.dataset.fade ?? FADE),
       a: -1,
       e: -1,
       on: true,
@@ -579,7 +582,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
       if (!b.on && (tS < b.t0 - .28 || tS > b.t1 + .28)) continue
       const first = b.t0 <= 0
       // el primero entra con el amanecer; los demás con su tiempo
-      const a = first ? clamp(intro * 1.6 - 0.35) : clamp((tS - b.t0 + .28) / FADE)
+      const a = first ? clamp(intro * 1.6 - 0.35) : clamp((tS - b.t0 + .28) / b.fade)
       const e = clamp((tS - (b.t1 + .28 - FADE)) / FADE)
       b.a = setv(b.inner, '--a', a, b.a)
       b.e = setv(b.inner, '--e', e, b.e)

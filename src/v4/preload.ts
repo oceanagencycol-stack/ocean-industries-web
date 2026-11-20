@@ -21,6 +21,41 @@ async function writeWord(root: HTMLElement, speed: number): Promise<void> {
   root.classList.add('pre--signed')
 }
 
+/**
+ * El isotipo se arma antes de la firma: una estrella de luz se abre en el negro y las dos mitades giran juntas alrededor
+ * de ella (un remolino: la estrella fluida) hasta cerrarse en su forma exacta. Solo transforma el maestro; no lo redibuja.
+ */
+function assembleMark(root: HTMLElement, speed: number): Promise<unknown> {
+  const mark = root.querySelector<SVGSVGElement>('.pre__mark')
+  if (!mark) return Promise.resolve()
+  const ms = (t: number) => t / speed
+  const runs: Animation[] = []
+  const glow = mark.querySelector('.pre__glow')
+  const star = mark.querySelector('.pre__star')
+  if (glow) runs.push(glow.animate([
+    { opacity: 0, transform: 'scale(.2)' },
+    { opacity: 1, transform: 'scale(1)', offset: .22 },
+    { opacity: .55, transform: 'scale(1.1)', offset: .55 },
+    { opacity: 0, transform: 'scale(1.4)' },
+  ], { duration: ms(1500), easing: 'cubic-bezier(.3,0,.2,1)', fill: 'both' }))
+  if (star) runs.push(star.animate([
+    { opacity: 0, transform: 'scale(.15) rotate(-35deg)' },
+    { opacity: 1, transform: 'scale(1.05) rotate(0deg)', offset: .3 },
+    { opacity: 1, transform: 'scale(.9) rotate(0deg)', offset: .55 },
+    { opacity: 0, transform: 'scale(.55) rotate(0deg)' },
+  ], { duration: ms(1350), easing: 'cubic-bezier(.3,0,.2,1)', fill: 'both' }))
+  // las dos corrientes llegan desde lados opuestos (la simetría se conserva: una es la otra girada 180°)
+  for (const half of mark.querySelectorAll<SVGElement>('.pre__mark__half')) {
+    const s = half.classList.contains('pre__mark__half--a') ? -1 : 1
+    runs.push(half.animate([
+      { opacity: 0, transform: `translate(${s * 210}px, ${s * 150}px) rotate(-75deg) scale(1.12)` },
+      { opacity: 1, offset: .32 },
+      { opacity: 1, transform: 'translate(0, 0) rotate(0deg) scale(1)' },
+    ], { delay: ms(260), duration: ms(1080), easing: 'cubic-bezier(.16,1,.3,1)', fill: 'both' }))
+  }
+  return Promise.allSettled(runs.map(a => a.finished))
+}
+
 export type Project = (vx: number, vy: number, out: [number, number]) => [number, number]
 
 export interface Preload {
@@ -111,7 +146,12 @@ export function preload(src: string, project: Project, opts: { reduced: boolean;
     root.classList.add('pre--writing')
     addEventListener('resize', geometry)
   }
-  const signature = opts.reduced ? Promise.resolve() : writeWord(root, opts.quick ? 3.5 : 1)
+  // el isotipo se arma y, cuando sus mitades ya giran, el logotipo empieza a escribirse
+  const speed = opts.quick ? 3.5 : 1
+  const signature = opts.reduced ? Promise.resolve() : Promise.all([
+    assembleMark(root, speed),
+    new Promise(resolve => setTimeout(resolve, 640 / speed)).then(() => writeWord(root, speed)),
+  ])
   Promise.all([opts.decoded, signature]).then(() => {
     removeEventListener('resize', geometry)
     if (!root.isConnected) { resolveOpened(); return }
@@ -128,6 +168,11 @@ export function preload(src: string, project: Project, opts: { reduced: boolean;
     const move = brand.animate(opts.reduced ? [{ opacity: 1 }, { opacity: 0 }] :
       [{ transform: 'none' }, { transform: destination() }], {
       duration, easing: 'cubic-bezier(.45,0,.16,1)', fill: 'forwards',
+    })
+    // el logotipo sube a la barra; el isotipo se recoge en su propio giro y se apaga
+    const mark = root.querySelector<SVGSVGElement>('.pre__mark')
+    mark?.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: opts.reduced ? 'none' : 'scale(.8) rotate(35deg)' }], {
+      duration: duration * 0.75, easing: 'cubic-bezier(.45,0,.16,1)', fill: 'forwards',
     })
     // On rotation the header moves. Finish the handoff at the live header position.
     const finish = () => {

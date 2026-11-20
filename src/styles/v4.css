@@ -162,6 +162,24 @@ html.pre-on .nav__logo { visibility: hidden; }
 .pre.is-done .pre__svg { opacity: 0; }
 .pre--quick::before { transition-duration: .2s; }
 .pre--quick .pre__track, .pre--quick .pre__svg { display: none; }
+/* El isotipo de la apertura: sobre el logotipo, sin moverlo del centro; sus partes giran alrededor de su propio
+   centro (--o, medido en el build desde el maestro). Ocultas hasta que preload.ts las anima. */
+.pre__mark {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + clamp(22px, 3.4vw, 48px));
+  width: clamp(72px, 29%, 150px);
+  height: auto;
+  margin-inline: auto;
+  overflow: visible;
+  color: var(--snow);
+}
+.pre__mark__half, .pre__star, .pre__glow { transform-box: view-box; transform-origin: var(--o); }
+html.js .pre:not(.pre--still) .pre__mark__half,
+html.js .pre:not(.pre--still) .pre__star,
+html.js .pre:not(.pre--still) .pre__glow { opacity: 0; }
+.pre--still .pre__star, .pre--still .pre__glow { display: none; }
 
 /* ---------- la secuencia ---------- */
 .film {
@@ -1081,3 +1099,36 @@ html.js:not(.no-stage) .is-tight .berg__low b { margin-bottom: 0; }
     overflow: hidden;
   }
 }
+
+/* ---------- el sello: en la luz blanca de la cumbre, el isotipo se arma con el scroll (la marca, en lo más alto) ---------- */
+html.js .beat--seal .beat__in {
+  justify-items: center;
+  align-content: center;
+  text-align: center;
+  color: var(--abyss);
+}
+.seal__mark {
+  display: block;
+  width: clamp(88px, 12vw, 176px);
+  height: auto;
+  overflow: visible;
+}
+.seal__mark__half { transform-box: view-box; transform-origin: var(--o); }
+html.js .seal__mark__half {
+  opacity: calc(var(--a, 1) * (1 - var(--e, 0)));
+  transform: rotate(calc((1 - var(--a, 1)) * -150deg + var(--e, 0) * 30deg)) scale(calc(1 + (1 - var(--a, 1)) * 0.4));
+}
+html.no-motion .seal__mark__half { transform: none; }
+.seal__word { margin: clamp(22px, 3.4vh, 38px) 0 0; }
+.seal__logo { display: block; width: clamp(150px, 17vw, 250px); height: auto; }
+.seal__line {
+  margin: 16px 0 0;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+/* sin WebGL el sello va sobre la noche quieta: la marca en nieve */
+html.no-stage .beat--seal .beat__in { color: var(--snow); }
+html.no-stage .beat--seal .seal__line { color: var(--mist); }

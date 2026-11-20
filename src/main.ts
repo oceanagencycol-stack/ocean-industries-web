@@ -21,6 +21,7 @@ import { initPay } from './ui/pay'
 import { initReels } from './ui/reels'
 import { initBooking } from './ui/booking'
 import { initAnalytics } from './ui/analytics'
+import { initBrand } from './ui/brand'
 import { initChrome } from './v3/chrome'
 import { initSound } from './v3/sound-gate'
 import { initReveal } from './v3/reveal'
@@ -42,6 +43,7 @@ initReels()
 initBooking()
 initChat()
 initAnalytics()
+initBrand()
 initSound()
 initReveal()
 initFilm({ reduced, lite })

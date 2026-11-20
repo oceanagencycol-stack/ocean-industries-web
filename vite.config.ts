@@ -43,6 +43,68 @@ function brandInline(file: string, cls: string): string {
     .replace(/\n\s*/g, '')
 }
 
+/**
+ * El isotipo en sus dos mitades, tal cual el maestro simétrico: cada mitad es uno de sus dos subtrazados (la otra
+ * girada 180°). `--o` es el centro de giro medido desde el viewBox, para animar las mitades sin redibujarlas.
+ * `extra` va detrás de las mitades (la estrella de luz de la apertura).
+ */
+function symbolParts(cls: string, extra: (cx: number, cy: number) => string = () => ''): string {
+  const svg = readFileSync(resolve(ROOT, 'marca/v3', BRAND.SIMBOLO), 'utf8')
+  const viewBox = svg.match(/viewBox="([^"]+)"/)?.[1]
+  const d = svg.match(/ d="([^"]+)"/)?.[1]
+  const halves = d?.match(/M[^M]+/g)
+  if (!viewBox || !d || halves?.length !== 2) throw new Error('[ocean-brand] el isotipo debe tener dos mitades')
+  const nums = d.match(/-?\d+(?:\.\d+)?/g)!.map(Number)
+  const xs = nums.filter((_, i) => i % 2 === 0), ys = nums.filter((_, i) => i % 2 === 1)
+  const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2
+  const [x0, y0] = viewBox.split(/\s+/).map(Number)
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" class="${cls}" aria-hidden="true" focusable="false" ` +
+    `style="--o:${(cx - x0).toFixed(2)}px ${(cy - y0).toFixed(2)}px">` + extra(cx, cy) +
+    halves.map((h, i) => `<path class="${cls}__half ${cls}__half--${i ? 'b' : 'a'}" fill="currentColor" d="${h.trim()}"/>`).join('') +
+    '</svg>'
+}
+
+/**
+ * La estrella de luz que abre la marca: un destello de cuatro puntas finas en el centro del isotipo. Al cerrarse las
+ * mitades se recoge a 0,55 y cabe en su hueco (medido desde el centro: ±215 de ancho, ±146 de alto).
+ */
+function openingStar(cx: number, cy: number): string {
+  const R = 250, V = 186, k = 0.9
+  const q = (ax: number, ay: number, bx: number, by: number) =>
+    `Q${(cx + (ax + bx) * (1 - k) * 0.5).toFixed(1)} ${(cy + (ay + by) * (1 - k) * 0.5).toFixed(1)} ${(cx + bx).toFixed(1)} ${(cy + by).toFixed(1)}`
+  const star = `M${cx + R} ${cy}` + q(R, 0, 0, -V) + q(0, -V, -R, 0) + q(-R, 0, 0, V) + q(0, V, R, 0) + 'Z'
+  return '<defs><radialGradient id="pre-glow"><stop offset="0" stop-color="#fff" stop-opacity=".85"/>' +
+    '<stop offset=".35" stop-color="#E0E7ED" stop-opacity=".28"/><stop offset="1" stop-color="#E0E7ED" stop-opacity="0"/></radialGradient></defs>' +
+    `<circle class="pre__glow" cx="${cx}" cy="${cy}" r="230" fill="url(#pre-glow)"/>` +
+    `<path class="pre__star" fill="#fff" d="${star}"/>`
+}
+
+/**
+ * La marca con material: metal claro de arriba a abajo (nieve → niebla, la gama de la casa) y una franja de luz que la
+ * cruza, recortada por la propia silueta (máscara). Mismo maestro, mismos trazos; ids únicos por clase.
+ */
+function steel(file: string, cls: string): string {
+  const src = readFileSync(resolve(ROOT, 'marca/v3', file), 'utf8').trim()
+  const viewBox = src.match(/viewBox="([^"]+)"/)?.[1]
+  if (!viewBox) throw new Error(`[ocean-brand] ${file} sin viewBox`)
+  const [x, y, w, h] = viewBox.split(/\s+/).map(Number)
+  const inner = src.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '').replace(/<title>[^<]*<\/title>/, '').replace(/\n\s*/g, '')
+  if (!inner.includes('currentColor')) throw new Error(`[ocean-brand] ${file} sin currentColor`)
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" class="${cls} steel" aria-hidden="true" focusable="false">` +
+    '<defs>' +
+    `<linearGradient id="${cls}-steel" gradientUnits="userSpaceOnUse" x1="0" y1="${y}" x2="0" y2="${y + h}">` +
+    '<stop offset="0" stop-color="#FFFFFF"/><stop offset=".44" stop-color="#E0E7ED"/><stop offset=".56" stop-color="#B2C0CC"/>' +
+    '<stop offset="1" stop-color="#D7DEE5"/></linearGradient>' +
+    `<linearGradient id="${cls}-band" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/>` +
+    '<stop offset=".5" stop-color="#fff" stop-opacity=".92"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>' +
+    `<mask id="${cls}-ink" maskUnits="userSpaceOnUse" x="${x}" y="${y}" width="${w}" height="${h}">${inner.replaceAll('currentColor', 'white')}</mask>` +
+    '</defs>' +
+    inner.replaceAll('currentColor', `url(#${cls}-steel)`) +
+    `<g mask="url(#${cls}-ink)"><g class="steel__sheen"><rect x="${(x - w * 0.34).toFixed(2)}" y="${y - h}" width="${(w * 0.2).toFixed(2)}" ` +
+    `height="${h * 3}" fill="url(#${cls}-band)" transform="rotate(18 ${(x - w * 0.24).toFixed(2)} ${(y + h / 2).toFixed(2)})"/></g></g>` +
+    '</svg>'
+}
+
 /** Los siete ejes del maestro revelan la tinta del logo sin modificar su silueta. */
 function signatureLogo(): string {
   const source = readFileSync(resolve(ROOT, 'marca/v3/logo-trazos.svg'), 'utf8')
@@ -100,6 +162,9 @@ function oceanBrand(): Plugin {
         .replace('<meta charset="utf-8" />', `<meta charset="utf-8" />\n    <meta name="ocean-build" content="${BUILD_ID}" />`)
         .replaceAll('__SITE_URL__', SITE_URL)
         .replace('<!--LOGO:pre__logo-->', signatureLogo)
+        .replace('<!--SIMBOLO_APERTURA:pre__mark-->', () => symbolParts('pre__mark', openingStar))
+        .replace(/<!--SIMBOLO_PARTES:([\w-]+)-->/g, (_m, cls: string) => symbolParts(cls))
+        .replace(/<!--(LOGO_R|SIMBOLO)_METAL:([\w-]+)-->/g, (_m, k: 'LOGO_R' | 'SIMBOLO', cls: string) => steel(BRAND[k], cls))
         .replace(/<!--(LOGO_R|LOGO|SIMBOLO):([\w-]+)-->/g, (_m, k: keyof typeof BRAND, cls: string) => brandInline(BRAND[k], cls))
         .replace(/<!--PLACA:([\w]+)(:first)?-->/g, (_m, name: string, first?: string) => plate(name, !!first))
         .replaceAll('<!--DEMO_TOGGLE-->', DEMO_TOGGLE)
