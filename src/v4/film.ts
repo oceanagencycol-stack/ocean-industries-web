@@ -170,7 +170,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
 
   /** del video a la pantalla con el encuadre actual (el mismo cálculo del shader) */
   function project(vx: number, vy: number, out: [number, number]): [number, number] {
-    const vidA = 1928 / 1072
+    const vidA = video!.videoWidth ? video!.videoWidth / video!.videoHeight : sd ? 1024 / 570 : 1600 / 890
     const sa = W / V
     let sx = 1, sy = 1
     if (sa > vidA) sy = vidA / sa
@@ -254,11 +254,11 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   const mtmp: [number, number, number, number] = [0, 0, 0, 0]
 
   // ---- el reloj ----
-  let yS = scrollY
+
   let tS = 0
-  let drift = 0
-  let lastY = scrollY
-  let still = 0
+
+
+
   let prev = performance.now()
   let clock = 0
   let started = false
@@ -271,7 +271,8 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   }
 
   function tick(now: number) {
-    const dt = Math.min(0.05, (now - prev) / 1000)
+    const elapsed = (now - prev) / 1000
+    const dt = Math.min(0.05, elapsed)
     prev = now
     clock += dt
 
@@ -280,33 +281,24 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     const introE = intro * intro * (3 - 2 * intro)
 
     const y = scrollY
-    yS += (y - yS) * (1 - Math.exp(-dt * 7))
-    if (Math.abs(y - yS) < 0.3) yS = y
-    still = Math.abs(y - lastY) > 0.5 ? 0 : still + dt
-    lastY = y
-
-    const tT = clamp((yS - reelTop) / sps, 0, DUR)
-    // quieto, la película respira: deriva unas décimas hacia adelante y vuelve al primer movimiento
-    const wantDrift = !opts.reduced && still > 1.2 && tT < DUR - 3 && intro >= 1 ? 0.45 : 0
-    drift += (wantDrift - drift) * (1 - Math.exp(-dt * (wantDrift > drift ? 0.5 : 5)))
     const tPrev = tS
-    tS = Math.min(DUR, tT + drift)
-    const rate = Math.abs(tS - tPrev) / Math.max(dt, 1e-3) // segundos de película por segundo
-    const vel = opts.reduced ? 0 : clamp((rate - 2.2) / 9) * Math.sign(tS - tPrev || 1)
-    frame.vel += (vel - frame.vel) * (1 - Math.exp(-dt * 8))
+    tS = clamp((y - reelTop) / sps, 0, DUR)
+    const rate = Math.abs(tS - tPrev) / Math.max(elapsed, 0.001)
+    const speed = opts.reduced ? 0 : clamp((rate - 3) / 12) * Math.sign(tS - tPrev)
+    frame.vel += (speed - frame.vel) * (1 - Math.exp(-dt * 8))
 
     const u = toU(tS)
     frame.t = tS
     look(u, L)
     L.exposure *= 0.05 + 0.95 * introE
     focusAt(u)
-    frame.zoom = 1.045 + (opts.reduced ? 0 : Math.sin(clock * 0.21) * 0.006) + Math.abs(frame.vel) * 0.025
+    frame.zoom = 1.045 + (opts.reduced ? 0 : Math.sin(clock * 0.21) * 0.003 * clamp(tS / 2)) + Math.abs(frame.vel) * 0.025
     vec(MEDIA, u, mtmp)
     const on = opts.reduced ? 0 : introE
     const m = frame.medium.w
     for (let k = 0; k < 4; k++) m[k] = mtmp[k] * on
     frame.flash = opts.reduced ? 0 : flash(u) * 0.8
-    stage!.render(frame, mouse, dt)
+    if (y <= reelTop + DUR * sps + V || !started) stage!.render(frame, mouse, dt)
     if (!started && stage!.ready && intro > 0) {
       started = true
       html.classList.add('has-stage')

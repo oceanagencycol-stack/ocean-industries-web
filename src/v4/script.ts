@@ -121,14 +121,18 @@ export const WATERLINE: Key<number>[] = [
 // ---------- interpolación (sin asignar memoria en el loop) ----------
 const ease = (x: number) => x * x * (3 - 2 * x)
 
-function seg<T>(keys: Key<T>[], u: number): [number, number, number] {
-  if (u <= keys[0][0]) return [0, 0, 0]
+const span: [number, number, number] = [0, 0, 0]
+function seg<T>(keys: Key<T>[], u: number) {
+
   const n = keys.length - 1
-  if (u >= keys[n][0]) return [n, n, 0]
+
   let i = 0
   while (i < n && keys[i + 1][0] < u) i++
   const a = keys[i][0], b = keys[i + 1][0]
-  return [i, i + 1, ease((u - a) / (b - a))]
+  span[0] = i
+  span[1] = i + 1
+  span[2] = ease(Math.max(0, Math.min(1, (u - a) / (b - a))))
+  return span
 }
 
 export function num(keys: Key<number>[], u: number): number {
@@ -168,8 +172,13 @@ export function flash(u: number): number {
 /** la lectura del instrumento: km arriba de 10 km, m abajo; con el signo tipográfico de menos */
 export function formatAlt(m: number, lang: string): string {
   const sep = lang === 'en' ? ',' : '.'
-  const group = (n: number) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, sep)
-  if (m >= 10000) return `${group(m / 1000)} km`
+
+  if (m >= 10000) return `${group(m / 1000, sep)} km`
   if (Math.abs(m) < 0.5) return '0 m'
-  return `${m < 0 ? '−' : ''}${group(Math.abs(m))} m`
+  return `${m < 0 ? '−' : ''}${group(Math.abs(m), sep)} m`
+}
+
+function group(n: number, sep: string) {
+  const v = Math.round(n)
+  return v < 1000 ? String(v) : Math.floor(v / 1000) + sep + String(v % 1000).padStart(3, '0')
 }

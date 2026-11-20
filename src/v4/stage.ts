@@ -66,14 +66,14 @@ void main(){
   vec2 ctr = cover(vec2(0.5, 0.5));
   float v = clamp(abs(uVel), 0., 1.);
   // desenfoque radial: la cámara corre hacia (o se aleja de) el centro
-  vec2 dir = (uv - ctr) * (0.085 * v) * sign(uVel + 1e-4);
+  vec2 dir = (uv - ctr) * (0.027 * v) * sign(uVel + 1e-4);
   vec3 col;
   if (v < 0.012) {
     col = texture(uTex, uv).rgb;
   } else {
     vec3 acc = vec3(0.); float wsum = 0.;
-    for (int i = 0; i < 12; i++){
-      float k = float(i)/11.;
+    for (int i = 0; i < 5; i++){
+      float k = float(i)/4.;
       float w = 1. - k*0.65;
       acc += texture(uTex, uv - dir*k).rgb * w;
       wsum += w;
@@ -82,7 +82,7 @@ void main(){
   }
   // aberración cromática solo en los bordes y solo cuando hay movimiento
   vec2 e = (vUv - 0.5);
-  float ca = dot(e,e) * (0.004 + 0.018*v);
+  float ca = dot(e,e) * (0.004*v);
   col.r = mix(col.r, texture(uTex, uv + e*ca).r, 0.85);
   col.b = mix(col.b, texture(uTex, uv - e*ca).b, 0.85);
   // brillo suave: lo que pasa de 0.72 se abre un poco
@@ -262,7 +262,11 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
 
   let vidW = 16, vidH = 9
   let hasFrame = false
-  let dirty = false
+  let uploaded = -1
+  let requested = 0
+  let quality = 1
+  let slow = 0
+  let lastRender = 0
   let seeking = false
   let want = 0
   let ready = 0
@@ -272,7 +276,8 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
 
   const upload = (src: TexImageSource, w: number, h: number) => {
     gl.bindTexture(gl.TEXTURE_2D, tex)
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src)
+    if (hasFrame && vidW === w && vidH === h) gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, src)
+    else gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src)
     vidW = w
     vidH = h
     hasFrame = true
@@ -285,31 +290,36 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
     else poster.addEventListener('load', usePoster, { once: true })
   }
 
-  const onSeeked = () => {
+  // Consume the completed decode before starting another seek. Setting currentTime
+  // first invalidates HAVE_CURRENT_DATA, which can leave the texture on the poster.
+  function publish() {
+    if (video.readyState < 2 || !video.videoWidth || video.seeking) return
+    if (uploaded !== requested) {
+      upload(video, video.videoWidth, video.videoHeight)
+      uploaded = requested
+    }
+  }
+  function onSeeked() {
     seeking = false
-    dirty = true
+    publish()
+    seek()
   }
   video.addEventListener('seeked', onSeeked)
-  video.addEventListener('loadeddata', () => {
-    dirty = true
-  })
+  video.addEventListener('loadeddata', publish)
 
   function seek() {
-    if (video.readyState < 1 || seeking) return
-    const d = Math.abs(video.currentTime - want)
-    if (d < 1 / 60) return
+    if (!Number.isFinite(video.duration) || video.readyState < 1 || seeking) return
+    const target = Math.min(Math.round(want * 24), Math.ceil(video.duration * 24) - 1)
+    if (target === requested) return
+    requested = target
     seeking = true
-    try {
-      video.currentTime = want
-    } catch {
-      seeking = false
-    }
+    video.currentTime = Math.min(video.duration - 0.001, (target + 0.25) / 24)
   }
 
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, lite ? 1.25 : 1.6)
-    const w = Math.round(canvas.clientWidth * dpr)
-    const h = Math.round(canvas.clientHeight * dpr)
+    const w = Math.round(canvas.clientWidth * dpr * quality)
+    const h = Math.round(canvas.clientHeight * dpr * quality)
     if (canvas.width !== w || canvas.height !== h) {
       canvas.width = w
       canvas.height = h
@@ -320,10 +330,15 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
     clock += dt
     want = f.t
     seek()
-    if (dirty && video.readyState >= 2 && video.videoWidth) {
-      upload(video, video.videoWidth, video.videoHeight)
-      dirty = false
+    const now = performance.now()
+    if (lastRender && now - lastRender > 37 && now - lastRender < 2500) slow++
+    else slow = Math.max(0, slow - 1)
+    if (slow >= 5 && quality > 0.42) {
+      quality = Math.max(0.42, quality * 0.8)
+      resize()
+      slow = 0
     }
+    lastRender = now
     ready += ((hasFrame ? 1 : 0) - ready) * Math.min(1, dt * 3)
 
     // la cámara «respira» con el puntero: un desplazamiento chico y amortiguado
@@ -341,7 +356,7 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
     gl.uniform1i(u.tex, 0)
     gl.uniform2f(u.res, W, H)
     gl.uniform2f(u.vid, vidW, vidH)
-    gl.uniform2f(u.focus, f.focus[0], f.focus[1])
+    gl.uniform2f(u.focus, f.focus[0], 1 - f.focus[1])
     gl.uniform2f(u.shift, shiftX, -shiftY)
     gl.uniform1f(u.zoom, f.zoom)
     gl.uniform1f(u.vel, f.vel)
@@ -396,10 +411,11 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
     resize,
     video,
     get ready() {
-      return hasFrame
+      return uploaded >= 0
     },
     destroy() {
       video.removeEventListener('seeked', onSeeked)
+      video.removeEventListener('loadeddata', publish)
       gl.getExtension('WEBGL_lose_context')?.loseContext()
     },
   }
