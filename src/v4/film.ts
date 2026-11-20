@@ -178,7 +178,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   }
 
   // ---- el escenario ----
-  const sd = opts.lite || W < 900
+  let sd = opts.lite || W < 900
   try {
     stage = createStage(canvas, video, poster, sd)
   } catch {
@@ -190,6 +190,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     return
   }
 
+  sd ||= stage.software
   const L: Look = { exposure: 1, contrast: 1, saturation: 1, tint: [1, 1, 1], vignette: 0, grain: 0, fade: 0 }
   const frame: StageFrame = { t: 0, vel: 0, focus: [0.5, 0.5], zoom: 1.045, look: L, medium: { w: [0, 0, 0, 0] }, flash: 0 }
   const fpos: [number, number] = [0.5, 0.5]
@@ -356,8 +357,8 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     const tPrev = tS
     tS = clamp((y - reelTop) / sps, 0, DUR)
     const rate = Math.abs(tS - tPrev) / Math.max(elapsed, 0.001)
-    const speed = opts.reduced ? 0 : clamp((rate - 3) / 12) * Math.sign(tS - tPrev)
-    frame.vel += (speed - frame.vel) * (1 - Math.exp(-dt * 8))
+    const speed = opts.reduced || Math.abs(tS - tPrev) > 1.5 ? 0 : clamp((rate - 3) / 12) * Math.sign(tS - tPrev)
+    frame.vel += (speed - frame.vel) * (1 - Math.exp(-elapsed * 8))
 
     const u = toU(tS)
     frame.t = tS

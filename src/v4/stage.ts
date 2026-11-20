@@ -181,6 +181,7 @@ export interface Stage {
   render(f: StageFrame, mouse: [number, number], dt: number): void
   resize(): void
   readonly video: HTMLVideoElement
+  readonly software: boolean
   readonly ready: boolean
   destroy(): void
 }
@@ -209,7 +210,11 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
   gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0)
 
   // partículas: N puntos, y las mismas como segmentos (2 vértices) para las estelas
-  const N = lite ? 520 : 1400
+  const rendererInfo = gl.getExtension('WEBGL_debug_renderer_info')
+  const software = !!rendererInfo && /swiftshader|llvmpipe|software rasterizer/i.test(
+    String(gl.getParameter(rendererInfo.UNMASKED_RENDERER_WEBGL)),
+  )
+  const N = software ? 160 : lite ? 520 : 1400
   const pts = new Float32Array(N * 4)
   for (let i = 0; i < N; i++) {
     pts[i * 4] = (Math.random() * 2 - 1) * 1.6
@@ -270,7 +275,8 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
   let hasFrame = false
   let uploaded = -1
   let requested = 0
-  let quality = 1
+  const floor = software ? 0.32 : 0.55
+  let quality = software ? 0.55 : 1
   let slow = 0
   let lastRender = 0
   let seeking = false
@@ -350,8 +356,8 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
     const now = performance.now()
     if (lastRender && now - lastRender > 37 && now - lastRender < 2500) slow++
     else slow = Math.max(0, slow - 1)
-    if (slow >= 5 && quality > 0.42) {
-      quality = Math.max(0.42, quality * 0.8)
+    if (slow >= 5 && quality > floor) {
+      quality = Math.max(floor, quality * 0.8)
       resize()
       slow = 0
     }
@@ -435,6 +441,7 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
   resize()
   return {
     render,
+    software,
     resize,
     video,
     get ready() {
