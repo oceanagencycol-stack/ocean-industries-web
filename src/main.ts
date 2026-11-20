@@ -10,6 +10,7 @@
 import './styles/fonts.css'
 import './styles/v3.css'
 import './styles/v4.css'
+import './styles/epilogue.css'
 
 import { initLang } from './ui/i18n'
 import { initWhatsApp } from './ui/wa'

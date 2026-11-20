@@ -477,7 +477,7 @@
               </article>
             </div>
 
-            <div class="reels">
+            <div class="reels" id="reels">
               <div class="reels__head">
                 <h3 class="reels__title" data-es="En movimiento" data-en="In motion" data-pt="Em movimento">En movimiento</h3>
                 <p data-es="Producción propia, publicada en Instagram." data-en="Our own production, published on Instagram (in Spanish)." data-pt="Produção própria, publicada no Instagram (em espanhol).">Producción propia, publicada en Instagram.</p>
@@ -548,6 +548,7 @@
                 <p class="field__note" id="usdNote" hidden data-es="Se cobra en pesos colombianos a la tasa del día." data-en="Charged in Colombian pesos at today's rate." data-pt="Cobrado em pesos colombianos à taxa do dia.">Se cobra en pesos colombianos a la tasa del día.</p>
               </div>
               <div class="payform__sum">
+                <h4 class="receipt-title" data-es="Resumen del pago" data-en="Payment summary" data-pt="Resumo do pagamento">Resumen del pago</h4>
                 <dl class="sum">
                   <div><dt data-es="Monto base" data-en="Base amount" data-pt="Valor base">Monto base</dt><dd id="sumBase">$0</dd></div>
                   <div><dt data-es="Comisión de Wompi (2,95 % + COP 700)" data-en="Wompi fee (2.95% + COP 700)" data-pt="Taxa da Wompi (2,95% + COP 700)">Comisión de Wompi (2,95 % + COP 700)</dt><dd id="sumFee">$0</dd></div>
@@ -570,9 +571,11 @@
       <button type="button" popovertarget="valeria-demo" popovertargetaction="hide" data-es="Cerrar" data-en="Close" data-pt="Fechar">Cerrar</button>
       <p class="kicker">Valeria</p><div class="live__msgs" data-transcript></div>
     </aside>
-    <footer class="footer" data-light data-fab-hide data-intro-inert>
+    <footer class="footer" data-fab-hide data-intro-inert>
+      <a class="footer__brand" href="#inicio" data-es-aria="OCEAN, al inicio" data-en-aria="OCEAN, back to top" data-pt-aria="OCEAN, ao início" aria-label="OCEAN, al inicio"><!--LOGO_R:footer__logo--><span class="footer__return"><span class="footer__return-text" data-es="Volver al inicio" data-en="Back to top" data-pt="Voltar ao início">Volver al inicio</span><span aria-hidden="true">↑</span></span></a>
       <div class="footer__cols">
         <nav class="footer__nav" data-es-aria="Pie de página" data-en-aria="Footer" data-pt-aria="Rodapé" aria-label="Pie de página">
+          <p class="footer__label" data-es="Explorar" data-en="Explore" data-pt="Explorar">Explorar</p>
           <a href="#senal" data-es="La señal" data-en="The signal" data-pt="O sinal">La señal</a>
           <a href="#agentes" data-es="Agentes de IA" data-en="AI agents" data-pt="Agentes de IA">Agentes de IA</a>
           <a href="#maquina" data-es="La máquina" data-en="The machine" data-pt="A máquina">La máquina</a>
@@ -581,12 +584,14 @@
           <a href="#pay" data-es="Pagos" data-en="Payments" data-pt="Pagamentos">Pagos</a>
         </nav>
         <div class="footer__contact">
+          <p class="footer__label" data-es="Contacto" data-en="Contact" data-pt="Contato">Contacto</p>
           <a data-wa="general" href="https://wa.me/573138721665" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg>+57 313 872 1665</a>
           <a href="https://www.instagram.com/oceanind.co/" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-ig" /></svg>@oceanind.co</a>
           <a href="https://share.google/Vqaeb84X8b2NTu0QD" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-pin" /></svg><span data-es="OCEAN en Google" data-en="OCEAN on Google" data-pt="OCEAN no Google">OCEAN en Google</span></a>
           <p class="footer__cities" data-es="Cali, Bogotá y Miami" data-en="Cali, Bogotá and Miami" data-pt="Cali, Bogotá e Miami">Cali, Bogotá y Miami</p>
         </div>
         <div class="footer__tools">
+          <p class="footer__label" data-es="Idioma" data-en="Language" data-pt="Idioma">Idioma</p>
           <div class="lang" role="group" data-es-aria="Idioma" data-en-aria="Language" data-pt-aria="Idioma" aria-label="Idioma">
             <button type="button" data-lang="es" aria-pressed="true" lang="es">ES</button>
             <button type="button" data-lang="en" aria-pressed="false" lang="en">EN</button>
@@ -596,7 +601,7 @@
           <button class="footer__btn" type="button" data-replay hidden data-es="Ver intro de marca" data-en="Play brand intro" data-pt="Ver intro da marca">Ver intro de marca</button>
         </div>
       </div>
-      <a class="footer__brand" href="#inicio" data-es-aria="OCEAN, al inicio" data-en-aria="OCEAN, back to top" data-pt-aria="OCEAN, ao início" aria-label="OCEAN, al inicio"><!--LOGO_R:footer__logo--></a>
+
       <div class="footer__legal">
         <p>© <span id="year">2026</span> Ocean Industries. <span data-es="OCEAN es una marca registrada." data-en="OCEAN is a registered trademark." data-pt="OCEAN é uma marca registrada.">OCEAN es una marca registrada.</span></p>
         <p data-es="Los paisajes de esta web se crearon con IA." data-en="The landscapes on this site were created with AI." data-pt="As paisagens deste site foram criadas com IA.">Los paisajes de esta web se crearon con IA.</p>

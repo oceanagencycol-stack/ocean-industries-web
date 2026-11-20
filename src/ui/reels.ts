@@ -95,7 +95,7 @@ export function initReels(): void {
     (entries) =>
       entries.forEach((e) => {
         const v = e.target as HTMLVideoElement
-        if (e.isIntersecting && !reduced) {
+        if (e.isIntersecting && !reduced && v.closest('.is-selected')) {
           v.dataset.want = '1'
           arm(v)
           void v.play().catch(() => {})
@@ -108,14 +108,47 @@ export function initReels(): void {
     { threshold: 0.5 },
   )
 
+  function select(fig: HTMLElement) {
+    for (const item of grid!.querySelectorAll<HTMLElement>('.reel')) {
+      const selected = item === fig
+      item.classList.toggle('is-selected', selected)
+      item.querySelector('.reel__pick')?.setAttribute('aria-pressed', String(selected))
+      if (!selected) {
+        const video = item.querySelector('video')!
+        delete video.dataset.want
+        video.pause()
+        if (loud === video) setLoud(null)
+      }
+    }
+  }
+
   const wire = () => {
-    grid.querySelectorAll<HTMLVideoElement>('.reel__video').forEach((v) => {
+    const items = grid.querySelectorAll<HTMLElement>('.reel')
+    for (const [i, item] of items.entries()) {
+      const v = item.querySelector('video')!
+      const caption = item.querySelector<HTMLElement>('.reel__cap')!
+      const pick = document.createElement('button')
+      pick.className = 'reel__pick'
+      pick.type = 'button'
+      v.id = 'ocean-reel-' + i
+      pick.setAttribute('aria-controls', v.id)
+      caption.before(pick)
+      pick.append(caption)
       near.observe(v)
       view.observe(v)
-    })
+    }
+    if (items.length) {
+      select(items[0])
+      grid.closest('.reels')?.classList.add('has-player')
+    }
   }
 
   grid.addEventListener('click', (e) => {
+    const item = (e.target as Element).closest<HTMLElement>('.reel')
+    if (item && (e.target as Element).closest('.reel__pick')) {
+      select(item)
+      return
+    }
     const b = (e.target as Element).closest<HTMLButtonElement>('.reel__sound')
     const v = (e.target as Element).closest('.reel')?.querySelector<HTMLVideoElement>('.reel__video')
     if (!v) return
@@ -143,6 +176,7 @@ export function initReels(): void {
       if (!d || d.source === 'fallback' || !Array.isArray(d.reels) || !d.reels.length) return
       near.disconnect()
       view.disconnect()
+      setLoud(null)
       grid.replaceChildren(...d.reels.slice(0, 3).map(card))
       wire()
     })
