@@ -115,3 +115,28 @@ El reloj coincidió con la posición del scroll en todas las muestras de dibujo 
 Lighthouse 12.8.2 móvil, una corrida por versión en este entorno, dio 37 → 44 en rendimiento, LCP 6,0 → 5,0 s y CLS 0,001 → 0. El bloqueo total pasó de 107,60 a 4,41 s. La puntuación final todavía es baja. El perfil simula CPU y red sobre un navegador con rasterización por software.
 
 Se ejecutaron instalación, comprobación TypeScript y compilación de Vite después de cada grupo de cambios. Los archivos de película, las marcas, el script de arranque y la CSP conservan su contenido.
+
+### v5 · Apertura de marca y epílogo editorial
+
+La primera imagen es el logotipo final de OCEAN sobre el color del espacio. Un trazo fino bajo la marca indica el avance de la descarga. Al llegar el primer cuadro decodificado, el logotipo se desplaza desde el centro hasta su posición medida en la cabecera. La Tierra y el titular aparecen durante ese mismo movimiento. Las visitas repetidas y la preferencia de movimiento reducido usan un fundido corto.
+
+En las pruebas a 1440 × 900, 1280 × 800, 2360 × 900 y 390 × 844, el rectángulo final de la animación coincidió con el logo de navegación con un error inferior a 0,004 píxeles CSS. El primer fotograma estaba decodificado en los cuatro tamaños. El arco tenue de la apertura quedó a menos de 0,14 píxeles del círculo de referencia. También se ensayaron el fallo de descarga, la lectura con portada estática y el movimiento reducido.
+
+Cada caso dispone de una lámina horizontal con la proporción de su sitio publicado. El índice de reels reúne los tres títulos y permite elegir un solo reproductor. El recibo de Wompi reúne los cargos y el total junto al formulario. Los créditos vuelven a la imagen orbital del inicio y el logo lleva al visitante de vuelta al hero.
+
+[Capturas de apertura y epílogo en escritorio](qa-v5/epilogo-escritorio.webp) · [Capturas en móvil](qa-v5/epilogo-movil.webp)
+
+#### Comparación con la vista anterior
+
+Se compararon el build de `1e32c65` y el nuevo render con `qa/secuencia-v5.cjs` en el mismo Chromium con SwiftShader y dos CPU lógicas. La tabla recoge el mayor intervalo observado entre cambios de imagen enviada al compositor. Los recorridos lentos duraron cinco segundos y los rápidos, cuatro.
+
+| Tramo del máster | Escritorio anterior | Escritorio nuevo | Móvil emulado anterior | Móvil emulado nuevo |
+| --- | ---: | ---: | ---: | ---: |
+| 12 → 16 s | 553 ms | 328 ms | 504 ms | 224 ms |
+| 16 → 12 s | 480 ms | 264 ms | 199 ms | 187 ms |
+| 12 → 50 s | 575 ms | 364 ms | 246 ms | 168 ms |
+| 50 → 12 s | 600 ms | 190 ms | 288 ms | 253 ms |
+
+Las luces de lectura se componen en el mismo shader de la película. Los rótulos se actualizan cuando cambia el guion y el render se suspende en el epílogo. El controlador por software reutiliza una superficie para cargar cada cuadro decodificado y reduce el ritmo del ambiente en reposo. El error medido entre el reloj y el objetivo de scroll fue cero en los ocho recorridos. Durante el scroll lento, la intensidad máxima del desenfoque fue 0,060 sobre 1. El límite de 33,3 ms entre cambios de imagen sigue pendiente en este entorno.
+
+Lighthouse móvil local obtuvo 56/100, con LCP de 3,4 s, CLS de 0 y bloqueo total de 6,02 s. El registro anterior de la rama marcaba 44/100. Las pruebas funcionales cubrieron los tres idiomas, el chat simulado, Valeria, WhatsApp contextual, los destinos de los casos, el selector de reels y su sonido, la integración de Cal.com y el cálculo previo de Wompi. Se comprobaron 27 combinaciones de idioma y ancho entre 320 y 1440 px.
