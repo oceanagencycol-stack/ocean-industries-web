@@ -4,11 +4,12 @@ Web oficial de OCEAN (nombre legal: Ocean Industries; oceanindustries.com.co). C
 Contenido: **ES por defecto, EN y PT** (cada elemento lleva `data-es` / `data-en` / `data-pt`, y `data-*-aria` /
 `data-*-ph` para nombres accesibles y placeholders).
 
-**v5 (ramas `v5-secuencia` → `v5-cierre`, 20-nov-2026) es la web vigente en desarrollo**: una sola película que
+**v5 (ramas `v5-secuencia` → `v5-cierre`) está en producción desde el 20-nov-2026** (`main` 27953b7, con visto bueno de Juan Manuel): una sola película que
 avanza con el scroll. `index.html` + `src/main.ts` → `src/v4/` (`stage.ts` el escenario WebGL2, `film.ts` la línea de
 tiempo, `script.ts` el guion técnico, `preload.ts` la apertura con la marca) y `src/styles/v4.css` + `epilogue.css`
 sobre `v3.css`. Película en `public/v4/`, cortes en `src/v4/film.json`. Todo en `docs/v4/PELICULA.md`.
-`main` sigue con la v2 en producción. `v3-cine` y `v4-pelicula` quedan como historia.
+La v2 quedó en `dpl_DhkVanu9RLzNPmZ2ynUvrGbP2tkA` (`main` 2f12397) para volver atrás con «Promote». `v3-cine` y
+`v4-pelicula` quedan como historia. **Siguiente: la v6** (película remasterizada), plan en `docs/plan-v6.md`.
 
 ### Reglas propias de la v5
 - **Legibilidad sobre la película**: el texto nunca lleva caja; el shader recoge la luz detrás de las cajas medidas
