@@ -43,6 +43,14 @@ function brandInline(file: string, cls: string): string {
     .replace(/\n\s*/g, '')
 }
 
+/** Los siete ejes del maestro revelan la tinta del logo sin modificar su silueta. */
+function brandPen(): string {
+  const source = readFileSync(resolve(ROOT, 'marca/v3/logo-trazos.svg'), 'utf8')
+  const strokes = source.match(/<(?:circle|path) data-l="[^"]+"[^>]*\/>/g)
+  if (strokes?.length !== 7) throw new Error('[ocean-brand] Se esperaban siete ejes en logo-trazos.svg')
+  return strokes.map(stroke => stroke.replace(' data-l=', ' pathLength="1" data-l=')).join('')
+}
+
 /** Fallback frames and the first paint use the same grade and crop as the movie. */
 const shotNames = ['m1a', 'm1sb', 'm2b', 'm3b', 'm4v2a', 'm5a', 'm6a']
 function plate(name: string, first: boolean): string {
@@ -84,6 +92,7 @@ function oceanBrand(): Plugin {
       return html
         .replace('<meta charset="utf-8" />', `<meta charset="utf-8" />\n    <meta name="ocean-build" content="${BUILD_ID}" />`)
         .replaceAll('__SITE_URL__', SITE_URL)
+        .replace('<!--EJES:pre-->', brandPen)
         .replace(/<!--(LOGO_R|LOGO|SIMBOLO):([\w-]+)-->/g, (_m, k: keyof typeof BRAND, cls: string) => brandInline(BRAND[k], cls))
         .replace(/<!--PLACA:([\w]+)(:first)?-->/g, (_m, name: string, first?: string) => plate(name, !!first))
         .replaceAll('<!--DEMO_TOGGLE-->', DEMO_TOGGLE)

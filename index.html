@@ -129,7 +129,12 @@
 
     <!-- El mismo maestro de marca ocupa el centro y se entrega a la navegación sobre la primera imagen. -->
     <div class="pre" aria-hidden="true">
-      <svg class="pre__svg" preserveAspectRatio="none"><path class="pre__rim" /></svg>
+      <svg class="pre__svg" preserveAspectRatio="none"><defs>
+          <mask id="pre-ink" maskUnits="userSpaceOnUse" x="-20" y="-24" width="600" height="156">
+            <g fill="none" stroke="white" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"><!--EJES:pre--></g>
+          </mask>
+        </defs>
+        <path class="pre__rim" pathLength="1" /></svg>
       <div class="pre__lockup">
         <span class="pre__brand"><!--LOGO:pre__logo--></span>
         <div class="pre__track"><i></i></div>

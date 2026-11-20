@@ -132,6 +132,9 @@ html.pre-on .nav__logo { visibility: hidden; }
 .pre__lockup { position: relative; width: clamp(185px, 33vw, 510px); }
 .pre__brand, .pre__logo { display: block; width: 100%; height: auto; }
 .pre__brand { transform-origin: left top; }
+/* La máscara recorre los ejes oficiales. La tinta que aparece es el maestro de la cabecera. */
+.pre:not(.pre--still):not(.pre--signed) .pre__logo > :is(g, path, circle) { mask: url(#pre-ink); }
+#pre-ink [data-l] { stroke-dasharray: 1 2; stroke-dashoffset: 1.28; opacity: 0; }
 .pre__track {
   position: absolute;
   top: calc(100% + clamp(24px, 3vw, 42px));
@@ -152,8 +155,10 @@ html.pre-on .nav__logo { visibility: hidden; }
 .pre__svg { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
 .pre__rim { fill: none; stroke: var(--mist); stroke-width: 1; }
 .pre.is-done::before, .pre.is-done .pre__track { opacity: 0; }
-.pre.is-done .pre__svg { animation: horizon-exposure .9s both; }
-@keyframes horizon-exposure { 36% { opacity: .23; } }
+.pre--writing .pre__svg { opacity: .24; transition: opacity .85s ease; }
+.pre--writing .pre__rim { animation: draw-limb 1.45s .52s cubic-bezier(.4,0,.26,1) both; stroke-dasharray: 1 2; }
+@keyframes draw-limb { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.pre.is-done .pre__svg { opacity: 0; }
 .pre--quick::before { transition-duration: .2s; }
 .pre--quick .pre__track, .pre--quick .pre__svg { display: none; }
 

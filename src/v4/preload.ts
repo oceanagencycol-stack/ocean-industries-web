@@ -1,5 +1,25 @@
 const LIMB = { cx: 1997.85 / 1920, cy: 3006.54 / 1068, r: 2686.4, w: 1920, h: 1068 }
-const MIN_MS = 850
+// Comienzo y duración en ms. Las tres barras de la E se leen como un solo gesto.
+const PEN: Record<string, readonly [number, number]> = {
+  O: [0, 630], C: [310, 565],
+  E1: [660, 310], E2: [745, 310], E3: [830, 310],
+  A: [1030, 500], N: [1330, 595],
+}
+
+async function writeWord(root: HTMLElement, speed: number): Promise<void> {
+  const drawing: Promise<Animation>[] = []
+  for (const stroke of root.querySelectorAll<SVGGeometryElement>('#pre-ink [data-l]')) {
+    const [delay, duration] = PEN[stroke.dataset.l!]
+    const pen = stroke.animate([
+      { strokeDashoffset: '1.28', opacity: 0 },
+      { strokeDashoffset: '1', opacity: 1, offset: .10 },
+      { strokeDashoffset: '0', opacity: 1 },
+    ], { delay: delay / speed, duration: duration / speed, easing: 'cubic-bezier(.42,0,.26,1)', fill: 'both' })
+    drawing.push(pen.finished)
+  }
+  await Promise.allSettled(drawing)
+  root.classList.add('pre--signed')
+}
 
 export type Project = (vx: number, vy: number, out: [number, number]) => [number, number]
 
@@ -23,7 +43,6 @@ export function preload(src: string, project: Project, opts: { reduced: boolean;
   let loaded = 0
   let total = 0
   let percent = -1
-  const start = performance.now()
   let resolveOpened: () => void = () => {}
   const opened = new Promise<void>((r) => (resolveOpened = r))
 
@@ -85,12 +104,18 @@ export function preload(src: string, project: Project, opts: { reduced: boolean;
 
   const short = opts.quick || opts.reduced
   root.classList.toggle('pre--quick', short)
+  root.classList.toggle('pre--still', opts.reduced)
   html.classList.add('pre-on')
-  opts.decoded.then(async () => {
-    if (!short) await new Promise(resolve => setTimeout(resolve, Math.max(0, MIN_MS - (performance.now() - start))))
+  if (!short) {
+    geometry()
+    root.classList.add('pre--writing')
+    addEventListener('resize', geometry)
+  }
+  const signature = opts.reduced ? Promise.resolve() : writeWord(root, opts.quick ? 3.5 : 1)
+  Promise.all([opts.decoded, signature]).then(() => {
+    removeEventListener('resize', geometry)
     if (!root.isConnected) { resolveOpened(); return }
-    if (!short) geometry()
-    const duration = short ? 220 : 940
+    const duration = opts.reduced ? 220 : opts.quick ? 370 : 940
     const original = brand.getBoundingClientRect()
     function destination() {
       const target = dock!.getBoundingClientRect()
@@ -100,7 +125,7 @@ export function preload(src: string, project: Project, opts: { reduced: boolean;
     root.classList.add('is-done')
     html.classList.add('pre-open')
     resolveOpened()
-    const move = brand.animate(short ? [{ opacity: 1 }, { opacity: 0 }] :
+    const move = brand.animate(opts.reduced ? [{ opacity: 1 }, { opacity: 0 }] :
       [{ transform: 'none' }, { transform: destination() }], {
       duration, easing: 'cubic-bezier(.45,0,.16,1)', fill: 'forwards',
     })
