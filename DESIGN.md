@@ -1,93 +1,84 @@
-# DESIGN.md — Ocean Industries, el Pacífico de noche
+# DESIGN.md — OCEAN v3, de lo más profundo a lo más alto
 
-Sistema de diseño de la web v2 (rama `v2`, nov-2026). Mezcla la web anterior de Ocean (marca, contenido, olas de
-puntos, trilingüe, pagos, agente) con el mundo de Qora (oscuro cinematográfico, una sola firma en cristal, intro con
-sonido, escenas que explican, color con significado).
+Sistema de diseño de la web v3 (rama `v3`, nov-2026). Concepto completo: `docs/v3/CONCEPTO.md`; técnica:
+`docs/v3/ARQUITECTURA.md`. Nivel pedido por Juan: «extremadamente pulido, con mucha autoridad… al nivel de Tesla».
 
 ## Idea rectora
-**Bioluminiscencia del Pacífico: el mar de noche se enciende donde algo se mueve.** En el Pacífico colombiano el
-plancton brilla cuando el agua se mueve; una marca bien conectada funciona igual: cada cliente que se mueve (un
-mensaje, un clic, un pago) enciende algo. Ocean construye lo que se enciende. De ahí sale todo lo demás.
+**OCEAN baja a lo más profundo para llevar tu marca a lo más alto.** Una sola toma: del espacio al fondo del mar y del
+fondo del mar a la cumbre de hielo. Lo que no se ve (agentes, automatización, software) sostiene lo que se ve (la marca,
+la web, la venta).
 
-## La firma (una sola)
-El mar de luz en tiempo real (three.js) con la firma «Ocean» en cristal que sale del agua. El mar brilla según qué
-tan rápido se mueve el agua, deja una estela de luz bajo el cursor o el dedo, se ilumina debajo del cristal y lanza
-un anillo azul cuando el agente responde. Todo lo demás es quieto y disciplinado: sin fade-up por sección, sin tilt,
-sin marquee, sin brillos sueltos.
+## El recorrido (siete tramos, `data-tramo`)
+| Tramo | id | Placa | Qué dice |
+|---|---|---|---|
+| espacio | `#inicio` | M1a (vertical: la estrella de cuatro puntas) | «De lo más profundo a lo más alto.» Qué es OCEAN, WhatsApp y agendar |
+| satelite | `#senal` | M1sb | 01 · La señal: contenido (UGC) y pauta en Meta |
+| mar | `#mar` | M2b | «Lo que hace crecer una marca casi nunca se ve.» Bajemos. |
+| agua | `#agentes` | M3b | 02 · Bajo el agua: agentes de IA y Valeria (de ejemplo) |
+| maquina | `#maquina` | M4v2a | 03 · La máquina: software con IA y automatización; 48 h, 24/7 |
+| emerge | `#trabajo` | M5a | 04 · Lo que queda en pie: webs y tiendas, los tres casos, los reels |
+| cumbre | `#hablemos` | M6a → nieve | 05 · La cumbre: WhatsApp, agenda (Cal.com) y pagos (Wompi) sobre la nieve; pie |
 
-## Color con oficio (la gramática de Qora con la paleta de Ocean)
-| Token | Hex | Significa |
+La cámara vive detrás del recorrido completo. Su posición, la luz y el fotograma son función del desplazamiento.
+Se cruza la atmósfera con bruma, se atraviesa la superficie con refracción y se sale hacia la cumbre entre nubes.
+Los titulares y los ejemplos cambian de lado en una retícula de doce columnas. El encuadre se mantiene cerca del
+ejemplo durante la lectura para que sus estados avancen al ritmo del desplazamiento.
+
+## Color: monocromo tipo Tesla
+| Token | Hex | Uso |
 |---|---|---|
-| `--night` | `#050A14` | el mar de noche: fondo de todo (con tinte, nunca negro plano) |
-| `--foam` | `#F4F5F0` | **la persona**: quien escribe, quien decide; el cristal |
-| `--klein` / `--blue` | `#0000FF` / `#3D63FF` | **la máquina**: el agente, la automatización, la luz del plancton. `#0000FF` solo en superficies (burbujas del agente, envío); en texto se usa `--blue-tx` `#9AAFFF` |
-| `--green` | `#00FF7F` | **el resultado**: la acción principal (WhatsApp), los indicadores en vivo, la cita, el pago, la rompiente. Nada más es verde |
-| `--cyan` | `#59C3E6` | el foco del teclado (interfaz, sin significado de negocio) |
-| `--mist` / `--mist-2` | `#A7B2C8` / `#8290AA` | texto secundario y terciario (fríos, nunca gris puro) |
+| `--space` | `#03060C` | el fondo |
+| `--abyss` | `#06141D` | superficies, el panel del chat, la tinta sobre la nieve |
+| `--slate` | `#2B404F` | texto secundario sobre la nieve |
+| `--haze` | `#6E8193` | texto terciario sobre la noche (nunca sobre slate ni nieve) |
+| `--mist` | `#B2C0CC` | texto secundario sobre la noche; la línea de la IA |
+| `--snow` | `#E0E7ED` | texto principal; la persona; el fondo de la cumbre y el pie |
+| `--white` | `#FFFFFF` | solo la acción principal y el resultado que se enciende |
+| `--signal` | `#A5FFD0` | acciones, resultados y progreso de lectura |
+
+Contraste (WCAG): snow/space 16,3 · mist/space 10,9 · haze/space 5,05 · haze/abyss 4,64 · mist/slate 5,8 · abyss/snow
+14,9 · slate/snow 8,6 · abyss/white 18,7. Fallan y no se usan para texto: haze/slate 2,7 · haze/snow 3,2.
+
+## La gramática de las escenas (por tono y forma)
+**La persona** = nieve sólida (burbuja, nodo, decisión). **La IA** = línea fina `--mist` de 1 px, sin relleno.
+**El resultado** = blanco pleno con su luz, que se enciende al llegar (`lit`). Se entiende en escala de grises y con
+daltonismo. La clave va arriba de las escenas: tres marcas con nombre (punto sólido, anillo, punto con luz).
 
 ## Tipografía
-Una sola familia, **Archivo Variable** (la de Ocean), con su eje de ancho como herramienta:
-- Titulares: ancho 118–125 %, peso 700–760, interletra negativa, en minúsculas de oración (el mundo de Qora).
-- Cifras y números de fase: ancho 64–70 %, peso 800+, `tabular-nums` (la energía de la Ocean anterior).
-- Texto: ancho 100 %, peso 400, 17 px, interlineado 1,6, líneas de menos de 60 caracteres.
-- La cursiva solo existe en la firma (el logo es un trazo, nunca un tipo).
+Geist variable (OFL), servida propia, latín + latín extendido. Titulares 600, interletra −0,035 em, interlineado
+0,98–1,04, `text-wrap: balance`. Etiquetas en mayúsculas pequeñas, 12 px, 0,24 em (el eco del logotipo). Texto 400 a
+17 px (18 desde 1024), interlineado 1,6, < 60 caracteres. Cifras `tabular-nums`.
 
-## Composición
-Alineado a la izquierda sobre el mar; el lienzo fijo detrás (`100lvh`). Recorrido:
-hero (la firma a la derecha, el texto a la izquierda sobre sombra) → **la ola** (escena pegajosa de 380vh: la frase
-del Pacífico, mar de fondo, la cresta azul, la rompiente verde y el cierre; mientras habla una fase, la noche se asienta
-bajo sus palabras para que se lean sobre la espuma) → servicios en filas, agrupados en las tres fases, cada uno con su
-escena de cuatro pasos y una clave de color arriba («Una persona · La IA · El resultado») → el agente en vivo
-(Valeria) → trabajo (casos con enlace al sitio y reels) → hablemos (el cristal vuelve) → agenda → pagos → pie. Después
-de «hablemos» el mar se apaga: agenda y pagos se leen sobre la noche quieta y el render descansa. En el teléfono el
-cristal vive en el tercio de arriba y el texto abajo sobre una sombra; mientras el mar carga, la imagen quieta es el
-primer cuadro y se funde con él.
-- La barra: escritorio con enlaces (Servicios, Agente, Trabajo, Agenda; Pagos va en el menú y el pie), idioma, sonido
-  y «Escríbenos». Desde 1080 px hacia abajo, el menú. En el teléfono el sonido queda en la barra como sus barras (siempre
-  se puede apagar) y «Escríbenos» se vuelve el ícono de WhatsApp por debajo de 389 px.
-- «Habla con Ocean» (el chat de la web) es del computador; en el teléfono WhatsApp ya está en la barra.
-- La agenda: en el computador, Cal.com incrustado (con «Cargando…» y, si tarda, la salida); en el teléfono se abre en
-  su propia página (incrustado cortaba el mes y hacía scroll dentro de la página).
+## Marca
+Barra: `logo-sin-r.svg` (104 px). Pie: `logo.svg` (OCEAN®) a lo ancho, abisal sobre nieve. La E son tres horizontes:
+un riel quieto al borde izquierdo con las barras de la E encendidas por tramo. Favicon: el símbolo simétrico en nieve
+sobre abisal (desde 32 px).
 
 ## Movimiento
-- Una intro orquestada (7,6 s, una vez cada 7 días, sin puerta): una gota despierta el agua, una ola crece y rompe en
-  verde, la firma sale del agua pieza por pieza, la luz pasa por el cristal, «Convertimos marcas en olas.» llega con
-  las tres notas (La, Mi, Do♯) y el cristal se va a su lugar.
-- La escena de la ola, atada al scroll.
-- «Saltar intro» está desde el primer segundo: quien salta mientras carga el mar ve la página ya y el mar llega detrás.
-- Nada late solo: el punto verde de «en línea» es una luz fija; sin barras de onda, sin halos.
-- Las escenas de cuatro pasos (en vista, tres vueltas, pausa y repetir; WCAG 2.2.2).
-- Movimiento reducido, sin WebGL2 o con WebGL por software: la imagen quieta (la firma sobre líneas de puntos), la
-  ola se lee en orden y las escenas muestran su cuadro final.
+- **Una sola gramática de entrada**: las líneas de un titular suben desde su máscara mientras la interletra pasa de
+  0,04 em a la final (1,3 s, `cubic-bezier(.16,1,.3,1)`, 110 ms entre líneas); lo secundario llega 120 ms después con un
+  barrido de luz de izquierda a derecha; las cifras cuentan. Nada aparece con un fundido genérico.
+- **La intro de marca** (paquete propio, ≈ 4,5 s, a petición): la estrella, el símbolo, el logotipo letra por letra, y
+  el logotipo vuela a la barra. La portada entra cuando el negro se abre.
+- **Botones**: reflejo que los cruza al pasar el puntero (solo con hover); se hunden 1 px al presionar.
+- Nada late solo: la luz de «en línea» es fija. Las escenas corren en vista, tres vueltas, con pausa (WCAG 2.2.2).
+- Pausa de movimiento en la barra y el pie con preferencia compartida. Con movimiento reducido se muestran las placas
+  y el contenido está visible desde el primer cuadro.
 
-## Sonido
-Todo sintetizado en el navegador (`src/core/sounds.ts`, cero archivos): el oleaje, la gota, la ola que crece y rompe,
-el cristal, el destello del plancton, el motivo, el colchón de la noche, gotas para la conversación y clics suaves.
-Suena si el navegador deja; si no, con el primer clic o toque en la página: nunca con una tecla (el primer Tab de quien
-usa teclado o lector de pantalla no pone música encima de su voz) ni al tocar un formulario, el idioma o «Saltar
-intro». Se baja mientras hay una conversación o un reel con sonido.
+## Grano
+Grano fino de película sobre toda la página (`public/v3/grano.png`, `soft-light` al 0,06): la textura de la casa, la
+misma de la intro. En el mundo va en la pasada final del shader.
 
-## Escenas que explican
-Cada servicio se explica trabajando, siempre con la misma gramática: alguien pide (blanco) → la máquina ejecuta (azul)
-→ una persona decide (blanco) → el resultado llega (verde, solo el resultado). Nombres, montos y fechas de las escenas
-son de ejemplo y lo dicen («Campaña de ejemplo», «Proveedor de ejemplo»).
-- La clave va arriba de los servicios como tres puntos con nombre, nunca como frase («the person is white» se leía
-  como un comentario de raza en inglés).
-- Cada chat se ve desde un teléfono real: la conversación de Valeria es el teléfono del cliente (sus mensajes a la
-  derecha); la escena del agente es el teléfono del negocio (la cabecera es «Ana · cliente», ella a la izquierda).
-- En la pauta, las barras son la medición (conversaciones) y llegan con ella: el anuncio que gana tiene la barra larga.
+## Composición
+Cabeceras alineadas a la izquierda sobre el aire oscuro de cada placa (la máquina y lo que queda en pie, abajo; la
+cumbre, arriba). En el teléfono, el texto abajo sobre una sombra (la cumbre, arriba). Barra transparente sobre la
+portada y con fondo casi opaco al moverse (clara sobre la nieve). «Habla con OCEAN» flota solo en el computador y se
+esconde en la portada, la cumbre y el pie.
 
 ## Palabras
-- Los servicios se nombran por lo que son: Contenido para redes (UGC), Pauta en Meta, Agentes de IA para WhatsApp y
-  web, Webs y tiendas en línea, Software a la medida con IA, Automatización de procesos.
-- «Demo» es el prototipo en 48 horas; la reunión es una «llamada» (45 minutos por Google Meet).
-- Los enlaces de los servicios llevan el ícono de WhatsApp: dicen adónde llevan.
+OCEAN en títulos y textos; Ocean Industries solo como nombre legal. Los servicios se nombran por lo que son. «Demo» es
+el prototipo en 48 horas; la reunión es una «llamada» (45 minutos por Google Meet).
 
-## Honestidad del copy
-Nada de cifras ni clientes sin verificar. Las cifras (48 h, 24/7, 11 s, 0 respuestas inventadas) y los tres casos son
-los que la web anterior ya publicaba con aprobación de Juan. Un caso nuevo entra solo con su visto bueno.
-- La conversación de Valeria es **de ejemplo** y lo dice; los tiempos son los medidos en la línea propia de Ocean.
-- La agenda dice lo que de verdad reserva Cal.com: 45 minutos por Google Meet, gratis (revisado el 2-nov-2026). Si
-  cambia el evento en Cal.com, cambia el texto de `#book` y `public/llms.txt`.
-- Los datos de las escenas se leen locales en cada idioma (EN: `yourbrand.com`, dólares, Apple Pay; PT: reais, Pix):
-  son ejemplos, no clientes ni montos reales.
+## Honestidad
+Nada de cifras ni clientes sin verificar: 48 h, 24/7, 11 s y los tres casos son los aprobados. Valeria y las escenas son
+de ejemplo y lo dicen. Los paisajes son ilustraciones hechas con IA (el pie y `llms.txt` lo dicen).

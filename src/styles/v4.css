@@ -1,0 +1,1134 @@
+/* ==========================================================================
+   OCEAN v4 · la web como una sola toma
+   Una sola secuencia a pantalla completa. La película vive detrás de todo (.stage) y avanza a velocidad constante con
+   el scroll. Cada .beat es un rótulo de esa película: ocupa su tramo de scroll en el documento (--t0/--t1 × --sps)
+   pero su contenido (.beat__in) está fijo sobre la imagen y entra/sale con --a/--e. Nada sube, nada tapa la imagen.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  src: url('@fontsource-variable/archivo/files/archivo-latin-standard-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  src: url('@fontsource-variable/archivo/files/archivo-latin-ext-standard-normal.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  --display: 'Archivo', 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --vh: 1vh;
+  --sv: 100svh;
+}
+
+html {
+  background: var(--space);
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------- el escenario ---------- */
+.stage {
+  position: fixed;
+  inset: 0;
+  height: 100dvh;
+  z-index: 0;
+  background: var(--space);
+  overflow: hidden;
+  pointer-events: none;
+}
+.stage__poster,
+.stage__poster img,
+.stage__gl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.stage__poster img {
+  object-fit: cover;
+  object-position: 60% 50%;
+}
+.stage__gl {
+  opacity: 0;
+  transition: none;
+}
+html.has-stage .stage__gl {
+  opacity: 1;
+}
+html.has-stage .stage__poster {
+  visibility: hidden;
+
+}
+.stage__src {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  opacity: 0;
+  left: 0;
+  top: 0;
+}
+/* sombra de lectura: la mueve el relato (--shade-l izquierda, --shade-b abajo, --shade-c centro, --shade-r derecha) */
+.stage__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(3, 6, 12, calc(var(--shade-l, 0) * 0.82)) 0%, rgba(3, 6, 12, 0) 58%),
+    linear-gradient(270deg, rgba(3, 6, 12, calc(var(--shade-r, 0) * 0.82)) 0%, rgba(3, 6, 12, 0) 58%),
+    linear-gradient(0deg, rgba(3, 6, 12, calc(var(--shade-b, 0) * 0.85)) 0%, rgba(3, 6, 12, 0) 55%),
+    radial-gradient(ellipse 70% 55% at 50% 50%, rgba(3, 6, 12, calc(var(--shade-c, 0) * 0.62)), rgba(3, 6, 12, 0) 70%),
+    linear-gradient(180deg, rgba(3, 6, 12, calc(var(--hud, 1) * 0.55)) 0%, rgba(3, 6, 12, 0) 14%);
+}
+
+.grain {
+  z-index: 40;
+  opacity: 0.05;
+}
+
+/* ---------- la barra: transparente sobre la película ---------- */
+.nav.is-scrolled {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+html.nav-light .nav.is-scrolled {
+  background: rgba(224, 231, 237, 0.94);
+  border-bottom-color: var(--ink-line);
+}
+
+
+
+/* ---------- el preloader ---------- */
+.pre { display: none; }
+html.js .pre {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  color: var(--snow);
+  pointer-events: none;
+}
+.pre::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--space);
+  transition: opacity .88s ease-in-out;
+}
+html.pre-on { overflow: hidden; }
+html.pre-on .nav__logo { visibility: hidden; }
+.pre__lockup { position: relative; width: clamp(185px, 33vw, 510px); }
+.pre__brand, .pre__logo { display: block; width: 100%; height: auto; }
+.pre__brand { transform-origin: left top; }
+/* Los trazos se escriben dentro de la silueta exacta de la marca de la cabecera. */
+.pre:not(.pre--still):not(.pre--signed) .pre__solid,
+.pre--still .pre__pen, .pre--signed .pre__pen { visibility: hidden; }
+.pre__pen [data-l] { stroke-dasharray: 1 2; stroke-dashoffset: 1.28; opacity: 0; }
+.pre__track {
+  position: absolute;
+  top: calc(100% + clamp(24px, 3vw, 42px));
+  left: 35%;
+  width: 30%;
+  height: 1px;
+  background: var(--slate);
+  transition: opacity .2s;
+}
+.pre__track i {
+  display: block;
+  height: 100%;
+  background: var(--snow);
+  transform: scaleX(var(--loaded, 0));
+  transform-origin: left;
+  transition: transform .24s linear;
+}
+.pre__svg { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
+.pre__rim { fill: none; stroke: var(--mist); stroke-width: 1; }
+.pre.is-done::before, .pre.is-done .pre__track { opacity: 0; }
+.pre--writing .pre__svg { opacity: .24; transition: opacity .85s ease; }
+.pre--writing .pre__rim { animation: draw-limb 1.45s .52s cubic-bezier(.4,0,.26,1) both; stroke-dasharray: 1 2; }
+@keyframes draw-limb { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.pre.is-done .pre__svg { opacity: 0; }
+.pre--quick::before { transition-duration: .2s; }
+.pre--quick .pre__track, .pre--quick .pre__svg { display: none; }
+/* El isotipo de la apertura: sobre el logotipo, sin moverlo del centro; sus partes giran alrededor de su propio
+   centro (--o, medido en el build desde el maestro). Ocultas hasta que preload.ts las anima. */
+.pre__mark {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + clamp(22px, 3.4vw, 48px));
+  width: clamp(72px, 29%, 150px);
+  height: auto;
+  margin-inline: auto;
+  overflow: visible;
+  color: var(--snow);
+}
+.pre__mark__half, .pre__star, .pre__glow { transform-box: view-box; transform-origin: var(--o); }
+html.js .pre:not(.pre--still) .pre__mark__half,
+html.js .pre:not(.pre--still) .pre__star,
+html.js .pre:not(.pre--still) .pre__glow { opacity: 0; }
+.pre--still .pre__star, .pre--still .pre__glow { display: none; }
+
+/* ---------- la secuencia ---------- */
+.film {
+  position: relative;
+  z-index: 2;
+}
+html.js:not(.no-stage) .film-track {
+  position: relative;
+  /* la película entera + una pantalla de luz blanca antes del epílogo */
+  height: calc(67.5 * var(--sps, 560px) + 70lvh);
+}
+html.js:not(.no-stage) .beat {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--t0) * var(--sps, 560px));
+  height: calc((var(--t1) - var(--t0)) * var(--sps, 560px));
+  /* un ancla lleva al momento en que el rótulo ya está entero */
+  scroll-margin-top: calc(-0.9 * var(--sps, 560px));
+  pointer-events: none;
+}
+.beat__in {
+  position: relative;
+  padding: calc(var(--nav-h) + 40px) var(--gutter) 120px;
+}
+html.js:not(.no-stage) .beat__in {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  align-content: center;
+  padding: calc(var(--nav-h) + 24px) calc(var(--gutter) + 72px) 110px;
+  visibility: hidden;
+  pointer-events: none;
+}
+html.js .beat__in.is-on {
+  visibility: visible;
+}
+html.js .beat__in.is-on a,
+html.js .beat__in.is-on button {
+  pointer-events: auto;
+}
+.beat__in > * {
+  max-width: 100%;
+}
+
+/* ---------- las letras: cada carácter con su azar (--r) vive de la variable de su línea (--l) ---------- */
+.film .ln {
+  display: block;
+  overflow: visible;
+  padding-block: 0;
+  margin-block: 0;
+}
+.ch {
+  display: inline-block;
+  white-space: pre;
+}
+.w {
+  display: inline-block;
+  white-space: nowrap;
+}
+html.js .ch {
+  --t: clamp(0, calc((var(--l, 1) - var(--r) * 0.55) / 0.45), 1);
+  --x: clamp(0, calc((var(--e, 0) - var(--r) * 0.5) / 0.5), 1);
+  opacity: calc(var(--t) * (1 - var(--x)));
+  transform: translate3d(0, calc((1 - var(--t)) * 0.32em - var(--x) * 0.26em), 0);
+
+}
+html.no-motion .ch {
+  filter: none !important;
+  transform: none !important;
+}
+html.js [data-k] {
+  --t: clamp(0, calc(var(--a, 1) * 1.7 - var(--k, 0) * 0.16), 1);
+  opacity: calc(var(--t) * (1 - var(--e, 0)));
+  transform: translate3d(0, calc((1 - var(--t)) * 16px - var(--e, 0) * 20px), 0);
+}
+
+/* ---------- tipografía ---------- */
+.kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+.kicker__n {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--display);
+  font-stretch: 70%;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--white);
+}
+.kicker__n::after {
+  content: '';
+  width: 40px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+}
+.film .title,
+.film .hero__title {
+  margin: 20px 0 0;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 0.96;
+  color: var(--white);
+  text-wrap: balance;
+}
+.film .title {
+  font-size: calc(clamp(40px, 5.6vw, 104px) * var(--fit, 1));
+}
+.film .title--xl {
+  font-size: calc(clamp(54px, 8.4vw, 156px) * var(--fit, 1));
+}
+.ln--em {
+  color: var(--mist);
+}
+.deck {
+  margin: 24px 0 0;
+  max-width: 44ch;
+  font-size: clamp(15px, 1.2vw, 18px);
+  line-height: 1.6;
+  color: var(--snow);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+.btn--lg {
+  min-height: 56px;
+  padding: 0 30px;
+  font-size: 16px;
+}
+.ico--down {
+  transform: rotate(90deg);
+}
+
+/* ---------- 00 · el hero: a sangre, el título a todo lo ancho ---------- */
+html.js .beat--hero .beat__in {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: calc(var(--nav-h) + 3vh);
+  padding-bottom: 96px;
+}
+.film .hero__title {
+  margin: 2.2vh 0 0;
+  font-family: var(--display);
+  font-weight: 800;
+  font-stretch: 66%;
+  text-transform: uppercase;
+  letter-spacing: -0.012em;
+  line-height: 0.84;
+  font-size: calc(clamp(60px, 11.2vw, 220px) * var(--fit, 1));
+}
+.beat--hero .hero__title .ln--em {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.92);
+}
+.hero__foot {
+  max-width: 560px;
+}
+.hero__foot .deck {
+  margin-top: 0;
+}
+.where {
+  grid-row: 3;
+}
+.beat--hero .hero__foot {
+  grid-row: 3;
+}
+.beat--hero .deck {
+  align-self: end;
+}
+.where {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 26px 0 0;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--haze);
+}
+.where i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* posiciones de los rótulos sobre la imagen */
+.beat--left .beat__in {
+  justify-items: start;
+}
+.beat--left .beat__in > :not(.phone-ov) {
+  max-width: min(760px, 100%);
+}
+html.js .beat--center .beat__in {
+  justify-items: center;
+  text-align: center;
+}
+.beat--center .kicker {
+  justify-content: center;
+}
+.beat--center .deck {
+  margin-left: auto;
+  margin-right: auto;
+}
+html.js .beat--low .beat__in,
+html.js .beat--berg .beat__in {
+  align-content: end;
+}
+html.js .beat--low .beat__in {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: end;
+  gap: 4vw;
+}
+html.js .beat--mega .beat__in {
+  justify-items: center;
+  align-content: center;
+  gap: 2vh;
+  text-align: center;
+}
+
+/* la cifra */
+.stat {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 26px 0 0;
+}
+.stat b,
+.figs dt {
+  font-family: var(--display);
+  font-stretch: 64%;
+  font-weight: 800;
+  font-size: calc(clamp(52px, 5.4vw, 92px) * var(--fit, 1));
+  line-height: 0.9;
+  color: var(--white);
+  font-variant-numeric: tabular-nums;
+}
+.stat > span {
+  font-family: var(--display);
+  font-stretch: 70%;
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--white);
+}
+.stat em {
+  flex-basis: 100%;
+  font-style: normal;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+.figs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px clamp(24px, 4vw, 60px);
+  margin: 28px 0 0;
+}
+.figs dt {
+  font-size: calc(clamp(40px, 4.2vw, 72px) * var(--fit, 1));
+}
+.figs dd {
+  margin: 8px 0 0;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+
+/* ---------- los servicios: rótulos bajos, sin caja ---------- */
+.lts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px clamp(22px, 3vw, 44px);
+  margin-top: 34px;
+  max-width: 860px;
+}
+.lts--row {
+  margin-top: 0;
+  align-self: end;
+}
+.lt {
+  position: relative;
+  padding-top: 16px;
+  border-top: 1px solid rgba(224, 231, 237, 0.28);
+}
+.lt .svc__text {
+  display: grid;
+  gap: 8px;
+}
+.lt .svc__problem {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--mist);
+}
+.lt .svc__name {
+  margin: 0;
+  font-size: clamp(18px, 1.5vw, 22px);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--white);
+}
+.lt .svc__desc {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--snow);
+}
+.lt .svc__link {
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+/* Valeria, como un teléfono que flota en la escena */
+.phone-ov {
+  position: absolute;
+  right: calc(var(--gutter) + 92px);
+  top: 50%;
+  width: min(330px, 26vw);
+  transform: translateY(-50%);
+}
+html.js .phone-ov[data-k] {
+  transform: translate3d(0, calc(-50% + (1 - var(--t)) * 24px - var(--e, 0) * 20px), 0);
+}
+.phone-ov .live__chat {
+  box-shadow: 0 50px 120px -30px rgba(0, 0, 0, 0.85);
+}
+
+/* ---------- los cruces: la frase gigante ---------- */
+.mega {
+  margin: 0;
+  max-width: 16ch;
+  font-family: var(--display);
+  font-weight: 800;
+  font-stretch: 68%;
+  text-transform: uppercase;
+  line-height: 0.86;
+  letter-spacing: -0.01em;
+  color: var(--white);
+  text-wrap: balance;
+}
+.mega--loud {
+  font-size: calc(clamp(54px, 10.5vw, 196px) * var(--fit, 1));
+}
+.mega--giant {
+  max-width: none;
+  font-size: calc(clamp(64px, 17vw, 330px) * var(--fit, 1));
+  line-height: 0.8;
+}
+.mega--quiet {
+  max-width: 30ch;
+  font-family: var(--font);
+  font-stretch: 100%;
+  text-transform: none;
+  font-weight: 500;
+  font-size: calc(clamp(22px, 2.6vw, 44px) * var(--fit, 1));
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--snow);
+}
+.mega .ln--em {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--white);
+}
+.beat--plunge .mega {
+  mix-blend-mode: difference;
+}
+
+
+/* ---------- el iceberg: 10 % / 90 % alrededor de la línea de agua ---------- */
+.berg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.berg p {
+  position: absolute;
+  right: calc(var(--gutter) + 130px);
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  margin: 0;
+  text-align: right;
+}
+.berg b {
+  font-family: var(--display);
+  font-stretch: 64%;
+  font-weight: 800;
+  font-size: calc(clamp(72px, 11vw, 200px) * var(--fit, 1));
+  line-height: 0.8;
+  color: var(--white);
+}
+.berg span {
+  max-width: 26ch;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--snow);
+}
+.berg__top {
+  bottom: calc(100% - var(--wl, 52%) + 22px);
+}
+.berg__top b {
+  color: var(--abyss);
+  -webkit-text-stroke: 0;
+}
+.berg__top span {
+  color: var(--slate);
+}
+.berg__low {
+  top: calc(var(--wl, 52%) + 22px);
+}
+.berg__low b {
+  margin-bottom: 0.16em;
+}
+.berg::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--wl, 52%);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7) 60%, transparent);
+  transform: scaleX(var(--a, 0));
+  opacity: calc(1 - var(--e, 0));
+}
+
+
+
+
+/* ---------- el epílogo: sobre la misma luz blanca en que termina la película ---------- */
+.epi {
+  position: relative;
+  z-index: 2;
+  color: var(--abyss);
+  background: var(--snow);
+  padding: 0 var(--gutter) clamp(80px, 10vw, 140px);
+  display: grid;
+  gap: clamp(96px, 12vw, 180px);
+}
+.epi > * {
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  scroll-margin-top: calc(var(--nav-h) + 24px);
+}
+html:not(.js) .epi,
+html.no-stage .epi {
+  background: var(--snow);
+  padding-top: 120px;
+}
+.epi .work__title,
+.epi .reels__title {
+  color: var(--abyss);
+}
+.epi .work__head p,
+.epi .reels__head p,
+.epi .case__place,
+.epi .case dt,
+.epi figcaption {
+  color: var(--slate);
+}
+.epi .case__name,
+.epi .case dd {
+  color: var(--abyss);
+}
+.epi .case,
+.epi .cases {
+  border-color: var(--ink-line);
+}
+.epi .case__link,
+.epi .reels__ig,
+.epi figcaption a {
+  color: var(--abyss);
+}
+
+/* ---------- la telemetría ---------- */
+.alti {
+  position: fixed;
+  z-index: 30;
+  right: var(--gutter);
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  opacity: var(--hud, 1);
+  transition: opacity 0.6s var(--ease);
+  pointer-events: none;
+}
+.alti__label {
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+.alti__val {
+  font-family: var(--display);
+  font-stretch: 70%;
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  font-variant-numeric: tabular-nums;
+  min-width: 7ch;
+  text-align: right;
+}
+.alti__tape {
+  position: relative;
+  width: 34px;
+  height: 180px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent);
+  mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent);
+}
+.alti__tape::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 34px;
+  height: 1px;
+  background: var(--white);
+}
+.alti__ticks {
+  position: absolute;
+  right: 0;
+  left: 0;
+  top: 0;
+  height: 400%;
+  background: repeating-linear-gradient(to bottom, rgba(178, 192, 204, 0.55) 0 1px, transparent 1px 12px),
+    repeating-linear-gradient(to bottom, rgba(224, 231, 237, 0.9) 0 1px, transparent 1px 60px);
+  background-size: 14px 100%, 26px 100%;
+  background-position: right top, right top;
+  background-repeat: repeat-y;
+  transform: translate3d(0, var(--tape, -40%), 0);
+}
+
+
+
+.scrub {
+  position: fixed;
+  z-index: 30;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: 20px;
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--haze);
+  opacity: var(--hud, 1);
+  transition: opacity 0.6s var(--ease);
+}
+html.nav-light .scrub,
+html.nav-light .alti {
+  opacity: 0;
+  pointer-events: none;
+}
+.scrub__tc {
+  font-family: var(--display);
+  font-stretch: 70%;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--snow);
+  font-variant-numeric: tabular-nums;
+}
+.scrub__now {
+  min-width: 9ch;
+  color: var(--white);
+}
+.scrub__track {
+  position: relative;
+  height: 22px;
+}
+.scrub__track::before,
+.scrub__fill {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(178, 192, 204, 0.22);
+}
+.scrub__fill {
+  background: var(--white);
+  transform-origin: left;
+  transform: scaleX(var(--prog, 0));
+}
+.scrub__track a {
+  position: absolute;
+  left: calc(var(--at, 0) * 100%);
+  top: 0;
+  width: 22px;
+  height: 22px;
+  margin-left: -11px;
+  display: grid;
+  place-items: center;
+  color: var(--haze);
+  text-decoration: none;
+}
+.scrub__track a::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.scrub__track a span {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translate(-50%, 4px);
+  white-space: nowrap;
+  opacity: 0;
+  color: var(--white);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+  pointer-events: none;
+}
+.scrub__track a[aria-current='true'] {
+  color: var(--white);
+}
+@media (hover: hover) {
+  .scrub__track a:hover span {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+.scrub__track a:focus-visible span {
+  opacity: 1;
+}
+
+/* ---------- rótulos anclados a la película ---------- */
+.callouts {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.co {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: var(--o, 0);
+  transform: translate3d(var(--x, -999px), var(--y, -999px), 0);
+  will-change: transform, opacity;
+}
+.co__dot {
+  position: absolute;
+  left: -5px;
+  top: -5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--white);
+}
+.co__dot::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--white);
+}
+.co__line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--len, 90px) * var(--o, 0));
+  height: 1px;
+  background: rgba(255, 255, 255, 0.8);
+  transform-origin: left;
+  transform: rotate(var(--ang, -32deg));
+}
+.co__label {
+  position: absolute;
+  left: var(--lx, 80px);
+  top: var(--ly, -62px);
+  transform: translate(var(--tx, 0%), -50%);
+  white-space: nowrap;
+  padding: 7px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(3, 6, 12, 0.55);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+
+/* ---------- teléfono ---------- */
+@media (max-width: 900px) {
+  html.js:not(.no-stage) .beat__in {
+    align-content: end;
+    align-content: safe end;
+    padding: calc(var(--nav-h) + 16px) var(--gutter) 96px;
+  }
+  html.js .beat--mega .beat__in {
+    align-content: center;
+  }
+  html.js .beat--center .beat__in {
+    text-align: left;
+    justify-items: start;
+  }
+  .beat--center .kicker {
+    justify-content: flex-start;
+  }
+  html.js .beat--low .beat__in {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+  .phone-ov {
+    display: none;
+  }
+  .alti {
+    top: auto;
+    bottom: 46px;
+    transform: none;
+    grid-template-columns: auto auto;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .alti__tape {
+    display: none;
+  }
+  .alti__val {
+    font-size: 15px;
+  }
+  .scrub {
+    grid-template-columns: auto 1fr;
+    bottom: 16px;
+  }
+  .scrub__now,
+  .scrub__hint {
+    display: none;
+  }
+  .lts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    margin-top: 22px;
+  }
+  .lts--row .lt:nth-child(2) .svc__desc,
+  .lt .svc__problem {
+    display: none;
+  }
+  .film .hero__title {
+    font-size: calc(clamp(52px, 15.5vw, 96px) * var(--fit, 1));
+  }
+  .berg p {
+    left: var(--gutter);
+    right: var(--gutter);
+  }
+  .beat--berg .low__l .lts {
+    display: none;
+  }
+  .co__label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+}
+@media (max-width: 400px) {
+  .kicker {
+    letter-spacing: 0.18em;
+  }
+  .figs {
+    gap: 14px;
+  }
+  .figs dt {
+    font-size: calc(40px * var(--fit, 1));
+  }
+  .mega {
+    max-width: 100%;
+  }
+  .mega--quiet {
+    font-size: calc(19px * var(--fit, 1));
+  }
+  .mega--giant {
+    font-size: calc(15.5vw * var(--fit, 1));
+  }
+  .mega--loud {
+    font-size: calc(13vw * var(--fit, 1));
+  }
+}
+
+html.pre-on .stage__poster { visibility: hidden; }
+html.no-stage .beat__in { visibility: visible; position: relative; }
+html.no-stage .beat { position: relative; pointer-events: auto; background: rgba(3,6,12,.65); }
+html.no-stage .beat--hero { min-height: 100svh; background: transparent; }
+html.no-stage .beat__in [data-k], html.no-stage .beat__in .ch { opacity: 1; filter: none; transform: none; }
+html.no-stage .scrub, html.no-stage .alti, html.no-stage .callouts, html.no-stage .berg { display: none; }
+html.no-stage .phone-ov { position: static; display: block; margin-top: 24px; }
+html.no-stage .beat--berg .low__l .lts { display: grid; }
+html.no-stage .beat--hero .beat__in { min-height: 100svh; }
+@media (max-width: 900px) {
+  .berg b { font-size: calc(clamp(24px, 7vw, 52px) * var(--fit, 1)); }
+  .berg span { max-width: 21ch; font-size: 10px; }
+  .berg__low { top: min(calc(var(--wl, 52%) + 12px), 58%); }
+  .beat--hero .hero__title { font-size: calc(clamp(46px, 14vw, 96px) * var(--fit, 1)); }
+}
+@media (max-height: 660px) {
+  html.js .beat--hero .beat__in { padding-block: calc(var(--nav-h) + 8px) 58px; }
+}
+@media (max-height: 660px) and (max-width: 900px) {
+  /* en el teléfono la telemetría vive abajo: el hero no se le monta (fit recoge lo que sobre) */
+  html.js .beat--hero .beat__in { padding-bottom: 96px; }
+  .film .hero__title { font-size: calc(min(10vw, 14svh) * var(--fit, 1)); }
+  .hero__foot .actions { margin-top: 8px; }
+}
+
+.valeria-open { display: none; }
+#valeria-demo { margin: auto; width: min(90vw, 420px); max-height: 78svh; overflow: auto; padding: 22px; color: var(--snow); background: var(--abyss); border: 1px solid var(--slate); }
+#valeria-demo::backdrop { background: rgb(3 6 12 / .8); }
+#valeria-demo > button { float: right; color: var(--snow); padding: 6px; }
+#valeria-demo .live__msgs { height: auto; padding: 16px 0 0; }
+@media (max-width: 900px) {
+  .valeria-open { display: inline-flex; width: fit-content; margin-top: 10px; color: var(--snow); }
+  .beat--berg .low__l .lts { display: grid; margin-top: 8px; }
+  .beat--berg .lt { border: 0; padding: 0; }
+  .beat--berg .lt .svc__name, .beat--berg .lt .svc__desc { display: none; }
+}
+@media (min-width: 901px) { .fab { bottom: 58px; } }
+
+html.has-stage .grain, html.has-stage .stage__shade { display: none; }
+html.js .ln.is-set .ch { filter: none; transform: none; opacity: 1; }
+
+.beat--plunge .mega { mix-blend-mode: normal; text-shadow: 0 2px 26px rgba(3,6,12,.75); }
+@media (max-width: 900px) {
+  .beat--left .title, .beat--low .title { text-shadow: 0 2px 16px rgba(3,6,12,.8); }
+}
+
+/* ---------- que cada rótulo quepa (film.ts → fit): pantallas bajas y textos largos en EN/PT ---------- */
+/* 1 · menos aire entre los bloques */
+html.js:not(.no-stage) .is-snug .title { margin-top: 12px; }
+html.js:not(.no-stage) .is-snug .stat,
+html.js:not(.no-stage) .is-snug .figs { margin-top: 16px; }
+html.js:not(.no-stage) .is-snug .figs { row-gap: 10px; }
+html.js:not(.no-stage) .is-snug .lts { margin-top: 18px; gap: 12px 26px; }
+html.js:not(.no-stage) .is-snug .lt { padding-top: 12px; }
+html.js:not(.no-stage) .is-snug .actions { margin-top: 18px; }
+html.js:not(.no-stage) .is-snug .where { margin-top: 14px; }
+html.js:not(.no-stage) .is-snug .deck { margin-top: 14px; }
+html.js:not(.no-stage) .beat--hero .is-snug .deck { margin-top: 0; }
+/* 2 · lo secundario se recoge entero (nunca a media palabra) */
+html.js:not(.no-stage) .is-tight .svc__problem,
+html.js:not(.no-stage) .is-tight .svc__desc,
+html.js:not(.no-stage) .is-tight .where,
+html.js:not(.no-stage) .is-tight .berg span { display: none; }
+html.js:not(.no-stage) .is-tight .berg__low b { margin-bottom: 0; }
+
+/* ---------- el índice en el teléfono y la tableta: la palabra y sus dos líneas en una fila ---------- */
+@media (max-width: 1080px) {
+  .nav__menu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: auto;
+    min-width: 44px;
+    padding: 0 4px;
+    margin-right: -4px;
+  }
+  .nav__index {
+    font-size: 13px;
+    line-height: 1;
+    color: var(--snow);
+  }
+  .nav__menu-icon {
+    width: 18px;
+  }
+}
+@media (max-width: 480px) {
+  .nav__index { display: none; }
+}
+
+/* el iceberg: en el computador la columna del capítulo no llega debajo de «Arriba» y «Debajo» */
+@media (min-width: 901px) {
+  html.js .beat--berg .low__l { max-width: min(600px, 44vw); }
+}
+
+/* Valeria en pantallas bajas: el teléfono cabe entre la barra y la telemetría; los primeros mensajes suben y se
+   ocultan arriba, como en un chat que avanza */
+@media (min-width: 901px) {
+  .phone-ov {
+    display: flex;
+    max-height: calc(100dvh - var(--nav-h) - 128px);
+  }
+  .phone-ov .live__chat {
+    min-height: 0;
+    max-height: 100%;
+  }
+  .phone-ov .live__msgs {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
+/* ---------- el sello: en la luz blanca de la cumbre, el isotipo se arma con el scroll (la marca, en lo más alto) ---------- */
+html.js .beat--seal .beat__in {
+  justify-items: center;
+  align-content: center;
+  text-align: center;
+  color: var(--abyss);
+}
+.seal__mark {
+  display: block;
+  width: clamp(88px, 12vw, 176px);
+  height: auto;
+  overflow: visible;
+}
+.seal__mark__half { transform-box: view-box; transform-origin: var(--o); }
+html.js .seal__mark__half {
+  opacity: calc(var(--a, 1) * (1 - var(--e, 0)));
+  transform: rotate(calc((1 - var(--a, 1)) * -150deg + var(--e, 0) * 30deg)) scale(calc(1 + (1 - var(--a, 1)) * 0.4));
+}
+html.no-motion .seal__mark__half { transform: none; }
+.seal__word { margin: clamp(22px, 3.4vh, 38px) 0 0; }
+.seal__logo { display: block; width: clamp(150px, 17vw, 250px); height: auto; }
+.seal__line {
+  margin: 16px 0 0;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+/* sin WebGL el sello va sobre la noche quieta: la marca en nieve */
+html.no-stage .beat--seal .beat__in { color: var(--snow); }
+html.no-stage .beat--seal .seal__line { color: var(--mist); }

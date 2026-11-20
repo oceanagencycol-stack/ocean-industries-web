@@ -2,10 +2,9 @@
  * The reels: Ocean's own production, from Instagram. The page carries the three latest as served from our own domain
  * (no JavaScript needed to see them); /api/reels may bring newer ones (Instagram Graph API, when its token is set).
  * Each video downloads only when it comes near the view, plays muted in view and pauses out of it; the sound button
- * plays one with sound at a time (and the site's own sound steps back meanwhile).
+ * plays one with sound at a time.
  */
-import { sound } from '../core/audio'
-import { t } from './i18n'
+import { t, type Lang } from './i18n'
 
 interface Reel {
   id: string
@@ -14,6 +13,16 @@ interface Reel {
   media_webm?: string
   thumbnail_url?: string
   caption?: string
+}
+
+const audioOn = { es: 'Activar el sonido del reel', en: 'Turn on reel audio', pt: 'Ativar o som do reel' }
+const audioOff = { es: 'Silenciar el reel', en: 'Mute the reel', pt: 'Silenciar o reel' }
+const instagram = { es: 'Ver en Instagram', en: 'See on Instagram', pt: 'Ver no Instagram' }
+
+function localize(el: HTMLElement, words: Record<Lang, string>, aria = false) {
+  for (const l of ['es', 'en', 'pt'] as const) el.setAttribute('data-' + l + (aria ? '-aria' : ''), words[l])
+  if (aria) el.setAttribute('aria-label', t(words))
+  else el.textContent = t(words)
 }
 
 function card(r: Reel): HTMLElement {
@@ -34,18 +43,19 @@ function card(r: Reel): HTMLElement {
   b.className = 'reel__sound'
   b.type = 'button'
   b.setAttribute('aria-pressed', 'false')
-  b.setAttribute('aria-label', t({ es: 'Activar el sonido del reel', en: "Turn on the reel's sound", pt: 'Ativar o som do reel' }))
+  localize(b, audioOn, true)
   b.innerHTML = '<svg class="ico i-off" aria-hidden="true"><use href="#i-muted"/></svg><svg class="ico i-on" aria-hidden="true"><use href="#i-loud"/></svg>'
   phone.append(v, b)
   const cap = document.createElement('figcaption')
   const s = document.createElement('span')
   s.className = 'reel__cap'
   s.textContent = (r.caption || '').split('\n')[0].slice(0, 120)
+  if (!s.textContent) localize(s, { es: 'Reel de OCEAN', en: 'OCEAN reel', pt: 'Reel da OCEAN' })
   const a = document.createElement('a')
   a.href = r.permalink
   a.target = '_blank'
   a.rel = 'noopener'
-  a.textContent = t({ es: 'Ver en Instagram', en: 'See on Instagram', pt: 'Ver no Instagram' })
+  localize(a, instagram)
   cap.append(s, a)
   fig.append(phone, cap)
   return fig
@@ -83,10 +93,13 @@ export function initReels(): void {
   const setLoud = (v: HTMLVideoElement | null) => {
     if (loud && loud !== v) {
       loud.muted = true
-      loud.closest('.reel')?.querySelector('.reel__sound')?.setAttribute('aria-pressed', 'false')
+      const previous = loud.closest('.reel')?.querySelector<HTMLElement>('.reel__sound')
+      if (previous) {
+        previous.setAttribute('aria-pressed', 'false')
+        localize(previous, audioOn, true)
+      }
     }
     loud = v
-    sound.duck(!!v)
   }
 
   const near = new IntersectionObserver(
@@ -97,7 +110,7 @@ export function initReels(): void {
     (entries) =>
       entries.forEach((e) => {
         const v = e.target as HTMLVideoElement
-        if (e.isIntersecting && !reduced) {
+        if (e.isIntersecting && !reduced && v.closest('.is-selected')) {
           v.dataset.want = '1'
           arm(v)
           void v.play().catch(() => {})
@@ -110,14 +123,47 @@ export function initReels(): void {
     { threshold: 0.5 },
   )
 
+  function select(fig: HTMLElement) {
+    for (const item of grid!.querySelectorAll<HTMLElement>('.reel')) {
+      const selected = item === fig
+      item.classList.toggle('is-selected', selected)
+      item.querySelector('.reel__pick')?.setAttribute('aria-pressed', String(selected))
+      if (!selected) {
+        const video = item.querySelector('video')!
+        delete video.dataset.want
+        video.pause()
+        if (loud === video) setLoud(null)
+      }
+    }
+  }
+
   const wire = () => {
-    grid.querySelectorAll<HTMLVideoElement>('.reel__video').forEach((v) => {
+    const items = grid.querySelectorAll<HTMLElement>('.reel')
+    for (const [i, item] of items.entries()) {
+      const v = item.querySelector('video')!
+      const caption = item.querySelector<HTMLElement>('.reel__cap')!
+      const pick = document.createElement('button')
+      pick.className = 'reel__pick'
+      pick.type = 'button'
+      v.id = 'ocean-reel-' + i
+      pick.setAttribute('aria-controls', v.id)
+      caption.before(pick)
+      pick.append(caption)
       near.observe(v)
       view.observe(v)
-    })
+    }
+    if (items.length) {
+      select(items[0])
+      grid.closest('.reels')?.classList.add('has-player')
+    }
   }
 
   grid.addEventListener('click', (e) => {
+    const item = (e.target as Element).closest<HTMLElement>('.reel')
+    if (item && (e.target as Element).closest('.reel__pick')) {
+      select(item)
+      return
+    }
     const b = (e.target as Element).closest<HTMLButtonElement>('.reel__sound')
     const v = (e.target as Element).closest('.reel')?.querySelector<HTMLVideoElement>('.reel__video')
     if (!v) return
@@ -126,7 +172,7 @@ export function initReels(): void {
       const on = v.muted
       v.muted = !on
       b.setAttribute('aria-pressed', String(on))
-      b.setAttribute('aria-label', on ? t({ es: 'Silenciar el reel', en: 'Mute the reel', pt: 'Silenciar o reel' }) : t({ es: 'Activar el sonido del reel', en: "Turn on the reel's sound", pt: 'Ativar o som do reel' }))
+      localize(b, on ? audioOff : audioOn, true)
       setLoud(on ? v : null)
       void v.play().catch(() => {})
     } else if (reduced) {
@@ -145,6 +191,7 @@ export function initReels(): void {
       if (!d || d.source === 'fallback' || !Array.isArray(d.reels) || !d.reels.length) return
       near.disconnect()
       view.disconnect()
+      setLoud(null)
       grid.replaceChildren(...d.reels.slice(0, 3).map(card))
       wire()
     })

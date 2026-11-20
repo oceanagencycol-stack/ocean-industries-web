@@ -1,14 +1,9 @@
-/**
- * The live section's conversation: a real script of Valeria's (the customer asks, the agent answers with a fact and
- * closes by booking). It plays when it comes into view, rests out of view, repeats a few times and then shows the whole
- * conversation. With reduced motion, the whole conversation shows at once: never an empty box.
- */
+/** La conversación de ejemplo avanza con el tramo de agentes. */
 import { lang, onLang, type Lang } from './i18n'
-import { sound } from '../core/audio'
 
 type Line = ['cli' | 'bot', string]
 
-const SCRIPT: Record<Lang, Line[]> = {
+export const SCRIPT: Record<Lang, Line[]> = {
   es: [
     ['cli', 'Hola, ¿ustedes hacen agentes para WhatsApp?'],
     ['bot', 'Sí. Lo montamos sobre tu número actual y responde solo, 24/7.'],
@@ -35,87 +30,60 @@ const SCRIPT: Record<Lang, Line[]> = {
   ],
 }
 
-const MAX_RUNS = 3
-
 export function initLive(): void {
   const box = document.getElementById('liveChat')
-  if (!box) return
-  const reduced = document.documentElement.classList.contains('no-motion')
-  let timer = 0
-  let runs = 0
-  let inView = false
+  const scene = box?.closest('.live__chat')
+  if (!box || !scene) return
+  const chat = { box, scene }
 
-  const bubble = (who: 'cli' | 'bot', text: string, quiet = false) => {
-    const p = document.createElement('p')
-    p.className = `msg ${who === 'cli' ? 'msg--in' : 'msg--out'}`
-    p.textContent = text
-    box.appendChild(p)
-    while (box.children.length > 5) box.removeChild(box.firstChild!)
-    if (!quiet) sound.play(who === 'bot' ? 'msgIn' : 'msgOut', { gain: 0.5 })
-  }
-  const typing = () => {
-    const p = document.createElement('p')
-    p.className = 'msg msg--out msg--typing'
-    p.innerHTML = '<i></i><i></i><i></i>'
-    box.appendChild(p)
-    while (box.children.length > 5) box.removeChild(box.firstChild!)
-    return p
-  }
-  const whole = () => {
-    window.clearTimeout(timer)
-    box.textContent = ''
-    SCRIPT[lang()].forEach(([w, x]) => bubble(w, x, true))
-  }
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)')
+  let visible = false
+  let lastCount = 0
+  let lastLang: Lang | undefined
+  let frame = 0
 
-  function run(): void {
-    window.clearTimeout(timer)
-    box!.textContent = ''
-    const g = SCRIPT[lang()]
-    let i = 0
-    const step = () => {
-      if (!inView) return
-      if (i >= g.length) {
-        runs++
-        if (runs < MAX_RUNS) timer = window.setTimeout(run, 4200)
-        return
-      }
-      const [who, text] = g[i++]
-      if (who === 'bot') {
-        const t = typing()
-        timer = window.setTimeout(() => {
-          t.remove()
-          bubble('bot', text)
-          timer = window.setTimeout(step, 1500)
-        }, 950)
-      } else {
-        bubble('cli', text)
-        timer = window.setTimeout(step, 1200)
-      }
+  function paint(): void {
+    const language = lang()
+    const lines = SCRIPT[language]
+    let count = 2
+    if (reduced.matches || document.documentElement.classList.contains('motion-paused')) count = lines.length
+    else if (visible) {
+      const rect = chat.scene.getBoundingClientRect()
+      const travel = innerHeight * 0.70 + rect.height * 0.4
+      const progress = (innerHeight * 0.87 - rect.top) / Math.max(1, travel)
+      count += Math.min(lines.length - count, Math.max(0, Math.floor(progress * (lines.length - 1))))
     }
-    step()
+    if (count === lastCount && language === lastLang) return
+    lastCount = count
+    lastLang = language
+
+    const messages = lines.slice(0, count).map(([who, body]) => {
+      const message = document.createElement('p')
+      message.className = `msg ${who === 'cli' ? 'msg--in' : 'msg--out'}`
+      message.textContent = body
+      return message
+    })
+    chat.box.replaceChildren(...messages)
   }
 
-  if (reduced || !('IntersectionObserver' in window)) {
-    whole()
-    onLang(whole)
-    return
+  function schedule(): void {
+    if (frame) return
+    frame = requestAnimationFrame(() => {
+      frame = 0
+      paint()
+    })
   }
-  whole() // the opening frame: the whole conversation, until it comes into view
-  const io = new IntersectionObserver(
-    (entries) => {
-      const e = entries[entries.length - 1]
-      const was = inView
-      inView = e.isIntersecting
-      if (inView && !was) {
-        if (runs < MAX_RUNS) run()
-      } else if (!inView) {
-        window.clearTimeout(timer)
-        whole()
-      }
-    },
-    { threshold: 0.35 },
-  )
-  io.observe(box)
-  document.addEventListener('visibilitychange', () => document.hidden && window.clearTimeout(timer))
-  onLang(() => (inView && runs < MAX_RUNS ? run() : whole()))
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting
+      if (visible) schedule()
+    })
+    observer.observe(scene)
+    window.addEventListener('scroll', () => { if (visible) schedule() }, { passive: true })
+  }
+  window.addEventListener('ocean:motion-preference', schedule)
+  reduced.addEventListener('change', schedule)
+  onLang(paint)
+  paint()
 }

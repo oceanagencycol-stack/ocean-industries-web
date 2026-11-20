@@ -1,5 +1,5 @@
 /**
- * The calendar (Cal.com): its iframe loads only when the section comes near (it weighs, and most visitors never get
+ * The calendar (Cal.com, light: it lives on the summit's snow): its iframe loads only when the section comes near (it weighs, and most visitors never get
  * there). The fallback inside the frame (open the calendar, book on WhatsApp) stays until it is loaded, and stays for
  * good if it can't be.
  */
@@ -23,7 +23,7 @@ export function initBooking(): void {
     // if it hasn't shown in a while, the way out (open Cal.com, WhatsApp) takes the place of "loading"
     const giveUp = window.setTimeout(() => frame.classList.remove('is-waiting'), 9000)
     iframe = document.createElement('iframe')
-    iframe.src = `${url}${url.includes('?') ? '&' : '?'}theme=dark`
+    iframe.src = `${url}${url.includes('?') ? '&' : '?'}theme=light`
     iframe.title = 'Cal.com'
     iframe.loading = 'lazy'
     iframe.allow = 'fullscreen'

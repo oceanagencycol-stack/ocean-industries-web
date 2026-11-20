@@ -1,0 +1,2443 @@
+/* ==========================================================================
+   OCEAN v3 · el sistema de la página (DESIGN.md)
+   Monocromo tipo Tesla: autoridad por contención. Lo único blanco puro es la acción principal y el resultado que
+   se enciende. Geist en una sola familia. Grano fino de película sobre todo. Una sola gramática de entrada
+   (src/v3/reveal.ts). Sin backdrop-filter; :hover solo dentro de @media (hover: hover).
+
+   Contraste medido (WCAG, tools: ver DESIGN.md): snow/space 16,3 · mist/space 10,9 · haze/space 5,05 ·
+   haze/abyss 4,64 · abyss/snow 14,9 · slate/snow 8,6 · abyss/white 18,7. Haze nunca va sobre slate ni sobre snow.
+   ========================================================================== */
+
+:root {
+  --space: #03060c;
+  --abyss: #06141d;
+  --slate: #2b404f;
+  --haze: #6e8193;
+  --mist: #b2c0cc;
+  --snow: #e0e7ed;
+  --white: #ffffff;
+  --signal: #a5ffd0;
+
+  --line: rgba(178, 192, 204, 0.16);
+  --line-2: rgba(178, 192, 204, 0.3);
+  --ink-line: rgba(6, 20, 29, 0.14);
+  --ink-line-2: rgba(6, 20, 29, 0.28);
+
+  --font: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --gutter: clamp(20px, 5vw, 72px);
+  --max: 1320px;
+  --nav-h: 64px;
+  --r: 6px;
+  --r-l: 14px;
+
+  color-scheme: dark;
+}
+
+/* ---------- base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--space);
+  color: var(--snow);
+  font-family: var(--font);
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: clip;
+  scroll-padding-top: calc(var(--nav-h) + 8px);
+  scroll-padding-bottom: 96px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.6;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'ss01' 0;
+  overflow-x: clip;
+}
+
+@media (min-width: 1024px) {
+  body {
+    font-size: 18px;
+  }
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+input {
+  font: inherit;
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+dl,
+dd,
+ul,
+ol,
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+[data-light] :focus-visible {
+  outline-color: var(--abyss);
+}
+
+::selection {
+  background: var(--snow);
+  color: var(--abyss);
+}
+
+.vh,
+.sprite {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: fixed;
+  z-index: 200;
+  left: 12px;
+  top: 12px;
+  padding: 10px 16px;
+  border-radius: var(--r);
+  background: var(--white);
+  color: var(--abyss);
+  font-weight: 560;
+  transform: translateY(-160%);
+}
+
+.skip:focus-visible {
+  transform: none;
+}
+
+.ico {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+/* ---------- el lienzo del mundo, el velo de la intro y el grano ---------- */
+.world {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100lvh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s var(--ease);
+}
+
+html.has-world .world {
+  opacity: 1;
+}
+
+html:not(.has-world) .world {
+  visibility: hidden;
+}
+
+.intro-veil {
+  display: none;
+}
+
+html.intro-due .intro-veil {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 2147482000;
+  background: var(--space);
+  /* si la intro no llega (red lenta, error), el velo se va solo: la página nunca queda tapada */
+  animation: veil-safety 0.6s ease 3s forwards;
+}
+
+@keyframes veil-safety {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* grano de película: la tesela de la casa (public/v3/grano.png, tools/grano.mjs: 256 px, la misma de la intro) sobre
+   todo, fina, en luz suave */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  background: url('/v3/grano.png') repeat;
+  background-size: 256px;
+  mix-blend-mode: soft-light;
+  opacity: 0.06;
+  contain: strict;
+}
+
+@media print {
+  .grain,
+  .world {
+    display: none;
+  }
+}
+
+/* ---------- tipografía ---------- */
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+
+.label__n {
+  font-variant-numeric: tabular-nums;
+  color: var(--snow);
+}
+
+.label__n::after {
+  content: '';
+  display: inline-block;
+  vertical-align: middle;
+  width: 28px;
+  height: 1px;
+  margin-left: 14px;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+.label--ink {
+  color: var(--slate);
+}
+
+.label--quiet {
+  color: var(--mist);
+}
+
+.title,
+.hero__title,
+.pause__title {
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  text-wrap: balance;
+}
+
+.title {
+  font-size: clamp(40px, 6vw, 88px);
+  margin: 22px 0 0;
+}
+
+.title--xl {
+  font-size: clamp(42px, 6.8vw, 104px);
+}
+
+/* las líneas de un titular entran desde detrás de su máscara (src/v3/reveal.ts) */
+.ln {
+  display: block;
+  overflow: clip;
+  /* lugar para los descendentes y la tilde: la máscara no los corta */
+  padding-block: 0.06em 0.1em;
+  margin-block: -0.06em -0.1em;
+}
+
+.ln > span {
+  display: inline-block;
+  will-change: auto;
+}
+
+.lead {
+  margin-top: 26px;
+  max-width: 34em;
+  color: var(--mist);
+  font-size: clamp(17px, 1.35vw, 19px);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* el estado inicial de la entrada: solo con JS y movimiento; si el JS no llega, se muestran solos */
+html.js:not(.no-motion) [data-reveal]:not(.is-in) .ln > span {
+  transform: translate3d(0, 108%, 0);
+}
+
+html.js:not(.no-motion) [data-rv]:not(.is-in) {
+  opacity: 0;
+}
+
+html.js:not(.no-motion):not(.rv-ready) [data-reveal] .ln > span,
+html.js:not(.no-motion):not(.rv-ready) [data-rv] {
+  animation: rv-safety 0.01s linear 3.6s forwards;
+}
+
+@keyframes rv-safety {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* el barrido de luz que descubre lo secundario: la máscara corre de izquierda a derecha */
+.rv-sweep {
+  -webkit-mask-image: linear-gradient(90deg, #000 33.3%, transparent 50%);
+  mask-image: linear-gradient(90deg, #000 33.3%, transparent 50%);
+  -webkit-mask-size: 300% 100%;
+  mask-size: 300% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: 100% 0;
+  mask-position: 100% 0;
+}
+
+/* ---------- botones ---------- */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: var(--r);
+  font-size: 15px;
+  font-weight: 540;
+  letter-spacing: -0.005em;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  isolation: isolate;
+  transition: background-color 0.3s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease), transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transform: translate3d(-110%, 0, 0);
+  pointer-events: none;
+}
+
+.btn:active {
+  transform: translate3d(0, 1px, 0);
+}
+
+/* la acción principal: lo único blanco puro de la interfaz */
+.btn--primary {
+  background: var(--white);
+  color: var(--abyss);
+}
+
+.btn--primary::after {
+  background: linear-gradient(105deg, transparent 30%, rgba(178, 192, 204, 0.55) 50%, transparent 70%);
+}
+
+/* la secundaria: contorno fino */
+.btn--line {
+  border: 1px solid rgba(224, 231, 237, 0.42);
+  color: var(--snow);
+}
+
+.btn--line::after {
+  background: linear-gradient(105deg, transparent 30%, rgba(224, 231, 237, 0.16) 50%, transparent 70%);
+}
+
+@media (hover: hover) {
+  .btn:hover::after {
+    transform: translate3d(110%, 0, 0);
+    transition: transform 0.9s var(--ease);
+  }
+  .btn--line:hover {
+    border-color: var(--snow);
+  }
+}
+
+.btn--sm {
+  min-height: 40px;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+.btn--lg {
+  min-height: 56px;
+  padding: 0 30px;
+  font-size: 16px;
+}
+
+.btn--wide {
+  width: 100%;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+  transform: none;
+}
+
+/* sobre la nieve, la acción principal se invierte: abisal con texto blanco */
+[data-light] .btn--primary {
+  background: var(--abyss);
+  color: var(--white);
+}
+
+[data-light] .btn--primary::after {
+  background: linear-gradient(105deg, transparent 30%, rgba(178, 192, 204, 0.28) 50%, transparent 70%);
+}
+
+[data-light] .btn--line {
+  border-color: var(--ink-line-2);
+  color: var(--abyss);
+}
+
+@media (hover: hover) {
+  [data-light] .btn--line:hover {
+    border-color: var(--abyss);
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 36px;
+}
+
+/* una luz fija (nada late solo) */
+.live-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12), 0 0 12px rgba(255, 255, 255, 0.6);
+  flex: none;
+}
+
+/* ==========================================================================
+   La barra
+   ========================================================================== */
+.nav {
+  position: fixed;
+  z-index: 60;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 0 var(--gutter);
+  padding-top: env(safe-area-inset-top);
+  box-sizing: content-box;
+  color: var(--snow);
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.5s var(--ease), border-color 0.5s var(--ease), color 0.5s var(--ease);
+}
+
+.nav.is-scrolled {
+  background: rgba(3, 6, 12, 0.9);
+  border-bottom-color: var(--line);
+}
+
+html.nav-light .nav.is-scrolled {
+  background: rgba(224, 231, 237, 0.96);
+  border-bottom-color: var(--ink-line);
+  color: var(--abyss);
+}
+
+.nav__brand {
+  display: block;
+  padding: 10px 0;
+}
+
+.nav__logo {
+  width: 104px;
+  height: auto;
+  overflow: visible;
+}
+
+/* la E del logotipo son tres horizontes (sus barras, tal cual, de marca/v3/logo.svg): el tramo actual enciende su
+   barra; en la cumbre, las tres. Quieta al borde izquierdo (computador), del tamaño del texto; nunca se anima sola */
+.horizon {
+  position: fixed;
+  z-index: 40;
+  left: max(24px, calc((100vw - var(--max)) / 2 - 44px));
+  top: 50%;
+  width: 17px;
+  height: auto;
+  margin-top: -9px;
+  overflow: visible;
+  color: var(--snow);
+  pointer-events: none;
+  transition: color 0.5s var(--ease);
+}
+
+html.nav-light .horizon {
+  color: var(--abyss);
+}
+
+.horizon path {
+  opacity: 0.2;
+  transition: opacity 0.6s var(--ease);
+}
+
+.horizon[data-horizon='1'] path:nth-child(1),
+.horizon[data-horizon='2'] path:nth-child(2),
+.horizon[data-horizon='3'] path:nth-child(3),
+.horizon[data-horizon='4'] path {
+  opacity: 1;
+}
+
+@media (max-width: 1240px) {
+  .horizon {
+    display: none;
+  }
+}
+
+.nav__links {
+  display: flex;
+  gap: 30px;
+  margin-left: auto;
+  font-size: 14px;
+  font-weight: 450;
+  letter-spacing: 0.01em;
+}
+
+.nav__links a {
+  position: relative;
+  padding: 8px 0;
+  opacity: 0.78;
+  transition: opacity 0.3s;
+}
+
+.nav__links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.6s var(--ease);
+}
+
+.nav__links a[aria-current] {
+  opacity: 1;
+}
+
+.nav__links a[aria-current]::after {
+  transform: none;
+}
+
+@media (hover: hover) {
+  .nav__links a:hover {
+    opacity: 1;
+  }
+}
+
+.nav__tools {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.lang {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.lang button {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 6px;
+  border-radius: var(--r);
+  font-size: 12px;
+  font-weight: 560;
+  letter-spacing: 0.12em;
+  opacity: 0.55;
+  transition: opacity 0.25s;
+}
+
+.lang button[aria-pressed='true'] {
+  opacity: 1;
+  box-shadow: inset 0 -1px 0 currentColor;
+  border-radius: 0;
+}
+
+@media (hover: hover) {
+  .lang button:hover {
+    opacity: 1;
+  }
+}
+
+/* sobre la nieve, lo no elegido sigue con contraste AA (abisal al 80 % sobre nieve ≈ 9:1) */
+[data-light] .lang button,
+html.nav-light .nav.is-scrolled .lang button {
+  opacity: 0.8;
+}
+
+[data-light] .lang button[aria-pressed='true'],
+html.nav-light .nav.is-scrolled .lang button[aria-pressed='true'] {
+  opacity: 1;
+}
+
+html.nav-light .nav.is-scrolled .btn--primary {
+  background: var(--abyss);
+  color: var(--white);
+}
+
+/* ---- botón de sonido (barra): cuatro barras que solo se mueven cuando suena ---- */
+.snd {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -6px;
+  border-radius: var(--r);
+  opacity: 0.7;
+  transition: opacity 0.25s;
+}
+
+.motion {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin-right: -8px;
+  border-radius: var(--r);
+  color: inherit;
+  opacity: 0.76;
+}
+
+.motion .ico {
+  width: 18px;
+  height: 18px;
+}
+
+.motion__play,
+.motion[aria-pressed='true'] .motion__pause {
+  display: none;
+}
+
+.motion[aria-pressed='true'] .motion__play {
+  display: block;
+}
+
+@media (hover: hover) {
+  .motion:hover {
+    opacity: 1;
+  }
+}
+.snd.is-on {
+  opacity: 1;
+}
+.snd__bars {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 16px;
+}
+.snd__bars i {
+  display: block;
+  width: 2px;
+  height: 16px;
+  background: currentColor;
+  border-radius: 1px;
+  transform: scaleY(0.14);
+  transition: transform 0.4s var(--ease);
+}
+.snd.is-on .snd__bars i {
+  transform: scaleY(0.4);
+}
+.snd.is-playing .snd__bars i {
+  animation: snd-bar 1.15s ease-in-out infinite;
+}
+.snd.is-playing .snd__bars i:nth-child(2) {
+  animation-duration: 0.9s;
+  animation-delay: -0.3s;
+}
+.snd.is-playing .snd__bars i:nth-child(3) {
+  animation-duration: 1.35s;
+  animation-delay: -0.6s;
+}
+.snd.is-playing .snd__bars i:nth-child(4) {
+  animation-duration: 1s;
+  animation-delay: -0.15s;
+}
+@keyframes snd-bar {
+  0%,
+  100% {
+    transform: scaleY(0.25);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+@media (hover: hover) {
+  .snd:hover {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .snd.is-playing .snd__bars i {
+    animation: none;
+    transform: scaleY(0.6);
+  }
+}
+
+.nav__menu {
+  display: none;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  margin-right: -10px;
+}
+
+.nav__menu-icon {
+  display: grid;
+  gap: 7px;
+  width: 20px;
+}
+
+.nav__menu-icon i {
+  display: block;
+  height: 1.5px;
+  background: currentColor;
+  transition: transform 0.4s var(--ease);
+}
+
+.nav__menu[aria-expanded='true'] .nav__menu-icon i:first-child {
+  transform: translateY(4.25px) rotate(45deg);
+}
+
+.nav__menu[aria-expanded='true'] .nav__menu-icon i:last-child {
+  transform: translateY(-4.25px) rotate(-45deg);
+}
+
+@media (max-width: 1080px) {
+  .nav__links {
+    display: none;
+  }
+  .nav__tools {
+    margin-left: auto;
+  }
+  .nav__tools .lang {
+    display: none;
+  }
+  .nav__menu {
+    display: grid;
+  }
+}
+
+@media (max-width: 420px) {
+  .nav__logo {
+    width: 92px;
+  }
+  .nav__cta {
+    padding: 0 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .nav__cta-label {
+    display: none;
+  }
+  .nav__cta {
+    width: 40px;
+    padding: 0;
+  }
+}
+
+/* el menú del teléfono */
+.menu {
+  position: fixed;
+  z-index: 55;
+  inset: 0;
+  padding: calc(var(--nav-h) + env(safe-area-inset-top) + 28px) var(--gutter) calc(32px + env(safe-area-inset-bottom));
+  background: var(--space);
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  overflow-y: auto;
+}
+
+html.is-menu-open .nav {
+  background: var(--space);
+  border-bottom-color: var(--line);
+  color: var(--snow);
+}
+
+.menu__links {
+  display: grid;
+}
+
+.menu__links a {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: clamp(28px, 8vw, 40px);
+  font-weight: 560;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.menu__n {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  color: var(--haze);
+  font-variant-numeric: tabular-nums;
+}
+
+.menu__more {
+  display: flex;
+  gap: 24px;
+  color: var(--mist);
+}
+
+.menu__more a {
+  padding: 6px 0;
+}
+
+.menu__cta {
+  margin-top: auto;
+}
+
+.is-locked body {
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   Los tramos y sus placas
+   ========================================================================== */
+main {
+  position: relative;
+  z-index: 1;
+}
+
+.tramo {
+  position: relative;
+}
+
+.tramo > :where(:not(.plate)) {
+  position: relative;
+  z-index: 1;
+}
+
+/* la placa de respaldo: fija en la pantalla mientras dura su tramo; la siguiente entra fundida sobre ella */
+.plate {
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  right: 0;
+  top: -34vh;
+  bottom: 0;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 34vh);
+  mask-image: linear-gradient(to bottom, transparent, #000 34vh);
+}
+
+.tramo--espacio .plate {
+  top: 0;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* la placa que sigue a la portada no la invade: si entrara en la primera pantalla, sería una imagen perezosa más
+   grande que nada (el LCP); se funde dentro de su propio tramo */
+.tramo--satelite .plate {
+  top: 0;
+}
+
+.plate picture {
+  display: block;
+  height: 100%;
+}
+
+.plate__frame {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100lvh;
+  overflow: hidden;
+}
+
+.plate img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: var(--plate-position, 50%) 50%;
+  transform: scale(1.045);
+}
+
+/* las sombras que dejan leer el texto sobre la foto (la foto no cambia: cambia la luz encima) */
+.plate::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+html.has-world .plate {
+  display: none;
+}
+
+.plate--m1sb {
+  --plate-position: 62%;
+}
+.plate--m3b {
+  --plate-position: 64%;
+}
+.plate--m4v2a {
+  --plate-position: 40%;
+}
+.plate--m5a {
+  --plate-position: 58%;
+}
+.plate--m6a {
+  --plate-position: 60%;
+}
+
+@media (max-aspect-ratio: 4/5) {
+  .plate {
+    --plate-position: 50%;
+  }
+}
+
+/* ---------- la portada ---------- */
+.hero {
+  min-height: 100vh;
+  min-height: 100svh;
+  max-width: calc(var(--max) + 2 * var(--gutter));
+  margin: 0 auto;
+  padding: calc(var(--nav-h) + 52px) var(--gutter) clamp(110px, 17vh, 176px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0 calc(50% - 50vw);
+  z-index: -1;
+  background:
+    linear-gradient(to top, rgba(3, 6, 12, 0.94), rgba(3, 6, 12, 0) 43%),
+    linear-gradient(100deg, rgba(3, 6, 12, 0.75), rgba(3, 6, 12, 0.13) 57%, transparent 78%);
+  pointer-events: none;
+}
+
+.hero__label {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.hero__beacon {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--signal);
+  box-shadow: 0 0 14px rgba(165, 255, 208, 0.55);
+}
+
+.hero__title {
+  margin-top: 25px;
+  font-size: clamp(42px, 7.15vw, 108px);
+  line-height: 0.99;
+  letter-spacing: -0.07em;
+}
+
+.hero__lead {
+  margin-top: 28px;
+  max-width: 31em;
+  color: var(--snow);
+  font-size: clamp(17px, 1.45vw, 20px);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.tramo > .hero__footer {
+  position: absolute;
+  inset: auto var(--gutter) 0;
+  width: auto;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 0 max(20px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 11px;
+  font-weight: 550;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+
+.descend {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  gap: 10px;
+  color: var(--snow);
+}
+
+.descend .ico {
+  color: var(--signal);
+  transform: rotate(90deg);
+  width: 18px;
+  height: 18px;
+}
+
+.hero__regions {
+  margin: 0;
+  text-align: right;
+}
+
+@media (hover: hover) {
+  .descend:hover {
+    color: var(--signal);
+  }
+}
+
+@media (max-width: 760px) {
+  .hero {
+    justify-content: flex-end;
+    padding-bottom: 120px;
+  }
+
+  .hero__title {
+    font-size: clamp(40px, 10.7vw, 70px);
+  }
+
+  .hero__lead {
+    margin-top: 20px;
+  }
+
+  .tramo > .hero__footer {
+    font-size: 9px;
+    letter-spacing: 0.09em;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+
+  .hero__regions {
+    max-width: 15em;
+  }
+}
+
+/* ---------- la cabecera de cada tramo (sobre su placa) ---------- */
+.head {
+  min-height: 100vh;
+  min-height: 100svh;
+  max-width: calc(var(--max) + 2 * var(--gutter));
+  margin: 0 auto;
+  padding: calc(var(--nav-h) + 64px) var(--gutter) 96px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.head::before {
+  content: '';
+  position: absolute;
+  inset: 0 calc(50% - 50vw);
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(100deg, rgba(3, 6, 12, 0.72) 8%, rgba(3, 6, 12, 0.2) 52%, rgba(3, 6, 12, 0) 72%);
+}
+
+.head--low {
+  justify-content: flex-end;
+}
+
+.head--low::before {
+  background:
+    linear-gradient(to top, rgba(3, 6, 12, 0.9), rgba(3, 6, 12, 0.35) 46%, rgba(3, 6, 12, 0) 70%),
+    linear-gradient(100deg, rgba(3, 6, 12, 0.5), rgba(3, 6, 12, 0) 60%);
+}
+
+.head--top {
+  justify-content: flex-start;
+  padding-top: calc(var(--nav-h) + 10vh);
+}
+
+.head--top::before {
+  background:
+    linear-gradient(to bottom, rgba(3, 6, 12, 0.78), rgba(3, 6, 12, 0.6) 46%, rgba(3, 6, 12, 0.12) 82%, rgba(3, 6, 12, 0)),
+    linear-gradient(100deg, rgba(3, 6, 12, 0.55), rgba(3, 6, 12, 0) 58%);
+}
+
+@media (max-width: 760px) {
+  .head {
+    justify-content: flex-end;
+    padding-bottom: 72px;
+  }
+  .head::before,
+  .head--low::before {
+    background: linear-gradient(to top, rgba(3, 6, 12, 0.94), rgba(3, 6, 12, 0.55) 52%, rgba(3, 6, 12, 0) 78%);
+  }
+  .head--top {
+    justify-content: flex-start;
+    padding-top: calc(var(--nav-h) + 44px);
+  }
+  .head--top::before {
+    background: linear-gradient(to bottom, rgba(3, 6, 12, 0.9), rgba(3, 6, 12, 0.72) 62%, rgba(3, 6, 12, 0) 92%);
+  }
+  .hero::before {
+    background: linear-gradient(to top, #03060c 0%, rgba(3, 6, 12, 0.76) 42%, rgba(3, 6, 12, 0) 78%);
+  }
+}
+
+/* ---------- el cuerpo de cada tramo: la luz baja y el contenido se lee sobre la noche ---------- */
+.body {
+  padding: 40px var(--gutter) clamp(96px, 14vw, 180px);
+}
+
+.body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(3, 6, 12, 0), rgba(3, 6, 12, 0.86) 34vh, rgba(3, 6, 12, 0.92));
+}
+
+.body > * {
+  max-width: var(--max);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ---------- la clave de las escenas ---------- */
+.key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin-bottom: clamp(48px, 7vw, 88px);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+
+.key__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.key__item::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+/* persona = nieve sólida; IA = línea fina sin relleno; resultado = blanco pleno que se enciende */
+.key__item--person::before {
+  background: var(--snow);
+}
+.key__item--machine::before {
+  border: 1px solid var(--mist);
+}
+.key__item--result::before {
+  background: var(--white);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+/* ---------- un servicio: el problema, el nombre, la explicación y su escena ---------- */
+.svc {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(32px, 6vw, 96px);
+  align-items: center;
+  padding: clamp(48px, 7vw, 96px) 0;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: var(--nav-h);
+}
+
+.svc__problem {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--haze);
+  line-height: 1.5;
+}
+
+.svc__name {
+  margin-top: 18px;
+  font-size: clamp(28px, 3vw, 44px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.svc__desc {
+  margin-top: 18px;
+  max-width: 30em;
+  color: var(--mist);
+  text-wrap: pretty;
+}
+
+.svc__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 28px;
+  padding: 6px 0;
+  font-size: 15px;
+  font-weight: 540;
+  border-bottom: 1px solid var(--line-2);
+  transition: border-color 0.3s;
+}
+
+@media (hover: hover) {
+  .svc__link:hover {
+    border-color: var(--snow);
+  }
+}
+
+@media (max-width: 900px) {
+  .svc {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- el tránsito al agua ---------- */
+.pause {
+  min-height: 120vh;
+  min-height: 120svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 var(--gutter);
+}
+
+.pause::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(60% 40% at 50% 50%, rgba(3, 6, 12, 0.6), rgba(3, 6, 12, 0) 100%);
+}
+
+.pause__title {
+  font-size: clamp(34px, 5vw, 72px);
+  line-height: 1.04;
+  max-width: 14em;
+}
+
+.pause__go {
+  margin-top: 26px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+
+/* ---------- el agente en vivo ---------- */
+.live {
+  padding-top: clamp(56px, 8vw, 112px);
+  border-top: 1px solid var(--line);
+  scroll-margin-top: var(--nav-h);
+}
+
+.live__head {
+  max-width: 40em;
+}
+
+.live__title,
+.work__title,
+.reels__title {
+  font-size: clamp(26px, 2.6vw, 38px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.live__head p,
+.work__head p {
+  margin-top: 14px;
+  color: var(--mist);
+}
+
+.live__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) minmax(0, 0.9fr);
+  gap: clamp(24px, 3.4vw, 48px);
+  margin-top: 48px;
+  align-items: start;
+}
+
+.live__chat {
+  display: flex;
+  flex-direction: column;
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: rgba(6, 20, 29, 0.72);
+  overflow: hidden;
+}
+
+.live__top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.live__av {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--mist);
+  flex: none;
+}
+
+.live__who {
+  display: grid;
+  line-height: 1.25;
+}
+
+.live__who b {
+  font-weight: 560;
+}
+
+.live__who > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: var(--mist);
+}
+
+.live__who .live-dot {
+  width: 6px;
+  height: 6px;
+}
+
+.live__tag {
+  margin-left: auto;
+  padding: 4px 9px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+
+.live__msgs {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 10px;
+  min-height: 380px;
+  padding: 18px;
+}
+
+.live__foot {
+  padding: 12px 18px;
+  border-top: 1px solid var(--line);
+  font-size: 12.5px;
+  color: var(--mist);
+  font-variant-numeric: tabular-nums;
+}
+
+.live__states {
+  display: grid;
+  gap: 12px;
+}
+
+.state {
+  display: grid;
+  gap: 4px;
+  padding: 18px 20px;
+  border-radius: var(--r-l);
+}
+
+.state b {
+  font-weight: 560;
+}
+
+.state span {
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.state--machine {
+  border: 1px solid var(--line-2);
+}
+
+.state--machine span {
+  color: var(--mist);
+}
+
+.state--person {
+  background: var(--snow);
+  color: var(--abyss);
+}
+
+.state--person span {
+  color: var(--slate);
+}
+
+.state--result {
+  background: var(--white);
+  color: var(--abyss);
+  box-shadow: 0 0 0 1px var(--white), 0 0 40px -8px rgba(255, 255, 255, 0.5);
+}
+
+.state--result span {
+  color: var(--slate);
+}
+
+.live__side {
+  display: grid;
+  gap: 22px;
+  justify-items: start;
+}
+
+.route {
+  counter-reset: r;
+  display: grid;
+  width: 100%;
+}
+
+.route li {
+  counter-increment: r;
+  display: flex;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.route li::before {
+  content: counter(r, decimal-leading-zero);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  color: var(--haze);
+  font-variant-numeric: tabular-nums;
+  padding-top: 3px;
+}
+
+@media (max-width: 1100px) {
+  .live__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .live__side {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 700px) {
+  .live__grid {
+    grid-template-columns: 1fr;
+  }
+  .live__msgs {
+    min-height: 340px;
+  }
+}
+
+/* ---------- las cifras de la máquina ---------- */
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px clamp(40px, 6vw, 88px);
+  margin-top: 44px;
+}
+
+.stats div {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+}
+
+.stats dd {
+  font-size: clamp(44px, 5vw, 72px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats dt {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+
+/* ---------- el trabajo ---------- */
+.work {
+  padding-top: clamp(56px, 8vw, 112px);
+  border-top: 1px solid var(--line);
+  scroll-margin-top: var(--nav-h);
+}
+
+.work__head {
+  max-width: 40em;
+}
+
+.cases {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 2.6vw, 36px);
+  margin-top: 48px;
+}
+
+.case {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 0 0;
+  border-top: 1px solid var(--line-2);
+}
+
+.case__n {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--haze);
+  font-variant-numeric: tabular-nums;
+}
+
+.case__name {
+  margin-top: 26px;
+  font-size: clamp(22px, 2vw, 28px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.case__place {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--mist);
+}
+
+.case__rows {
+  display: grid;
+  gap: 16px;
+  margin: 26px 0 28px;
+}
+
+.case__rows div {
+  display: grid;
+  gap: 4px;
+}
+
+.case__rows dt {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--haze);
+}
+
+.case__rows dd {
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--mist);
+}
+
+.case__state dd {
+  color: var(--snow);
+}
+
+.case__link {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
+  font-weight: 520;
+  transition: color 0.3s;
+}
+
+.case__link .ico {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.5s var(--ease);
+}
+
+@media (hover: hover) {
+  .case__link:hover .ico {
+    transform: translate3d(3px, -3px, 0);
+  }
+}
+
+@media (max-width: 900px) {
+  .cases {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- los reels ---------- */
+.reels {
+  margin-top: clamp(72px, 9vw, 128px);
+}
+
+.reels__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 24px;
+}
+
+.reels__head p {
+  color: var(--mist);
+  font-size: 15px;
+}
+
+.reels__ig {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 520;
+}
+
+.reels__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 28px);
+  margin-top: 32px;
+}
+
+.reel {
+  display: grid;
+  gap: 14px;
+}
+
+.reel__phone {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--abyss);
+}
+
+.reel__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reel__sound {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(3, 6, 12, 0.78);
+  border: 1px solid var(--line-2);
+}
+
+.reel__sound .i-on,
+.reel__sound[aria-pressed='true'] .i-off {
+  display: none;
+}
+
+.reel__sound[aria-pressed='true'] .i-on {
+  display: block;
+}
+
+.reel figcaption {
+  display: grid;
+  gap: 6px;
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.reel figcaption a {
+  font-size: 13px;
+  color: var(--mist);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--line-2);
+}
+
+@media (max-width: 760px) {
+  .reels__grid {
+    grid-template-columns: repeat(3, minmax(220px, 72vw));
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-right: calc(var(--gutter) * -1);
+    padding-right: var(--gutter);
+    scrollbar-width: none;
+  }
+  .reel {
+    scroll-snap-align: start;
+  }
+}
+
+/* ==========================================================================
+   La cumbre: hablemos, y la nieve (agenda y pagos)
+   ========================================================================== */
+.assure {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin-top: 28px;
+  font-size: 14px;
+  color: var(--mist);
+}
+
+.assure li {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.assure li::before {
+  content: '';
+  width: 12px;
+  height: 1px;
+  background: currentColor;
+}
+
+.snow {
+  position: relative;
+  color: var(--abyss);
+  padding: clamp(120px, 18vw, 240px) var(--gutter) clamp(80px, 10vw, 140px);
+  display: grid;
+  gap: clamp(88px, 11vw, 160px);
+}
+
+.snow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(224, 231, 237, 0), var(--snow) clamp(120px, 18vw, 240px));
+}
+
+.snow > * {
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  scroll-margin-top: calc(var(--nav-h) + 24px);
+}
+
+.snow__head {
+  display: grid;
+  gap: 16px;
+  max-width: 44em;
+}
+
+.snow__title {
+  font-size: clamp(32px, 3.6vw, 52px);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+}
+
+.snow__head > p:last-child {
+  color: var(--slate);
+}
+
+/* ---------- la agenda ---------- */
+.book__frame {
+  margin-top: 40px;
+  border-radius: var(--r-l);
+  border: 1px solid var(--ink-line);
+  background: var(--white);
+  min-height: 560px;
+  overflow: hidden;
+  display: grid;
+}
+
+.book__frame iframe {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 720px;
+  border: 0;
+  display: block;
+  background: transparent;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+
+.book__frame.is-loaded iframe {
+  opacity: 1;
+}
+
+.book__fallback {
+  grid-area: 1 / 1;
+  align-self: center;
+  justify-self: center;
+  max-width: 560px;
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--slate);
+}
+
+.book__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.book__frame.is-loaded .book__fallback {
+  display: none;
+}
+
+.book__wait,
+.book__phone {
+  display: none;
+}
+
+.book__frame.is-waiting .book__wait,
+.book__frame.is-phone .book__phone {
+  display: block;
+}
+
+.book__frame.is-waiting .book__note,
+.book__frame.is-phone .book__note {
+  display: none;
+}
+
+.book__wait {
+  color: var(--abyss);
+}
+
+.book__frame.is-phone {
+  min-height: 0;
+}
+
+.book__frame.is-phone .book__fallback {
+  padding: 32px 18px;
+}
+
+/* ---------- los pagos ---------- */
+.payform {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: start;
+}
+
+.payform__fields {
+  display: grid;
+  gap: 18px;
+}
+
+.cur {
+  display: inline-flex;
+  justify-self: start;
+  padding: 3px;
+  border-radius: var(--r);
+  border: 1px solid var(--ink-line-2);
+}
+
+.cur button {
+  min-width: 64px;
+  height: 36px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 560;
+  letter-spacing: 0.1em;
+  color: var(--slate);
+}
+
+.cur button[aria-checked='true'] {
+  background: var(--abyss);
+  color: var(--white);
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 520;
+  letter-spacing: 0.02em;
+  color: var(--slate);
+}
+
+.field input {
+  height: 52px;
+  padding: 0 16px;
+  border-radius: var(--r);
+  border: 1px solid var(--ink-line-2);
+  background: var(--white);
+  color: var(--abyss);
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0;
+  transition: border-color 0.2s;
+}
+
+.field input::placeholder {
+  color: #5f7283;
+}
+
+.field input:focus-visible {
+  outline: 2px solid var(--abyss);
+  outline-offset: 1px;
+  border-color: var(--abyss);
+}
+
+.field input[aria-invalid='true'] {
+  border-color: #8a1c1c;
+}
+
+.field__err {
+  margin-top: -8px;
+  font-size: 14px;
+  color: #8a1c1c;
+}
+
+.field__note {
+  margin-top: -8px;
+  font-size: 13.5px;
+  color: var(--slate);
+}
+
+.field__note:empty {
+  display: none;
+}
+
+.payform__sum {
+  display: grid;
+  gap: 16px;
+  padding: 28px;
+  border-radius: var(--r-l);
+  background: var(--white);
+  border: 1px solid var(--ink-line);
+}
+
+.sum {
+  display: grid;
+}
+
+.sum div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--ink-line);
+  font-size: 14.5px;
+}
+
+.sum dt {
+  color: var(--slate);
+}
+
+.sum dd {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.sum__total {
+  border-bottom: 0 !important;
+  padding-top: 18px !important;
+}
+
+.sum__total dt {
+  color: var(--abyss);
+  font-weight: 560;
+}
+
+.sum__total dd {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.sum__cop,
+.sum__safe {
+  font-size: 13.5px;
+  color: var(--slate);
+}
+
+@media (max-width: 860px) {
+  .payform {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   El pie: el logotipo grande sobre la nieve
+   ========================================================================== */
+.footer {
+  position: relative;
+  z-index: 1;
+  background: var(--snow);
+  color: var(--abyss);
+  padding: clamp(56px, 7vw, 96px) var(--gutter) calc(32px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--ink-line);
+}
+
+.footer > * {
+  max-width: var(--max);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.footer__cols {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+}
+
+.footer__nav,
+.footer__contact {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  font-size: 15px;
+}
+
+.footer__nav a,
+.footer__contact a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  justify-self: start;
+  padding: 6px 0;
+}
+
+@media (hover: hover) {
+  .footer__nav a:hover,
+  .footer__contact a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+
+.footer__cities {
+  padding-top: 6px;
+  color: var(--slate);
+}
+
+.footer__tools {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  align-content: start;
+}
+
+.footer__btn {
+  padding: 8px 0;
+  font-size: 14px;
+  color: var(--slate);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--ink-line-2);
+}
+
+.footer__brand {
+  display: block;
+  margin-top: clamp(56px, 8vw, 120px);
+}
+
+.footer__logo {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin-top: clamp(28px, 3vw, 44px);
+  padding-top: 20px;
+  border-top: 1px solid var(--ink-line);
+  font-size: 13px;
+  color: var(--slate);
+}
+
+.footer__legal p:last-child {
+  margin-left: auto;
+}
+
+.footer__legal a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  .footer__cols {
+    grid-template-columns: 1fr 1fr;
+  }
+  .footer__tools {
+    grid-column: 1 / -1;
+  }
+  .footer__legal p:last-child {
+    margin-left: 0;
+  }
+}
+
+/* ==========================================================================
+   Burbujas, el resultado, el chat de la web, el aviso
+   ========================================================================== */
+/* la persona = nieve sólida; la IA = línea fina sin relleno */
+.msg {
+  max-width: 86%;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 14.5px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.msg--in {
+  align-self: flex-end;
+  background: var(--snow);
+  color: var(--abyss);
+  border-bottom-right-radius: 5px;
+}
+
+.msg--out {
+  align-self: flex-start;
+  border: 1px solid var(--mist);
+  color: var(--snow);
+  border-bottom-left-radius: 5px;
+}
+
+.msg--typing {
+  display: inline-flex;
+  gap: 4px;
+  padding: 13px 15px;
+}
+
+.msg--typing i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--mist);
+  animation: typing 1.2s ease-in-out infinite;
+}
+
+.msg--typing i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.msg--typing i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
+.msg a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* el resultado: blanco pleno que se enciende */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 560;
+}
+
+.chip--ok {
+  background: var(--white);
+  color: var(--abyss);
+  box-shadow: 0 0 0 1px var(--white), 0 0 28px -4px rgba(255, 255, 255, 0.65);
+}
+
+.chip--ok::before {
+  content: '';
+  width: 11px;
+  height: 6px;
+  border-left: 1.6px solid currentColor;
+  border-bottom: 1.6px solid currentColor;
+  transform: rotate(-45deg) translate(1px, -2px);
+}
+
+/* el botón «Habla con OCEAN» (computador) y su panel */
+.fab {
+  position: fixed;
+  z-index: 50;
+  right: max(var(--gutter), env(safe-area-inset-right));
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  background: rgba(3, 6, 12, 0.92);
+  color: var(--snow);
+  font-size: 14px;
+  font-weight: 520;
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease), border-color 0.3s;
+}
+
+.fab.is-hidden {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .fab:hover {
+    border-color: var(--snow);
+  }
+}
+
+@media (max-width: 760px) {
+  .fab {
+    display: none;
+  }
+}
+
+.chat {
+  position: fixed;
+  z-index: 70;
+  right: max(var(--gutter), env(safe-area-inset-right));
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  width: min(400px, calc(100vw - 32px));
+  height: min(600px, calc(100svh - 120px));
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  border: 1px solid var(--line-2);
+  background: var(--abyss);
+  box-shadow: 0 40px 80px -30px #000;
+  overflow: hidden;
+}
+
+.chat__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 14px 14px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.chat__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 560;
+  font-size: 15px;
+}
+
+.chat__close {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.chat__log {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px;
+}
+
+.chat__log .msg--user {
+  align-self: flex-end;
+  background: var(--snow);
+  color: var(--abyss);
+  border-bottom-right-radius: 5px;
+}
+
+.chat__log .msg--bot {
+  align-self: flex-start;
+  border: 1px solid var(--mist);
+  color: var(--snow);
+  border-bottom-left-radius: 5px;
+}
+
+.chat__form {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.chat__form input {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  padding: 0 14px;
+  border-radius: var(--r);
+  border: 1px solid var(--line-2);
+  background: var(--space);
+  font-size: 16px;
+}
+
+.chat__form input:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 1px;
+}
+
+.chat__send {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r);
+  background: var(--white);
+  color: var(--abyss);
+}
+
+.chat__wa {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+  color: var(--mist);
+}
+
+.chat__log .chat__wa {
+  align-self: flex-start;
+  border: 0;
+}
+
+.toast {
+  position: fixed;
+  z-index: 100;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 14px 20px;
+  border-radius: var(--r);
+  background: var(--white);
+  color: var(--abyss);
+  font-size: 15px;
+  box-shadow: 0 20px 40px -20px #000;
+  opacity: 0;
+  transform: translate3d(-50%, 16px, 0);
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+}
+
+.toast.is-on {
+  opacity: 1;
+  transform: translate3d(-50%, 0, 0);
+}
+
+.toast.is-err {
+  box-shadow: inset 3px 0 0 #8a1c1c, 0 20px 40px -20px #000;
+}
+
+/* ==========================================================================
+   Movimiento reducido: todo quieto, todo visible
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

@@ -8,6 +8,12 @@
   protección de Vercel del equipo y `noindex`).
 - Build (lo dice `vercel.json`): `npm run build` → `dist/`. Las funciones de `api/` se despliegan solas.
 
+## Estado (20-nov-2026)
+- Producción (`main`): la v2. En desarrollo: la v5, rama `v5-cierre` (sobre `v5-secuencia`).
+- Antes de fusionar la v5 en `main`, con el visto bueno de Juan: revisar la vista previa en un teléfono físico y en un
+  computador con GPU (la cadencia solo se midió con SwiftShader), escuchar el sonido, abrir Cal.com y el widget de
+  Wompi sin pagar, y correr `qa/overflow.cjs`, `qa/secuencia-v5.cjs` y la prueba de ajuste de rótulos.
+
 ## Variables de entorno (solo nombres; los valores viven en Vercel)
 | Variable | Para qué | Entornos |
 |---|---|---|
@@ -36,8 +42,10 @@ Ojo: la vista previa usa las mismas llaves de Wompi que producción. **Nunca se 
    La última versión de la v1 es `dpl_4eeUPUZNYtEx1pmfF9DUn7ZZvFFQ` (commit `1f92216`, «GA4 en produccion», 8-sep-2026).
 
 ## Regenerar lo que sale de un script
-- `src/brand/wordmark.svg`: trazo del logo maestro (2501 px) con potrace; no se edita a mano.
-- `public/favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`: la O de la firma.
-- `public/og.jpg`: una captura del mar con la firma (`qa/og.cjs`).
+- `public/v3/cine/posters/*` (placas de cada tramo) salen del primer cuadro de las tomas de `public/v3/cine/`.
+  Para ver su procedencia y los encuadres, consulta `data/procedencia.json` y `docs/v3/CINE.md`.
+- `public/favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png` y `public/og.jpg`:
+  `python3 tools/medios_pagina.py`, desde `media/v3/direccion/` y `marca/v3/`.
+- `public/v3/grano.png`: `node tools/grano.mjs` (paquete de la intro).
 - Si cambia el script de arranque de `index.html`, el build falla y da el hash nuevo para `script-src` en
   `vercel.json`.

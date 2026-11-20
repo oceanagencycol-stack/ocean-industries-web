@@ -11,7 +11,6 @@ import { onLang, t } from './i18n'
 import { toast } from './toast'
 import { waLink } from './wa'
 import { track } from './analytics'
-import { sound } from '../core/audio'
 
 const WOMPI_PUBLIC_KEY = 'pub_prod_TMaELJ4lqpsANIDgLEKO75nBdapSuZf0' // public key: fine in the frontend
 const SIGN_ENDPOINT = '/api/pago-wompi'
@@ -42,7 +41,7 @@ function loadWompi(): Promise<void> {
 }
 
 export interface PayHooks {
-  /** a payment was approved in the widget (the sea glows green) */
+  /** a payment was approved in the widget */
   onApproved?: () => void
 }
 
@@ -136,7 +135,7 @@ export function initPay(hooks: PayHooks = {}): void {
     e.preventDefault()
     const name = ($<HTMLInputElement>('payName').value || '').trim()
     const email = ($<HTMLInputElement>('payEmail').value || '').trim()
-    const concept = ($<HTMLInputElement>('payConcept').value || '').trim() || 'Pago de servicio Ocean'
+    const concept = ($<HTMLInputElement>('payConcept').value || '').trim() || 'Pago de servicio OCEAN'
     if (state.total < MIN_COP) {
       toast(t({ es: 'El monto es muy bajo.', en: 'The amount is too low.', pt: 'O valor é muito baixo.' }), 'err')
       return
@@ -178,7 +177,6 @@ export function initPay(hooks: PayHooks = {}): void {
         const tx = r.transaction
         if (tx?.status === 'APPROVED') {
           toast(t({ es: `¡Pago aprobado! Gracias${name ? `, ${name}` : ''}.`, en: `Payment approved! Thank you${name ? `, ${name}` : ''}.`, pt: `Pagamento aprovado! Obrigado${name ? `, ${name}` : ''}.` }), 'ok')
-          sound.play('result')
           hooks.onApproved?.()
           track('payment_approved', { currency: cur })
         } else if (tx?.status) {
@@ -187,7 +185,7 @@ export function initPay(hooks: PayHooks = {}): void {
       })
     } catch {
       toast(t({ es: 'No pudimos abrir el pago. Te llevamos a WhatsApp para terminarlo.', en: "We couldn't open the payment. We'll take you to WhatsApp to finish it.", pt: 'Não conseguimos abrir o pagamento. Vamos te levar ao WhatsApp para concluir.' }), 'err')
-      const msg = t({ es: 'Hola Ocean, quiero pagar ', en: 'Hi Ocean, I want to pay ', pt: 'Olá Ocean, quero pagar ' }) + `${fmtCOP(state.total)} (${concept})`
+      const msg = t({ es: 'Hola OCEAN, quiero pagar ', en: 'Hi OCEAN, I want to pay ', pt: 'Olá OCEAN, quero pagar ' }) + `${fmtCOP(state.total)} (${concept})`
       window.open(waLink('general', msg), '_blank', 'noopener')
     } finally {
       btn.disabled = false

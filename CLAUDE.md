@@ -1,58 +1,106 @@
-# CLAUDE.md — ocean-industries-web
+# CLAUDE.md — ocean-industries-web (v5)
 
-Web oficial de Ocean Industries (oceanindustries.com.co). Comunicación con Juan: **español**. Contenido: **ES por
-defecto, EN y PT** (cada elemento lleva `data-es` / `data-en` / `data-pt`).
+Web oficial de OCEAN (nombre legal: Ocean Industries; oceanindustries.com.co). Comunicación con Juan: **español**.
+Contenido: **ES por defecto, EN y PT** (cada elemento lleva `data-es` / `data-en` / `data-pt`, y `data-*-aria` /
+`data-*-ph` para nombres accesibles y placeholders).
+
+**v5 (ramas `v5-secuencia` → `v5-cierre`, 20-nov-2026) es la web vigente en desarrollo**: una sola película que
+avanza con el scroll. `index.html` + `src/main.ts` → `src/v4/` (`stage.ts` el escenario WebGL2, `film.ts` la línea de
+tiempo, `script.ts` el guion técnico, `preload.ts` la apertura con la marca) y `src/styles/v4.css` + `epilogue.css`
+sobre `v3.css`. Película en `public/v4/`, cortes en `src/v4/film.json`. Todo en `docs/v4/PELICULA.md`.
+`main` sigue con la v2 en producción. `v3-cine` y `v4-pelicula` quedan como historia.
+
+### Reglas propias de la v5
+- **Legibilidad sobre la película**: el texto nunca lleva caja; el shader recoge la luz detrás de las cajas medidas
+  del texto visible (`READ` en `film.ts`, fuerza por rótulo con `data-scrim`; 0 = sin recoger). Texto oscuro sobre
+  cielo claro («Arriba») no entra en `READ`.
+- **Cada rótulo cabe**: `fit()` en `film.ts` recoge aire (`.is-snug`), luego lo secundario entero (`.is-tight`) y por
+  último baja la tipografía grande (`--fit`, bisección). Nunca se corta texto a media palabra. Prueba:
+  `node qa/ajuste-rotulos.cjs http://localhost:4175/ [--lang=en]`.
+- **Rótulos anclados**: se esconden si la etiqueta, la línea o el punto cruzan texto o telemetría.
+- **La marca en la película**: apertura (estrella → dos mitades del isotipo → el logotipo se escribe y vuela a la
+  barra), sello en la luz de la cumbre (`.beat--seal`, `data-fade`) y firma del pie en metal claro con franja de luz
+  (`brand.ts`). Todo sale de `marca/v3/` por marcadores del build: `<!--SIMBOLO_APERTURA:…-->`,
+  `<!--SIMBOLO_PARTES:…-->`, `<!--LOGO_R_METAL:…-->`, `<!--SIMBOLO_METAL:…-->` (`vite.config.ts`).
+- **Logotipo robusto** (20-nov): `tools/marca/robusta.py` desde `robusta.json`; el maestro del 18-nov en
+  `marca/v3/anterior/`.
 
 ## Antes de tocar nada
-1. Lee `DESIGN.md` (el sistema) y el brain (`brain/proyectos/ocean-industries-web.md`).
+1. Lee `DESIGN.md` (el sistema v3), `docs/v3/CONCEPTO.md`, `docs/v3/ARQUITECTURA.md`, `docs/plan-v3.md` («Decisiones
+   de Juan») y el brain (`brain/proyectos/ocean-industries-web.md`).
 2. `npm install && npm run typecheck && npm run build` debe pasar limpio.
 3. Producción manda: `curl -sI https://www.oceanindustries.com.co/` antes de afirmar qué está publicado.
 
 ## Reglas
-- **Una sola firma**: el mar que se enciende con la firma de cristal. No agregues efectos sueltos.
-- **Color con significado**: blanco = la persona, azul = la máquina, verde = el resultado. `#0000FF` solo en
-  superficies; en texto, `--blue-tx`. El verde solo en la acción principal, lo vivo y el resultado.
-- **Honestidad**: nada de cifras ni clientes sin verificar; los datos de las escenas son de ejemplo y lo dicen.
-- **El logo no se redibuja**: `src/brand/wordmark.svg` es el trazo del maestro de 2501 px (Cloudinary
-  `LOGO-Ocean-INDS-10`). El 3D, el SVG de la barra, el pie, la intro y el favicon salen de ahí.
-- **Producción solo con visto bueno de Juan**: `main` es lo publicado en www.oceanindustries.com.co (la v2 salió el
-  2-nov-2026 con su visto bueno: «ya publica en el dominio oficial»). Todo cambio nuevo va en una rama → vista previa
-  de Vercel → visto bueno de Juan → `main`.
-- Oficio (de Qora): sin `backdrop-filter`; `:hover` solo dentro de `@media (hover: hover)`; el lienzo medido por su
-  caja (`100lvh`); `stage.ts` importado dinámico (three.js fuera del primer bundle); nada de asignaciones por cuadro
-  en el loop; en `demos.css` nada de selectores que terminen en `*` o en `:is()`.
-- **CSP**: el script de arranque (`<script data-ocean-boot>`) va por hash en `vercel.json`; si cambia, el build falla
-  y da el hash nuevo. Wompi necesita `https://checkout.wompi.co` en `script-src` (si falta, bloquea los pagos en
-  silencio).
-- **Pagos**: la tarjeta nunca toca a Ocean (widget de Wompi); la firma sale de `/api/pago-wompi`; el regreso de Wompi
-  no confirma nada (lo confirma el webhook). No se hacen pagos reales en pruebas. `Permissions-Policy` no bloquea
-  `payment` (como la v1): el widget de Wompi podría necesitarlo para algún medio y fallaría en silencio.
-- **El agente de la web** (`/api/agente`, n8n) no se prueba con mensajes reales sin permiso: en QA se simula.
-- **Carga** (2-nov-2026): el trozo de three.js (`stage-*.js`, ~170 kB comprimido) **no** se precarga con
-  `modulepreload` (en el teléfono competía con la fuente y `main.js`: Lighthouse móvil pasó de 87 a 99); `main.ts` lo
-  pide cuando sabe que lo va a usar. En una visita de regreso sin ancla, la prueba de WebGL (crea un contexto) espera
-  al primer pintado (`markSea` en `bootDirect`); con ancla, en la primera visita o con la intro, se hace al arrancar.
+- **Producción solo con visto bueno de Juan**: `main` es lo publicado. La v3 vive en `v3`; cada paquete en su rama
+  `v3-<paquete>` (página: `v3-pagina`; mundo: `v3-maqueta`; intro: `v3-intro`), con commit y push al avanzar.
+- **La marca sale de `marca/v3/` y no se redibuja** (Juan, 18-nov): `logo-sin-r.svg` en la barra, `logo.svg` (OCEAN®,
+  registrada) en el pie, `simbolo-simetrico.svg` el símbolo. El build los pone en línea con `<!--LOGO:clase-->`,
+  `<!--LOGO_R:clase-->` y `<!--SIMBOLO:clase-->` (`vite.config.ts`). Favicon, íconos y `og.jpg` salen de
+  `tools/medios_pagina.py` (el símbolo simétrico en el lienzo de `simbolo-cuadrado.svg`; el og sobre M1a).
+- **Nombre**: OCEAN en títulos, barra, textos, agente y redes; «Ocean Industries» solo como nombre legal (pie,
+  `/privacidad`, JSON-LD `legalName`).
+- **Monocromo tipo Tesla**: tokens `--space #03060C`, `--abyss #06141D`, `--slate #2B404F`, `--haze #6E8193`,
+  `--mist #B2C0CC`, `--snow #E0E7ED`, `--white #FFFFFF`. Sin verde ni azul. La acción principal es el único blanco puro
+  (botón blanco con texto abisal; sobre la nieve se invierte a abisal con texto blanco); la secundaria, contorno fino.
+  `--haze` nunca sobre `--slate` ni sobre `--snow`. Pares medidos en `DESIGN.md`.
+- **Gramática de las escenas por tono y forma**: persona = nieve sólida; IA = línea fina `--mist` de 1 px sin relleno;
+  resultado = blanco pleno que se enciende (`.chip--ok`, destello `lit`). Los datos de las escenas son de ejemplo y lo dicen.
+- **Geist** variable servida propia (`src/styles/fonts.css`, solo latin + latin-ext; el latín se precarga). Titulares
+  600 a −0,035 em; etiquetas en mayúsculas a 0,24 em; texto 400 a 17–18 px, interlineado 1,6. Una sola familia.
+- **Grano de película** sobre todo: `.grain` con `public/v3/grano.png` (la tesela de la intro, `tools/grano.mjs`),
+  `soft-light` al 0,06. Sin `backdrop-filter`.
+- **Una sola gramática de entrada** (`src/v3/reveal.ts`): titulares `[data-reveal]` por líneas (`.ln > span`) que suben
+  desde su máscara mientras la interletra se asienta; lo secundario `[data-rv]` 120 ms después con un barrido de luz
+  (`.rv-sweep`); cifras `[data-count]` que cuentan. Web Animations + IntersectionObserver. Nada de fade-up genérico.
+  El estado oculto solo existe con `html.js` y movimiento; si el JS no llega, `rv-safety` lo muestra a los 3,6 s.
+  Botones: reflejo al pasar el puntero (solo dentro de `@media (hover: hover)`) y hundimiento de 1 px al presionar.
+- **El mundo y la intro se consumen solo por API** (`src/v3/bridge.ts`, con `import.meta.glob` + stubs en
+  `src/v3/stubs.ts`): `mountWorld({ canvas, sections })` → `{ dispose }` y `shouldRunIntro()` / `runIntro({ dock })`.
+  La página no toca `src/world/` ni `src/intro-v3/`. Mientras `src/world/plates.ts` no exista, el stub deja la versión
+  quieta; al integrarlo entra solo, sin tocar la página. El mundo se pide en `whenCalm()` (después del primer pintado),
+  nunca con movimiento reducido, ahorro de datos o 2G, ni precargado.
+- **Placas de respaldo**: cada `[data-tramo]` trae su `<!--PLACA:nombre-->` (vertical en pantallas altas, 16:9 en las
+  demás; AVIF + WebP en `public/v3/pagina/`). Con el mundo montado se esconden (`html.has-world`). La de la portada va
+  con prioridad; la del satélite no invade la primera pantalla (si no, es el LCP y perezosa).
+- **La intro de marca**: abre a petición desde el pie (`?intro=1`; QA con `?qa=intro`). El recorrido normal abre con la
+  portada a sangre. Si toca, `html.intro-due` muestra el velo. `[data-intro-dock]` es el logotipo de la barra.
+- **La E son tres horizontes**: `.horizon` (las barras de la E de `logo.svg`) quieta al borde izquierdo en el computador;
+  el tramo en el centro de la pantalla enciende su barra (`data-horizon` 1–3; la cumbre, 4 = las tres).
+- **La cumbre y el pie van sobre la nieve** (`[data-light]`): la barra se vuelve clara encima (`html.nav-light`).
+- **Pausar el movimiento** (WCAG 2.2.2): controles en la barra y el pie con el mundo real; suelta el mundo, deja las placas y se
+  recuerda (`ocean-motion-paused`).
+- **CSP**: el script de arranque va por hash en `vercel.json`; si cambia, el build falla y da el hash nuevo. Wompi
+  necesita `https://checkout.wompi.co` en `script-src`.
+- **Pagos**: la tarjeta nunca toca a OCEAN (widget de Wompi); la firma sale de `/api/pago-wompi`; el regreso de Wompi no
+  confirma nada (lo confirma el webhook). No se hacen pagos reales en pruebas.
+- **El agente de la web** (`/api/agente`, n8n) no se prueba con mensajes reales: en `vite`/`vite preview` responde un
+  simulado.
 - **Analítica**: GA4 solo mide en `oceanindustries.com.co` (ni vistas previas, ni local, ni `?qa`).
-- **Sonido** (2-nov-2026): se enciende solo si el navegador deja o con el primer clic o toque en la página; nunca con
-  una tecla ni al tocar un formulario, el idioma o «Saltar intro» (`armFirstGesture` en `src/core/audio.ts`). En el
-  teléfono el botón de sonido vive en la barra: si suena, siempre se puede apagar.
-- **El mar se apaga después de `#talk`** (`ctaOut` en `src/ui/scenes.ts`): agenda y pagos van sobre la noche quieta.
-- **Barra**: enlaces desde 1081 px; el menú desde 1080 px hacia abajo (`menu.ts` cierra al pasar de 1081).
-- **Agenda**: en el teléfono (≤ 760 px) Cal.com se abre en su página; en el computador va incrustado (`booking.ts`).
+- **Agenda**: Cal.com en claro; en el teléfono (≤ 760 px) se abre en su página; en el computador va incrustado.
+- **Barra**: enlaces desde 1081 px; el menú desde 1080 px hacia abajo. «Habla con OCEAN» solo en el computador.
+- **Sonido v3** (`src/v3/SONIDO.md`): cero audio hasta el primer clic o toque (nunca una tecla, formulario, idioma o «Saltar intro») o el botón de la barra; motor `sound.ts` por import dinámico, ambientes por tramo con paso bajo bajo el agua, efectos en los cruces; se calla con el chat o un reel con sonido; ahorro de datos = apagado. Audio en `public/v3/audio/` (`node tools/audio.mjs`); `node qa/sonido.cjs`.
+- Honestidad: nada de cifras, clientes, logos ni testimonios que no estén aprobados (48 h, 24/7, 11 s y los tres casos).
+  Los paisajes son ilustraciones con IA y el pie lo dice.
 - Sin secretos en el repo. Commits con identidad `oceanagencycol-stack <oceanagencycol@gmail.com>`.
 
 ## Dónde está cada cosa
-`index.html` (la página, trilingüe) · `404.html` · `src/main.ts` (arranque) · `src/three/` (el mar `sea.ts`, la
-firma `wordmark.ts`, el escenario `stage.ts`, su estado `state.ts`) · `src/intro/` (splash y cinemática) ·
-`src/core/` (sonido, vibración, dispositivo) · `src/ui/` (idioma, WhatsApp, escenas, la ola, el agente en vivo, la
-conversación, pagos, reels, agenda, analítica) · `src/styles/` · `api/` (agente, firma de Wompi, reels) ·
-`public/` (reels, videos UGC, marca, íconos, og) · `qa/` (capturas).
+`index.html` (la página, siete tramos) · `privacidad.html` · `404.html` · `src/main.ts` (arranque) · `src/v3/`
+(`bridge.ts` mundo e intro por API, `stubs.ts`, `reveal.ts` la entrada, `chrome.ts` la barra y la E) ·
+`src/intro-v3/` (la intro, paquete propio) · `src/ui/` (idioma, WhatsApp, menú, escenas, Valeria, el chat, pagos, reels,
+agenda, analítica) · `src/styles/` (`fonts.css`, `v3.css` el sistema, `demos.css` las escenas, `lite.css` 404 y
+privacidad) · `api/` (agente, firma de Wompi, reels) · `public/v3/` (placas, grano) · `tools/medios_pagina.py` (placas,
+íconos, og) · `qa/`. La v2 (`src/three/`, `src/intro/`, `dev-stage.html`) queda en el repo sin importarse.
 
-## QA
-Con `npx vite` (o `npm run preview`): `node qa/shoot.cjs http://localhost:5175/ <carpeta> both` (sin el 3D, rápido)
-y `--glass` (con el mar; en el sandbox sin GPU va con SwiftShader y tarda). `node qa/stage_shot.cjs` posa el
-escenario solo (`dev-stage.html`). Termina en «sin problemas» o lista los fallos. `node qa/flows.cjs <url>` prueba
-idioma, WhatsApp, chat (simulado), calculadora de pagos, escenas, reels, menú del teléfono y la 404 («todo en verde»).
-`node qa/overflow.cjs <url>` revisa que nada se salga de la pantalla en 320–1440 px y en los tres idiomas («nada se sale
-de la pantalla»). `node qa/intro.cjs <url> <carpeta>` congela la intro cuadro a cuadro. Lighthouse en teléfono contra `npm run preview`
-(2-nov-2026: rendimiento 99, accesibilidad, buenas prácticas y SEO 100; FCP/LCP 1,6 s, TBT 20 ms, CLS 0).
+## QA (con `npm run build && npx vite preview --port 4175`)
+- `node qa/shoot.cjs http://localhost:4175/ <carpeta> both [--lang=en|pt] [--world] [--full]`: cada tramo en escritorio
+  1440×900 y teléfono 390×844, consola, red, desborde y que todo haya entrado. Termina en «sin problemas».
+- `node qa/flows.cjs http://localhost:4175/`: idioma, WhatsApp, la E, barra clara, chat simulado, escenas, Valeria,
+  reels, Cal.com, pagos sin pagar, menú del teléfono, intro (velo y salida), movimiento reducido, sin JS, 404 y
+  privacidad. Termina en «todo en verde».
+- `node qa/overflow.cjs http://localhost:4175/`: nada se sale de 320 a 1440 px en ES/EN/PT («nada se sale de la pantalla»).
+- `node qa/intro-pagina.cjs http://localhost:4175/ <carpeta>`: intro a petición, capturas en el tiempo.
+- `node qa/intro-v3.cjs` (del paquete de la intro).
+- Lighthouse móvil contra el preview (`CHROME_PATH` al Chromium de Playwright, `/opt/pw-browsers/.../chrome`):
+  19-nov-2026, primera visita con intro, 7 corridas: rendimiento 93–99 (mediana 98); accesibilidad, buenas prácticas y
+  SEO 100; LCP 2,0–2,4 s, TBT 30–250 ms, CLS 0. La tarea larga mayor es el análisis del HTML (≈ 150 ms, CSS en línea).

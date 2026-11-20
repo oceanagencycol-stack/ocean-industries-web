@@ -1,0 +1,6 @@
+{
+  "fps": 24,
+  "frames": [0, 241, 479, 717, 955, 1193, 1431, 1621],
+  "src": { "hd": "/v4/film-hd.mp4", "sd": "/v4/film-sd.mp4" },
+  "_": "frames: el primer cuadro de cada toma S0–S6 y el total (tools/v4-film.sh)"
+}

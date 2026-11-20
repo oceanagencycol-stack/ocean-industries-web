@@ -1,28 +1,31 @@
-# Ocean Industries — web v2
+# OCEAN — web v3
 
-**El Pacífico de noche: el mar se enciende donde algo se mueve.** La web oficial de Ocean Industries, rehecha como una
-mezcla de la web anterior de Ocean (su marca, su contenido, sus olas de puntos, trilingüe, pagos y agente) con el
-mundo de Qora (oscuro cinematográfico, una sola firma en cristal, intro con sonido y escenas que explican).
+**De lo más profundo a lo más alto.** La web oficial de OCEAN (Ocean Industries): un recorrido en siete tramos del
+espacio al fondo del mar y del mar a la cumbre de hielo, con luz azul, tipografía Geist e Instrument Serif y una señal que guía la cámara.
 
-- **La firma**: un mar de plancton en tiempo real (three.js) que brilla donde el agua se mueve, deja una estela bajo el
-  cursor o el dedo, y la firma «Ocean» en cristal que sale del agua.
-- **La intro** (una vez cada 7 días, sin puerta): una gota despierta el agua, una ola crece y rompe en verde, la firma
-  sale del agua y llega «Convertimos marcas en olas.» con tres notas. Sonido sintetizado en el navegador.
-- **La ola** (escena por scroll): mar de fondo → la cresta (azul: la máquina) → la rompiente (verde: el resultado). Los
-  seis servicios, agrupados en esas tres fases, cada uno con una escena de cuatro pasos.
-- **Lo que se conserva**: WhatsApp con mensaje por contexto e idioma, el agente en vivo (Valeria), los tres casos, los
-  reels, Cal.com, los pagos con Wompi (`/api/pago-wompi`), el chat con el agente (`/api/agente`), GA4 con los mismos
-  eventos, ES/EN/PT.
-- **Sin WebGL, con movimiento reducido o con ahorro de datos**: la firma quieta sobre líneas de luz; todo se lee.
+- **La página** (`index.html`, rama `v3-pagina`): HTML real trilingüe (ES/EN/PT) que se lee entero sin JavaScript.
+  Cada tramo trae su placa de respaldo; la cumbre (agenda y pagos) y el pie van sobre la nieve.
+- **La película** (`src/v3/film.ts`) sigue a una clienta desde un reel hasta la compra.
+  Un máster de 55 segundos enlaza las siete composiciones con movimientos de cámara generados entre pares de placas.
+  Se recorre con el scroll, el índice o la reproducción continua. Las demos, proyectos y el contacto conservan sus enlaces.
+  Cada encuadre tiene respaldo estático para movimiento reducido y ahorro de datos.
+- **La intro de marca** (`src/intro-v3/`): el logotipo se escribe y vuela a la barra cuando se elige reproducirla.
+- **Lo que se conserva de la v2**: WhatsApp con el mensaje escrito por contexto e idioma, las seis escenas de servicios,
+  Valeria (de ejemplo), el chat «Habla con OCEAN» (`/api/agente`), Cal.com, los pagos con Wompi (`/api/pago-wompi`),
+  los reels (`/api/reels`), GA4 solo en el dominio real, la 404 y ahora `/privacidad`.
 
 | Archivo | Qué es |
 |---|---|
-| `DESIGN.md` | el sistema: idea rectora, color, tipo, composición, movimiento, sonido |
-| `DEPLOY.md` | Vercel, variables, cómo pasar a producción, pruebas |
-| `CLAUDE.md` | reglas para agentes |
+| `DESIGN.md` | el sistema v3: tramos, color, tipo, marca, movimiento |
+| `CLAUDE.md` | reglas para agentes y QA |
+| `DEPLOY.md` | Vercel, variables, cómo pasar a producción |
+| `docs/v3/` | concepto, arquitectura y medios de la v3 |
+| `docs/v3/CINE.md` | auditoría, referencias y decisiones de la versión cinematográfica |
+| `tools/medios_pagina.py` | placas, favicon, íconos y og.jpg (por código, sin IA) |
 
 ```bash
 npm install
 npm run dev        # http://localhost:5175
 npm run typecheck && npm run build
+npx vite preview --port 4175   # y la QA de CLAUDE.md
 ```

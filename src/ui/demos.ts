@@ -47,6 +47,7 @@ interface Demo {
   parked: boolean
   /** still final frame (reduced motion or data-still) */
   still: boolean
+  scrollDriven: boolean
   io: IntersectionObserver
 }
 
@@ -77,6 +78,7 @@ function setStep(d: Demo, k: number): void {
 
 function playing(d: Demo): boolean {
   return d.inView && !d.userPaused && !d.parked && !d.still && !document.hidden && !reduced()
+    && !(d.scrollDriven && document.documentElement.classList.contains('motion-paused'))
 }
 
 function paint(d: Demo): void {
@@ -102,6 +104,10 @@ function schedule(d: Demo): void {
   stop(d)
   paint(d)
   if (!playing(d)) return
+  if (d.scrollDriven) {
+    positionFromScroll(d)
+    return
+  }
   if (d.step >= d.n) {
     if (d.loops >= d.maxLoops) {
       d.parked = true
@@ -117,6 +123,26 @@ function schedule(d: Demo): void {
     if (d.step >= d.n) d.loops++
     schedule(d)
   }, wait)
+}
+
+function positionFromScroll(d: Demo): void {
+  const stage = d.el.querySelector('.demo__stage')
+  if (!stage) return
+  const { top, height } = stage.getBoundingClientRect()
+  const start = innerHeight * 0.90
+  const end = innerHeight * 0.13 - height * 0.24
+  const fraction = (start - top) / Math.max(1, start - end)
+  const next = Math.max(1, Math.min(d.n, 1 + Math.floor(fraction * d.n)))
+  if (next !== d.step) setStep(d, next)
+}
+
+let scrollFrame = 0
+function updateScrollScenes(): void {
+  if (scrollFrame) return
+  scrollFrame = requestAnimationFrame(() => {
+    scrollFrame = 0
+    for (const d of demos) if (d.scrollDriven && playing(d)) positionFromScroll(d)
+  })
 }
 
 /** Back to the opening frame with a short fade, and again. */
@@ -163,6 +189,7 @@ function setup(el: HTMLElement): Demo {
     userPaused: false,
     parked: false,
     still: reduced() || (!!el.dataset.still && matchMedia(el.dataset.still).matches),
+    scrollDriven: !!el.closest('.sequence'),
     io: null as unknown as IntersectionObserver,
   }
 
@@ -173,7 +200,8 @@ function setup(el: HTMLElement): Demo {
     setStep(d, n)
     rail.forEach((li) => li.classList.add('is-done'))
     if (d.toggle) d.toggle.hidden = true
-  } else setStep(d, 0)
+  } else setStep(d, d.scrollDriven ? 1 : 0)
+  el.toggleAttribute('data-demo-scroll', d.scrollDriven)
 
   // a step's button jumps there and pauses (to read at ease, or see one again)
   const MOVE: Record<string, number> = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }
@@ -197,6 +225,11 @@ function setup(el: HTMLElement): Demo {
   })
 
   d.toggle?.addEventListener('click', () => {
+    if (d.scrollDriven) {
+      d.userPaused = !d.userPaused
+      schedule(d)
+      return
+    }
     if (playing(d)) {
       d.userPaused = true
       stop(d)
@@ -218,6 +251,10 @@ function setup(el: HTMLElement): Demo {
       if (!d.inView) {
         stop(d)
         paint(d)
+        return
+      }
+      if (d.scrollDriven) {
+        schedule(d)
         return
       }
       // back in view: if it had finished (and nobody paused it), start again
@@ -248,6 +285,9 @@ document.addEventListener('visibilitychange', () => {
     } else schedule(d)
   })
 })
+window.addEventListener('scroll', updateScrollScenes, { passive: true })
+window.addEventListener('resize', updateScrollScenes, { passive: true })
+window.addEventListener('ocean:motion-preference', () => demos.forEach((d) => d.scrollDriven && schedule(d)))
 
 /** Scenes waiting to come near the view to be armed. */
 const waiting = new Set<HTMLElement>()

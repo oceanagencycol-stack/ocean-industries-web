@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>OCEAN v3 · el mundo (placas)</title>
+    <style>
+      :root {
+        --space: #03060c;
+        --abyss: #06141d;
+        --slate: #2b404f;
+        --haze: #6e8193;
+        --mist: #b2c0cc;
+        --snow: #e0e7ed;
+        --white: #ffffff;
+        --font: 'Archivo Variable', 'Archivo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --gutter: clamp(20px, 5vw, 72px);
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        background: var(--space);
+        color: var(--snow);
+        font-family: var(--font);
+        -webkit-text-size-adjust: 100%;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: clip;
+      }
+      body {
+        margin: 0;
+      }
+      /* el lienzo fijo, al nivel de la ventana, medido por su caja (100lvh: no cambia con la barra del teléfono) */
+      #world {
+        position: fixed;
+        inset: 0 auto auto 0;
+        width: 100vw;
+        height: 100lvh;
+        display: block;
+        opacity: 0;
+        transition: opacity 0.8s ease;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .world-on #world {
+        opacity: 1;
+      }
+      .qa #world {
+        transition: none;
+      }
+      .world-still #world {
+        display: none;
+      }
+      main {
+        position: relative;
+        z-index: 1;
+      }
+      .tramo {
+        position: relative;
+        isolation: isolate;
+        min-height: 150lvh;
+        padding: 22lvh var(--gutter) 0;
+      }
+      .tramo--cumbre {
+        min-height: 170lvh;
+      }
+      /* la versión quieta (sin JS, sin WebGL2, movimiento reducido, ahorro de datos): cada tramo con su placa, fija
+         mientras se lee, con el mismo recorte que el mundo */
+      .still {
+        position: sticky;
+        top: 0;
+        display: block;
+        height: 100lvh;
+        margin: -22lvh calc(-1 * var(--gutter)) -78lvh;
+        z-index: -1;
+      }
+      .still img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: var(--fx) var(--fy);
+      }
+      @media (max-aspect-ratio: 4/5) {
+        .still img {
+          object-position: var(--vfx) var(--fy);
+        }
+      }
+      .world-on .still {
+        display: none;
+      }
+      .world-on .tramo {
+        padding-top: 22lvh;
+      }
+      .tramo__in {
+        position: relative;
+        max-width: 30rem;
+        text-shadow: 0 1px 24px rgba(3, 6, 12, 0.55);
+      }
+      .tramo--der .tramo__in {
+        margin-left: auto;
+      }
+      .tag {
+        margin: 0 0 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--mist);
+      }
+      h2 {
+        margin: 0 0 0.9rem;
+        font-size: clamp(2rem, 5.2vw, 4.2rem);
+        line-height: 1.02;
+        font-weight: 650;
+        letter-spacing: -0.03em;
+      }
+      p {
+        margin: 0;
+        font-size: 1.0625rem;
+        line-height: 1.6;
+        color: var(--mist);
+        max-width: 34ch;
+      }
+      .btn {
+        display: inline-block;
+        margin-top: 1.8rem;
+        padding: 0.95rem 1.5rem;
+        border-radius: 999px;
+        background: var(--white);
+        color: var(--abyss);
+        font-weight: 600;
+        text-decoration: none;
+        text-shadow: none;
+      }
+      .badge {
+        position: fixed;
+        top: 14px;
+        left: var(--gutter);
+        z-index: 2;
+        font-size: 0.6875rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--haze);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="world" aria-hidden="true"></canvas>
+    <div class="badge">OCEAN v3 · el mundo · vista de desarrollo</div>
+    <main>
+      <section class="tramo tramo--izq" id="espacio" data-tramo="espacio">
+        <picture class="still" style="--fx:45%;--fy:42%;--vfx:66%">
+          <source type="image/avif" media="(max-aspect-ratio: 4/5)" srcset="/v3/world/espacio-v.avif" />
+          <source type="image/webp" media="(max-aspect-ratio: 4/5)" srcset="/v3/world/espacio-v.webp" />
+          <source type="image/avif" srcset="/v3/world/espacio-1280.avif 1280w, /v3/world/espacio-1920.avif 1920w, /v3/world/espacio-2560.avif 2560w" sizes="100vw" />
+          <source type="image/webp" srcset="/v3/world/espacio-1280.webp 1280w, /v3/world/espacio-1920.webp 1920w, /v3/world/espacio-2560.webp 2560w" sizes="100vw" />
+          <img src="/v3/world/espacio-1920.webp" alt="La Tierra de noche desde el espacio, con la luna creciente y una estrella de cuatro puntas" width="1920" height="1072" decoding="async" />
+        </picture>
+        <div class="tramo__in">
+          <p class="tag">Espacio</p>
+          <h2>De lo más profundo a lo más alto.</h2>
+          <p>Desde arriba se ve todo: el mensaje que tiene que llegar a la gente.</p>
+        </div>
+      </section>
+      <section class="tramo tramo--izq" id="satelite" data-tramo="satelite">
+        <picture class="still" style="--fx:62%;--fy:30%;--vfx:56%">
+          <source type="image/avif" media="(max-aspect-ratio: 4/5)" srcset="/v3/world/satelite-v.avif" />
+          <source type="image/webp" media="(max-aspect-ratio: 4/5)" srcset="/v3/world/satelite-v.webp" />
+          <source type="image/avif" srcset="/v3/world/satelite-1280.avif 1280w, /v3/world/satelite-1920.avif 1920w, /v3/world/satelite-2560.avif 2560w" sizes="100vw" />
+          <source type="image/webp" srcset="/v3/world/satelite-1280.webp 1280w, /v3/world/satelite-1920.webp 1920w, /v3/world/satelite-2560.webp 2560w" sizes="100vw" />
+          <img src="/v3/world/satelite-1920.webp" alt="Un satélite plateado en órbita sobre el borde de la Tierra" width="1920" height="1072" decoding="async" loading="lazy" />
+        </picture>
+        <div class="tramo__in">
+          <p class="tag">La señal</p>
+          <h2>Lo que se dice llega.</h2>
+          <p>Contenido para redes y pauta en Meta: la señal que encuentra a quien la necesita.</p>
+        </div>
+      </section>
+      <section class="tramo tramo--izq" id="mar" data-tramo="mar">
+        <picture class="still" style="--fx:49%;--fy:74%;--vfx:50%">
+          <source type="image/avif" media="(max-aspect-ratio: 4/5)" srcset="/v3/world/mar-v.avif" />
+          <source type="image/webp" media="(max-aspect-ratio: 4/5)" srcset="/v3/world/mar-v.webp" />
+          <source type="image/avif" srcset="/v3/world/mar-1280.avif 1280w, /v3/world/mar-1920.avif 1920w, /v3/world/mar-2560.avif 2560w" sizes="100vw" />
+          <source type="image/webp" srcset="/v3/world/mar-1280.webp 1280w, /v3/world/mar-1920.webp 1920w, /v3/world/mar-2560.webp 2560w" sizes="100vw" />
+          <img src="/v3/world/mar-1920.webp" alt="El mar de noche visto desde muy arriba, con un velero solo" width="1920" height="1072" decoding="async" loading="lazy" />
+        </picture>
+        <div class="tramo__in">
+          <p class="tag">Bajando al mar</p>
+          <h2>Abajo, el trabajo.</h2>
+          <p>El mar de noche visto desde arriba. Ahí empieza lo que no se ve.</p>
+        </div>
+      </section>
+      <section class="tramo tramo--izq" id="agua" data-tramo="agua">
+        <picture class="still" style="--fx:66%;--fy:50%;--vfx:69%">
+          <source type="image/avif" media="(max-aspect-ratio: 4/5)" srcset="/v3/world/agua-v.avif" />
+          <source type="image/webp" media="(max-aspect-ratio: 4/5)" srcset="/v3/world/agua-v.webp" />
+          <source type="image/avif" srcset="/v3/world/agua-1280.avif 1280w, /v3/world/agua-1920.avif 1920w, /v3/world/agua-2560.avif 2560w" sizes="100vw" />
+          <source type="image/webp" srcset="/v3/world/agua-1280.webp 1280w, /v3/world/agua-1920.webp 1920w, /v3/world/agua-2560.webp 2560w" sizes="100vw" />
+          <img src="/v3/world/agua-1920.webp" alt="Bajo el agua, un buzo desciende por un haz de luz que entra desde la superficie" width="1920" height="1072" decoding="async" loading="lazy" />
+        </picture>
+        <div class="tramo__in">
+          <p class="tag">Bajo el agua</p>
+          <h2>Rompemos la superficie.</h2>
+          <p>Lo que trabaja abajo, a oscuras, 24/7, sin que nadie lo vea.</p>
+        </div>
+      </section>
+      <section class="tramo tramo--der" id="maquina" data-tramo="maquina">
+        <picture class="still" style="--fx:42%;--fy:45%;--vfx:25%">
+          <source type="image/avif" media="(max-aspect-ratio: 4/5)" srcset="/v3/world/maquina-v.avif" />
+          <source type="image/webp" media="(max-aspect-ratio: 4/5)" srcset="/v3/world/maquina-v.webp" />
+          <source type="image/avif" srcset="/v3/world/maquina-1280.avif 1280w, /v3/world/maquina-1920.avif 1920w, /v3/world/maquina-2560.avif 2560w" sizes="100vw" />
+          <source type="image/webp" srcset="/v3/world/maquina-1280.webp 1280w, /v3/world/maquina-1920.webp 1920w, /v3/world/maquina-2560.webp 2560w" sizes="100vw" />
+          <img src="/v3/world/maquina-1920.webp" alt="Un sumergible ilumina con sus faros la pared de una montaña submarina" width="1920" height="1072" decoding="async" loading="lazy" />
+        </picture>
+        <div class="tramo__in">
+          <p class="tag">La máquina de OCEAN</p>
+          <h2>Agentes que no duermen.</h2>
+          <p>IA para WhatsApp y web, automatización de procesos: la luz en el fondo es la de la máquina.</p>
+        </div>
+      </section>
+      <section class="tramo tramo--izq" id="emerge" data-tramo="emerge">
+        <picture class="still" style="--fx:72%;--fy:42%;--vfx:56%">
+          <source type="image/avif" media="(max-aspect-ratio: 4/5)" srcset="/v3/world/emerge-v.avif" />
+          <source type="image/webp" media="(max-aspect-ratio: 4/5)" srcset="/v3/world/emerge-v.webp" />
+          <source type="image/avif" srcset="/v3/world/emerge-1280.avif 1280w, /v3/world/emerge-1920.avif 1920w, /v3/world/emerge-2560.avif 2560w" sizes="100vw" />
+          <source type="image/webp" srcset="/v3/world/emerge-1280.webp 1280w, /v3/world/emerge-1920.webp 1920w, /v3/world/emerge-2560.webp 2560w" sizes="100vw" />
+          <img src="/v3/world/emerge-1920.webp" alt="Una montaña de hielo partida por la línea del agua: arriba la cumbre, abajo su base" width="1920" height="1072" decoding="async" loading="lazy" />
+        </picture>
+        <div class="tramo__in">
+          <p class="tag">Salir del agua</p>
+          <h2>Lo que no se ve sostiene lo que se ve.</h2>
+          <p>Webs, tiendas y software a la medida: la estructura que queda en pie.</p>
+        </div>
+      </section>
+      <section class="tramo tramo--izq tramo--cumbre" id="cumbre" data-tramo="cumbre">
+        <picture class="still" style="--fx:62%;--fy:36%;--vfx:50%">
+          <source type="image/avif" media="(max-aspect-ratio: 4/5)" srcset="/v3/world/cumbre-v.avif" />
+          <source type="image/webp" media="(max-aspect-ratio: 4/5)" srcset="/v3/world/cumbre-v.webp" />
+          <source type="image/avif" srcset="/v3/world/cumbre-1280.avif 1280w, /v3/world/cumbre-1920.avif 1920w, /v3/world/cumbre-2560.avif 2560w" sizes="100vw" />
+          <source type="image/webp" srcset="/v3/world/cumbre-1280.webp 1280w, /v3/world/cumbre-1920.webp 1920w, /v3/world/cumbre-2560.webp 2560w" sizes="100vw" />
+          <img src="/v3/world/cumbre-1920.webp" alt="Una cumbre de hielo sobre un mar de nubes al amanecer, con un caminante en la arista" width="1920" height="1072" decoding="async" loading="lazy" />
+        </picture>
+        <div class="tramo__in">
+          <p class="tag">Cumbre</p>
+          <h2>Hablemos.</h2>
+          <p>Texto de relleno: la conversación, la agenda y el pago, en calma.</p>
+          <a class="btn" href="#espacio">Volver al espacio</a>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/src/world/dev.ts"></script>
+  </body>
+</html>

@@ -1,43 +1,137 @@
-/* The 404: the wordmark, one line, two ways back. */
-.lost {
-  min-height: 100svh;
-  display: grid;
-  place-items: center;
-  background:
-    radial-gradient(60% 45% at 50% 100%, rgba(0, 0, 255, 0.22), transparent 70%),
-    var(--night);
+/* Las páginas ligeras: la 404 (una placa, una línea, dos salidas) y la privacidad (texto en una columna). */
+.lite__bar {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: calc(18px + env(safe-area-inset-top)) var(--gutter) 18px;
 }
 
-.lost__main {
-  max-width: 720px;
-  padding: 48px var(--gutter);
-}
-
-.lost__wm {
-  width: 140px;
+.lite__logo {
+  width: 104px;
   height: auto;
-  color: var(--foam);
-  margin-bottom: 48px;
 }
 
-.lost__title {
-  margin: 0 0 18px;
-  font-size: clamp(34px, 5.4vw, 64px);
-  font-stretch: 121%;
-  font-weight: 720;
-  line-height: 1;
-  letter-spacing: -0.03em;
+.lite--lost .plate {
+  position: fixed;
+  top: 0;
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 
-.lost__text {
-  margin: 0 0 30px;
-  color: var(--mist);
-  max-width: 52ch;
+.lite--lost .plate::after {
+  background: linear-gradient(100deg, rgba(3, 6, 12, 0.85) 10%, rgba(3, 6, 12, 0.3) 60%, rgba(3, 6, 12, 0.1));
 }
 
-.lost__actions {
+.lite__main {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  min-height: 100svh;
+  max-width: calc(var(--max) + 2 * var(--gutter));
+  margin: 0 auto;
+  padding: 120px var(--gutter) 96px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin: 0;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.lite__title {
+  margin-top: 22px;
+  max-width: 13em;
+  font-size: clamp(40px, 6vw, 84px);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.lite__text {
+  margin-top: 24px;
+  max-width: 34em;
+  color: var(--mist);
+}
+
+/* ---------- la privacidad ---------- */
+.lite--doc .lite__bar {
+  position: static;
+}
+
+.doc-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px var(--gutter) 120px;
+}
+
+.doc-page h1 {
+  margin-top: 22px;
+  font-size: clamp(38px, 5vw, 64px);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+}
+
+.doc-page .doc-page__date {
+  margin-top: 16px;
+  color: var(--haze);
+  font-size: 14px;
+}
+
+.doc-page h2 {
+  margin-top: 56px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.doc-page p,
+.doc-page li {
+  color: var(--mist);
+}
+
+.doc-page p {
+  margin-top: 14px;
+}
+
+.doc-page ul {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.doc-page li {
+  padding-left: 22px;
+  position: relative;
+}
+
+.doc-page li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.8em;
+  width: 10px;
+  height: 1px;
+  background: var(--mist);
+}
+
+.doc-page a {
+  color: var(--snow);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--line-2);
+}
+
+.doc-page b {
+  color: var(--snow);
+  font-weight: 560;
+}
+
+.lite__foot {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px var(--gutter) 48px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--haze);
 }

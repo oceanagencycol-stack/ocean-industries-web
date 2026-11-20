@@ -1,22 +1,20 @@
 /**
  * The phone menu (≤ 760 px): a full-screen disclosure under the bar. The bar's button opens and closes it
  * (aria-expanded). While it is open the rest of the page is `inert` and doesn't scroll; Escape, a link, or going back
- * to a wider screen closes it. Links are anchors: main.ts scrolls (Lenis or native) after it closes.
+ * to a wider screen closes it. Links are plain anchors (native scroll, scroll-padding under the bar).
  */
-import type Lenis from 'lenis'
-
 export interface Menu {
   close: (restoreFocus?: boolean) => void
 }
 
-export function initMenu(lenis: Lenis | null): Menu {
+export function initMenu(): Menu {
   const html = document.documentElement
   const btn = document.querySelector<HTMLButtonElement>('.nav__menu')
   const menu = document.getElementById('menu')
   if (!btn || !menu) return { close: () => {} }
   let open = false
 
-  const outside = () => [document.querySelector('main'), document.querySelector('.footer'), document.querySelector('.fab')].filter(Boolean) as HTMLElement[]
+  const outside = () => [document.querySelector('main'), document.querySelector('.footer'), document.querySelector('.fab'), document.querySelector('.skip')].filter(Boolean) as HTMLElement[]
 
   function show(): void {
     if (open) return
@@ -25,7 +23,6 @@ export function initMenu(lenis: Lenis | null): Menu {
     btn!.setAttribute('aria-expanded', 'true')
     html.classList.add('is-menu-open', 'is-locked')
     outside().forEach((el) => (el.inert = true))
-    lenis?.stop()
     menu!.querySelector<HTMLElement>('a, button')?.focus({ preventScroll: true })
   }
 
@@ -37,7 +34,6 @@ export function initMenu(lenis: Lenis | null): Menu {
     btn!.setAttribute('aria-expanded', 'false')
     html.classList.remove('is-menu-open', 'is-locked')
     outside().forEach((el) => (el.inert = false))
-    lenis?.start()
     if (restoreFocus && hadFocus) btn!.focus({ preventScroll: true })
   }
 

@@ -3,10 +3,8 @@
  * workflow; the webhook's address lives in an environment variable, never here). The floating button hides where the
  * page already offers the same thing (the hero, the invitation, the calendar and the payments: [data-fab-hide]).
  *
- * The agent's answer is the machine speaking: a blue drop sounds and, on the home page's glass, a ring of blue light
- * runs out over the water (stage.pulse()). Every failure ends in WhatsApp: the visitor never hits a dead end.
+ * Every failure ends in WhatsApp: the visitor never hits a dead end.
  */
-import { sound } from '../core/audio'
 import { lang, onLang, t } from './i18n'
 import { waLink } from './wa'
 import { track } from './analytics'
@@ -14,9 +12,9 @@ import { track } from './analytics'
 const ENDPOINT = '/api/agente'
 
 const GREETING = {
-  es: 'Hola 👋 Te escribe el asistente de Ocean. Cuéntame un poco sobre tu negocio y vemos qué podemos automatizar.',
-  en: "Hi 👋 This is Ocean's assistant. Tell me a bit about your business and let's see what we can automate.",
-  pt: 'Oi 👋 Aqui é o assistente da Ocean. Conte um pouco sobre seu negócio e vemos o que podemos automatizar.',
+  es: 'Hola 👋 Te escribe el asistente de OCEAN. Cuéntame un poco sobre tu negocio y vemos qué podemos automatizar.',
+  en: "Hi 👋 This is OCEAN's assistant. Tell me a bit about your business and let's see what we can automate.",
+  pt: 'Oi 👋 Aqui é o assistente da OCEAN. Conte um pouco sobre seu negócio e vemos o que podemos automatizar.',
 }
 
 export interface ChatHooks {
@@ -64,7 +62,6 @@ export function initChat(hooks: ChatHooks = {}): void {
     panel!.hidden = false
     fab!.setAttribute('aria-expanded', 'true')
     fab!.classList.add('is-hidden')
-    sound.duck(true)
     if (!greeted) {
       greeted = true
       window.setTimeout(() => add(t(GREETING), 'bot'), 180)
@@ -78,7 +75,6 @@ export function initChat(hooks: ChatHooks = {}): void {
     panel!.hidden = true
     fab!.setAttribute('aria-expanded', 'false')
     fab!.classList.remove('is-hidden')
-    sound.duck(false)
     fab!.focus({ preventScroll: true })
     paintFab()
   }
@@ -95,7 +91,6 @@ export function initChat(hooks: ChatHooks = {}): void {
     if (!text || busy) return
     busy = true
     add(text, 'user')
-    sound.play('msgOut', { gain: 0.6 })
     input.value = ''
     const dots = typing()
     try {
@@ -111,14 +106,13 @@ export function initChat(hooks: ChatHooks = {}): void {
       const data = (await res.json().catch(() => ({}))) as { reply?: string }
       dots.remove()
       add(data.reply || t({ es: 'No me llegó la respuesta. Escríbenos por WhatsApp y seguimos ahí.', en: "The answer didn't come through. Message us on WhatsApp and we'll continue there.", pt: 'A resposta não chegou. Fale conosco no WhatsApp e seguimos por lá.' }), 'bot')
-      sound.play('msgIn', { gain: 0.7 })
       hooks.onAnswer?.()
     } catch {
       dots.remove()
       add(t({ es: 'Tuve un problema de conexión. Sigamos por WhatsApp: allá te respondemos al instante.', en: "I had a connection problem. Let's continue on WhatsApp: we answer right away there.", pt: 'Tive um problema de conexão. Vamos seguir pelo WhatsApp: lá respondemos na hora.' }), 'bot')
       // a real button, not a raw link: the conversation continues where it always works
       const go = document.createElement('a')
-      go.className = 'btn btn--go btn--sm chat__wa'
+      go.className = 'btn btn--primary btn--sm chat__wa'
       go.href = waLink('general')
       go.target = '_blank'
       go.rel = 'noopener'
@@ -143,7 +137,9 @@ export function initChat(hooks: ChatHooks = {}): void {
         entries.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)))
         paintFab()
       },
-      { threshold: 0.25 },
+      // A long section may never reach a quarter of its own area. Observe the
+      // bottom of the viewport, where the floating button actually sits.
+      { rootMargin: '-78% 0px 0px', threshold: 0 },
     )
     zones.forEach((z) => io.observe(z))
   }
