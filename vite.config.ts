@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
@@ -11,7 +11,17 @@ const ROOT = fileURLToPath(new URL('.', import.meta.url))
 const SITE_URL = (process.env.SITE_URL || 'https://www.oceanindustries.com.co').replace(/\/$/, '')
 
 /** Páginas: la web es una sola (index), la privacidad y la 404 que Vercel sirve en cualquier ruta que no existe. */
-const PAGES = ['index', 'privacidad', '404'] as const
+const PAGES = [
+  'index',
+  'privacidad',
+  '404',
+  // las páginas de servicios y la de inglés (SEO): salen de tools/paginas-seo/build.mjs
+  'servicios',
+  'en',
+  ...readdirSync(resolve(ROOT, 'servicios'))
+    .filter((f) => f.endsWith('.html'))
+    .map((f) => `servicios/${f.slice(0, -5)}`),
+]
 
 /** Páginas de desarrollo (noindex, fuera del sitemap): la intro v3 sola, sobre el espacio de M1a. */
 const DEV_PAGES = ['dev-intro', 'dev-world'] as const
@@ -287,7 +297,7 @@ export default defineConfig({
     rolldownOptions: {
       // Páginas de desarrollo (noindex) solo en las vistas previas; nunca en producción
       input: Object.fromEntries(
-        [...PAGES, ...(process.env.VERCEL_ENV === 'production' ? [] : DEV_PAGES)].map((p) => [p === 'index' ? 'main' : p, resolve(ROOT, `${p}.html`)]),
+        [...PAGES, ...(process.env.VERCEL_ENV === 'production' ? [] : DEV_PAGES)].map((p) => [p === 'index' ? 'main' : p.replace('/', '-'), resolve(ROOT, `${p}.html`)]),
       ),
     },
   },

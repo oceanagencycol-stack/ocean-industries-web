@@ -26,6 +26,17 @@ La v2 quedó en `dpl_DhkVanu9RLzNPmZ2ynUvrGbP2tkA` (`main` 2f12397) para volver 
 - **Logotipo robusto** (20-nov): `tools/marca/robusta.py` desde `robusta.json`; el maestro del 18-nov en
   `marca/v3/anterior/`.
 
+### SEO e IA SEO (rama `v5-seo`, 20-nov-2026)
+- **Posicionamiento**: OCEAN es primero una **empresa de software e ingeniería con IA** (software a la medida, agentes de
+  IA, automatización); webs, contenido y pauta completan el sistema. Así en el título, la portada, la barra, los datos
+  estructurados y `llms.txt`. Qora no se menciona en la web de OCEAN (decisión pendiente de Juan).
+- **Páginas segmentadas**: `/servicios`, `/servicios/<servicio>` (5) y `/en` (nearshore para EE. UU.). Salen de
+  `tools/paginas-seo/contenido.mjs` con `node tools/paginas-seo/build.mjs`, que también escribe `public/sitemap.xml`,
+  `public/robots.txt` (bots de IA permitidos), `public/llms.txt` y `public/llms-full.txt`. No se editan a mano: se
+  cambia el contenido y se vuelve a generar. Usan `src/lite.ts` (con GA4) y los estilos `.sp-*` de `lite.css`.
+- **Home**: bloque `#servicios` y `#preguntas` (FAQ visible, con `FAQPage` en el JSON-LD) en el epílogo, trilingües.
+- Prueba de las páginas: título ≤ 60, descripción ≤ 165, un H1, JSON-LD válido, sin desborde de 320 a 1440 px.
+
 ## Antes de tocar nada
 1. Lee `DESIGN.md` (el sistema v3), `docs/v3/CONCEPTO.md`, `docs/v3/ARQUITECTURA.md`, `docs/plan-v3.md` («Decisiones
    de Juan») y el brain (`brain/proyectos/ocean-industries-web.md`).

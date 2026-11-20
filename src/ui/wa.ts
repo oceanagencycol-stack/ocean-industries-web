@@ -9,9 +9,9 @@ export const WA_NUMBER = '573138721665'
 
 const MESSAGES: Record<string, Record<Lang, string>> = {
   general: {
-    es: 'Hola OCEAN 👋 Vengo de su web y quiero saber cómo pueden automatizar mi negocio.',
-    en: "Hi OCEAN 👋 I came from your site and I'd like to know how you can automate my business.",
-    pt: 'Olá OCEAN 👋 Vim do site e quero saber como podem automatizar meu negócio.',
+    es: 'Hola OCEAN 👋 Vengo de su web y quiero contarles un proyecto (software, IA o automatización).',
+    en: "Hi OCEAN 👋 I came from your site and I'd like to tell you about a project (software, AI or automation).",
+    pt: 'Olá OCEAN 👋 Vim do site e quero contar um projeto (software, IA ou automação).',
   },
   demo: {
     es: 'Hola OCEAN 👋 Quiero agendar una llamada para ver qué pueden automatizar en mi negocio. ¿Qué horarios tienen?',

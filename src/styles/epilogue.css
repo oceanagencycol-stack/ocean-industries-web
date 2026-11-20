@@ -213,3 +213,107 @@ html.no-motion .steel__sheen { animation: none !important; }
   .footer { --lw: 36vw; }
   .footer .footer__legal { padding-bottom: 36px; }
 }
+
+/* Servicios y preguntas frecuentes sobre la nieve: el índice de la ingeniería de OCEAN y lo que más se pregunta. */
+.epi .svcx__list,
+.epi .faqx__list {
+  margin-top: clamp(36px, 5vw, 64px);
+  border-top: 1px solid var(--ink-line-2);
+}
+.epi .svcx__list a {
+  display: grid;
+  grid-template-columns: 3.2em minmax(0, 1fr) minmax(0, 1.1fr) auto;
+  align-items: center;
+  gap: 8px 24px;
+  min-height: 72px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--ink-line-2);
+  color: var(--abyss);
+  transition: padding 0.4s var(--ease);
+}
+.epi .svcx__n {
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  color: var(--slate);
+  font-variant-numeric: tabular-nums;
+}
+.epi .svcx__name {
+  font: 580 clamp(22px, 2.3vw, 34px)/1.05 var(--display);
+  letter-spacing: -0.04em;
+}
+.epi .svcx__d {
+  color: var(--slate);
+  font-size: clamp(15px, 1.1vw, 17px);
+}
+@media (hover: hover) {
+  .epi .svcx__list a:hover {
+    padding-left: 12px;
+  }
+}
+.epi .svcx__more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 36px;
+  margin-top: 28px;
+}
+.epi .svcx__more a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  color: var(--abyss);
+  font-weight: 540;
+  text-decoration: underline;
+  text-decoration-color: var(--ink-line-2);
+  text-underline-offset: 4px;
+}
+@media (max-width: 760px) {
+  .epi .svcx__list a {
+    grid-template-columns: 2.6em minmax(0, 1fr) auto;
+  }
+  .epi .svcx__d {
+    grid-column: 2 / 3;
+  }
+  .epi .svcx__list .ico {
+    grid-row: 1;
+    grid-column: 3;
+  }
+}
+.epi .faqx__list details {
+  border-bottom: 1px solid var(--ink-line-2);
+}
+.epi .faqx__list summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 56px;
+  padding: 20px 0;
+  cursor: pointer;
+  list-style: none;
+}
+.epi .faqx__list summary::-webkit-details-marker {
+  display: none;
+}
+.epi .faqx__list summary::after {
+  content: '+';
+  flex: none;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--slate);
+  transition: transform 0.3s var(--ease);
+}
+.epi .faqx__list details[open] summary::after {
+  transform: rotate(45deg);
+}
+.epi .faqx__list h3 {
+  margin: 0;
+  font: 560 clamp(18px, 1.6vw, 24px)/1.25 var(--display);
+  letter-spacing: -0.02em;
+  color: var(--abyss);
+}
+.epi .faqx__list details p {
+  max-width: 46em;
+  padding: 0 0 24px;
+  color: var(--slate);
+}

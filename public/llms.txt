@@ -1,25 +1,38 @@
 # OCEAN
 
-> OCEAN (nombre legal: Ocean Industries) es un estudio de tecnología con presencia en Cali, Bogotá y Miami. Construye agentes de IA que atienden WhatsApp y la web, software a la medida con IA, automatizaciones, webs y tiendas, pauta en Meta y contenido vertical. Atiende en español, inglés y portugués. Lema: «De lo más profundo a lo más alto».
+> OCEAN (nombre legal: Ocean Industries) es una empresa de software e ingeniería con inteligencia artificial, con equipo en Cali y Bogotá (Colombia) y presencia en Miami. Diseña y construye software a la medida, agentes de IA para WhatsApp, voz y web, automatización de procesos y webs y tiendas de alto rendimiento para empresas de Colombia, Estados Unidos y Latinoamérica, en español, inglés y portugués.
 >
-> English: OCEAN (legal name: Ocean Industries) is a technology studio (Cali, Bogotá, Miami). It builds AI agents that answer WhatsApp and web chat, custom AI software, automations, websites and stores, Meta ads and short-form video content. Spanish, English and Portuguese.
+> English: OCEAN (legal name: Ocean Industries) is a software and AI engineering company with teams in Cali and Bogotá, Colombia, and a presence in Miami. It designs and builds custom software, AI agents for WhatsApp, phone and web, process automation and high-performance websites for companies in the United States, Colombia and Latin America, in English, Spanish and Portuguese.
 
-Cómo trabaja: el primer contacto es por WhatsApp o una videollamada de 45 minutos por Google Meet, gratis. La demo de un agente queda funcionando en 48 horas. Cuando el agente no sabe algo, pasa la conversación a una persona. Los paisajes de la web son ilustraciones hechas con IA; los nombres y cifras de las escenas de ejemplo no son clientes reales.
+OCEAN es primero una empresa de ingeniería: software a la medida, agentes de IA y automatización. Las webs, el contenido y la pauta completan el sistema. El primer contacto es por WhatsApp o una videollamada de 45 minutos por Google Meet, gratis; el primer prototipo o la demo de un agente quedan funcionando en 24 a 48 horas. Cuando un agente no sabe algo, pasa la conversación a una persona. Los paisajes de la web son ilustraciones hechas con IA; los nombres y cifras de las escenas de ejemplo no son clientes reales.
 
 ## Servicios
-- [Contenido para redes (UGC)](https://www.oceanindustries.com.co/#ugc): contenido vertical para TikTok, Reels y Facebook que lleva la conversación a WhatsApp.
-- [Pauta en Meta](https://www.oceanindustries.com.co/#performance): campañas en Meta Ads pensadas para conversaciones en WhatsApp, no para clics.
-- [Agentes de IA para WhatsApp y web](https://www.oceanindustries.com.co/#omnicanal): agentes que entienden el contexto, agendan citas y pasan a una persona cuando no saben.
-- [Software a la medida con IA](https://www.oceanindustries.com.co/#software): paneles y software conectados a bases de datos, CRM y hojas de cálculo.
-- [Automatización de procesos](https://www.oceanindustries.com.co/#automatizacion): CRM, pagos, WhatsApp, calendario e IA conectados en un solo sistema.
-- [Webs y tiendas en línea](https://www.oceanindustries.com.co/#web): webs y tiendas rápidas en el celular, con catálogo, pagos y SEO.
+- [Desarrollo de software a la medida con inteligencia artificial](https://www.oceanindustries.com.co/servicios/desarrollo-de-software-a-la-medida): OCEAN desarrolla software a la medida con IA: paneles, CRM, plataformas internas y SaaS conectados a tus datos. Equipo en Cali y Bogotá. Prototipo en 48 horas.
+- [Agentes de IA para WhatsApp, voz y web](https://www.oceanindustries.com.co/servicios/agentes-de-ia): Agentes de IA que atienden WhatsApp, llamadas y el chat de tu web 24/7: responden, agendan y pasan a una persona. Demo funcionando en 48 horas.
+- [Automatización de procesos e integraciones con IA](https://www.oceanindustries.com.co/servicios/automatizacion-de-procesos): OCEAN conecta tu CRM, pagos, WhatsApp, calendario, correo y hojas de cálculo en un solo sistema que trabaja solo, con IA. Diagnóstico gratis.
+- [Desarrollo web: páginas, tiendas y plataformas que venden](https://www.oceanindustries.com.co/servicios/desarrollo-web): Webs, tiendas y plataformas que cargan al instante en el celular, con pagos, WhatsApp y SEO técnico y para IA. Prototipo navegable en 48 horas.
+- [Contenido UGC y pauta en Meta que terminan en conversaciones](https://www.oceanindustries.com.co/servicios/contenido-y-pauta): Contenido vertical para TikTok y Reels y campañas en Meta Ads pensadas para conversaciones, no para clics, conectadas a agentes de IA que responden al instante.
+- [Todos los servicios](https://www.oceanindustries.com.co/servicios)
+- [OCEAN in English: nearshore software and AI engineering from Colombia](https://www.oceanindustries.com.co/en)
 
 ## Trabajo publicado
-- [Casos](https://www.oceanindustries.com.co/#work): Outstanding Garage Doors (Miami, agentes de IA para su teléfono y su WhatsApp, y sitio en inglés), Naidikó (Pacífico colombiano, sitio con catálogo, mayoreo e inversión) y Álvaro Arroyo (Colombia, sitio de autoridad).
+- Outstanding Garage Doors (Miami, Florida (EE. UU.)): Negocio de servicio local en el sur de Florida. Su línea telefónica y su WhatsApp conectados a agentes de IA que responden y pasan a una persona. Estado: agente de voz en operación y sitio en inglés publicado; WhatsApp en ajuste.
+- Naidikó (Pacífico colombiano): Marca de naidí (el açaí del Pacífico) con tres modelos de venta en un mismo sitio: una web propia con catálogo, formularios y pedidos por WhatsApp. En producción: catálogo, mayoreo e inversión activos.
+- Álvaro Arroyo (Colombia): Figura pública sin un sitio propio donde publicar: un sitio de autoridad de 20 páginas pensado para buscadores. Publicado, con 20 páginas indexadas.
+
+## Datos
+- Nombre: OCEAN. Nombre legal: Ocean Industries. OCEAN es una marca registrada.
+- Ciudades: Cali y Bogotá (Colombia), Miami (EE. UU.). Atiende Colombia, Estados Unidos y Latinoamérica.
+- Idiomas: español, inglés y portugués.
+- Tecnología: TypeScript, React y Next.js, Node.js, PostgreSQL y Supabase, Vercel, Modelos de Claude y OpenAI, n8n, API de WhatsApp, WebGL y three.js, Wompi (pagos), Google Workspace, Cal.com.
+- Respuesta media de 11 s, medida en la línea de WhatsApp de OCEAN.
 
 ## Contacto
 - [WhatsApp +57 313 872 1665](https://wa.me/573138721665)
-- [Agendar una llamada (Cal.com, 45 min)](https://cal.com/ocean-industries-2e5al7/agenda-demo-gratuita)
+- [Agendar una llamada (Cal.com, 45 min, gratis)](https://cal.com/ocean-industries-2e5al7/agenda-demo-gratuita)
 - [Instagram @oceanind.co](https://www.instagram.com/oceanind.co/)
 - [Pagos en línea con Wompi (en COP; los USD se cobran en COP a la tasa del día)](https://www.oceanindustries.com.co/#pay)
 - [Privacidad](https://www.oceanindustries.com.co/privacidad)
+
+## Opcional
+- [Texto completo de las páginas de servicios](https://www.oceanindustries.com.co/llms-full.txt)
