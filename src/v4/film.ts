@@ -23,7 +23,7 @@ const FPS = timing.fps
 const FR = timing.frames
 const SHOTS = FR.length - 1
 const DUR = (FR[SHOTS] - 1) / FPS
-const FADE = 0.75 // s de película para entrar o salir un rótulo
+const FADE = 0.55 // s de película para entrar o salir un rótulo
 const clamp = (x: number, a = 0, b = 1) => (x < a ? a : x > b ? b : x)
 const ALT_WORDS = { es: ['Altitud', 'Profundidad'], en: ['Altitude', 'Depth'], pt: ['Altitude', 'Profundidade'] }
 
@@ -122,6 +122,30 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     if (c) a.style.setProperty('--at', (c.t0 / DUR).toFixed(4))
   })
 
+  const messages = SCRIPT.es.map(([who, text]) => {
+    const node = document.createElement('p')
+    node.className = who === 'cli' ? 'msg msg--in' : 'msg msg--out'
+    node.textContent = text
+    return node
+  })
+  chatBox?.replaceChildren(...messages)
+  function translateChat() {
+    const script = SCRIPT[lang()]
+    messages.forEach((node, i) => { node.textContent = script[i][1] })
+  }
+  const transcript = document.querySelector('[data-transcript]')
+  if (transcript) {
+    const rows = SCRIPT.es.map((line, i) => {
+      const node = messages[i].cloneNode(false) as HTMLElement
+      node.dataset.es = line[1]
+      node.dataset.en = SCRIPT.en[i][1]
+      node.dataset.pt = SCRIPT.pt[i][1]
+      node.textContent = SCRIPT[lang()][i][1]
+      return node
+    })
+    transcript.replaceChildren(...rows)
+  }
+  translateChat()
   let lastAlt = ''
   let lastTc = ''
   let lastNow = -2
@@ -129,6 +153,8 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   let lastChat = -1
   onLang(() => {
     split(document)
+    translateChat()
+    if (!html.classList.contains('no-stage')) requestAnimationFrame(refreshBounds)
     for (const b of beats) for (const l of b.lines) l.last = -1
     lastAlt = ''
     lastNow = -2
@@ -275,6 +301,28 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   const pos: [number, number] = [0, 0]
   const mtmp: [number, number, number, number] = [0, 0, 0, 0]
 
+  // Measure type after layout or translation. During scroll only compare numbers.
+  const obstacles: { t0: number; t1: number; box: DOMRect }[] = []
+  const labelSizes = CALLOUTS.map(c => ({ label: c.el?.querySelector<HTMLElement>('.co__label'), w: 0, h: 0, x: 0, y: 0, shown: false }))
+  function refreshBounds() {
+    obstacles.length = 0
+    for (const b of beats) {
+      for (const node of b.inner.querySelectorAll('.w,.lt,.figs,.stat,.actions,.phone-ov,.deck,.kicker,.where,.berg p')) {
+        const box = node.getBoundingClientRect()
+        if (box.width && box.height) obstacles.push({ t0: b.t0 - .22, t1: b.t1 + .22, box })
+      }
+    }
+    for (const el of [altiBox, scrub, document.querySelector('.nav')]) {
+      if (el) obstacles.push({ t0: -1, t1: DUR + 1, box: el.getBoundingClientRect() })
+    }
+    for (const size of labelSizes) {
+      size.w = size.label?.offsetWidth ?? 0
+      size.h = size.label?.offsetHeight ?? 0
+    }
+  }
+  refreshBounds()
+  addEventListener('resize', () => requestAnimationFrame(refreshBounds))
+  document.fonts?.ready.then(refreshBounds)
   // ---- el reloj ----
 
   let tS = 0
@@ -337,13 +385,13 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     for (const b of beats) {
       const first = b.t0 <= 0
       // el primero entra con el amanecer; los demás con su tiempo
-      const a = first ? clamp(intro * 1.6 - 0.35) : clamp((tS - b.t0) / FADE)
-      const e = clamp((tS - (b.t1 - FADE)) / FADE)
+      const a = first ? clamp(intro * 1.6 - 0.35) : clamp((tS - b.t0 + .28) / FADE)
+      const e = clamp((tS - (b.t1 + .28 - FADE)) / FADE)
       b.a = setv(b.inner, '--a', a, b.a)
       b.e = setv(b.inner, '--e', e, b.e)
       const span = b.t1 - b.t0
       for (const l of b.lines) {
-        const lt = first ? clamp(intro * 1.7 - 0.45 - l.at * 4) : clamp((tS - b.t0 - l.at * span) / 0.9)
+        const lt = first ? clamp(intro * 1.7 - 0.45 - l.at * 4) : clamp((tS - b.t0 + .28 - l.at * span) / 0.63)
         l.last = setv(l.el, '--l', lt, l.last)
       }
       const vis = a * (1 - e)
@@ -370,19 +418,12 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
 
     // Valeria: la conversación avanza con su tramo
     if (chatBox && agentes) {
-      const lines = SCRIPT[lang()]
+      const lines = messages
       const p = clamp((tS - agentes.t0 - 0.4) / (agentes.t1 - agentes.t0 - 1.6))
       const n = opts.reduced ? lines.length : Math.max(1, Math.min(lines.length, 1 + Math.floor(p * lines.length)))
       if (n !== lastChat) {
         lastChat = n
-        chatBox.replaceChildren(
-          ...lines.slice(0, n).map(([who, body]) => {
-            const msg = document.createElement('p')
-            msg.className = `msg ${who === 'cli' ? 'msg--in' : 'msg--out'}`
-            msg.textContent = body
-            return msg
-          }),
-        )
+        for (let i = 0; i < messages.length; i++) messages[i].hidden = i >= n
       }
     }
 
@@ -412,7 +453,9 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     }
 
     // rótulos anclados a los sujetos
-    for (const c of CALLOUTS) {
+    for (let ci = 0; ci < CALLOUTS.length; ci++) {
+      const c = CALLOUTS[ci], size = labelSizes[ci]
+      size.shown = false
       const el = c.el
       if (!el) continue
       const o = (c.wide && W < 900 ? 0 : clamp((u - c.from) / 0.03) * clamp((c.to - u) / 0.03)) * introE
@@ -432,6 +475,23 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
         c.side = 0
         geometry(el, c.ang ?? -32, c.len ?? 90)
       }
+      const angle = (W < 700 ? (c.side < 0 ? 205 : -25) : c.ang ?? -32) * Math.PI / 180
+      const dx = Math.cos(angle) * (W < 700 ? 44 : c.len ?? 90)
+      const x = pos[0] + dx + (dx < 0 ? -8 - size.w : 8)
+      const y = pos[1] + Math.sin(angle) * (W < 700 ? 44 : c.len ?? 90) - size.h / 2
+      let blocked = x < 8 || y < 8 || x + size.w > W - 8 || y + size.h > V - 8
+      for (let j = 0; !blocked && j < obstacles.length; j++) {
+        const r = obstacles[j], box = r.box
+        blocked = tS >= r.t0 && tS <= r.t1 && x < box.right + 5 && x + size.w > box.left - 5 && y < box.bottom + 5 && y + size.h > box.top - 5
+      }
+      for (let j = 0; !blocked && j < ci; j++) {
+        const r = labelSizes[j]
+        blocked = r.shown && x < r.x + r.w + 5 && x + size.w > r.x - 5 && y < r.y + r.h + 5 && y + size.h > r.y - 5
+      }
+      if (blocked) { el.style.setProperty('--o', '0'); continue }
+      size.shown = true
+      size.x = x
+      size.y = y
       el.style.setProperty('--o', o.toFixed(3))
       el.style.setProperty('--x', `${pos[0].toFixed(1)}px`)
       el.style.setProperty('--y', `${pos[1].toFixed(1)}px`)

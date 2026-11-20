@@ -1083,3 +1083,16 @@ html.no-stage .beat--hero .beat__in { min-height: 100svh; }
   .film .hero__title { font-size: min(10vw, 14svh); }
   .hero__foot .actions { margin-top: 8px; }
 }
+
+.valeria-open { display: none; }
+#valeria-demo { margin: auto; width: min(90vw, 420px); max-height: 78svh; overflow: auto; padding: 22px; color: var(--snow); background: var(--abyss); border: 1px solid var(--slate); }
+#valeria-demo::backdrop { background: rgb(3 6 12 / .8); }
+#valeria-demo > button { float: right; color: var(--snow); padding: 6px; }
+#valeria-demo .live__msgs { height: auto; padding: 16px 0 0; }
+@media (max-width: 900px) {
+  .valeria-open { display: inline-flex; width: fit-content; margin-top: 10px; color: var(--snow); }
+  .beat--berg .low__l .lts { display: grid; margin-top: 8px; }
+  .beat--berg .lt { border: 0; padding: 0; }
+  .beat--berg .lt .svc__name, .beat--berg .lt .svc__desc { display: none; }
+}
+@media (min-width: 901px) { .fab { bottom: 58px; } }
