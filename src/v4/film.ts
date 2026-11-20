@@ -82,7 +82,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   const video = document.querySelector<HTMLVideoElement>('.stage__src')
   const poster = document.querySelector<HTMLImageElement>('.stage__poster img')
   const shadeEl = document.querySelector<HTMLElement>('.stage__shade')
-  const reel = document.querySelector<HTMLElement>('.reel')
+  const reel = document.querySelector<HTMLElement>('.film-track')
   const altiVal = document.querySelector<HTMLElement>('[data-alti]')
   const altiLabel = document.querySelector<HTMLElement>('[data-alti-label]')
   const altiBox = document.querySelector<HTMLElement>('.alti')
@@ -208,16 +208,38 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     frame.zoom = z
     return out
   }
-  const pre = preload(src, projectHero, { reduced: opts.reduced, quick })
-  pre.url.then((blob) => {
+  let failed = false
+  let release!: () => void
+  const decoded = new Promise<void>(resolve => { release = resolve })
+  let timeout = 0
+  let objectUrl: string | null = null
+  function fallback() {
+    if (failed) return
+    failed = true
+    clearTimeout(timeout)
+    html.classList.remove('has-stage', 'pre-on')
+    html.classList.add('no-stage')
+    document.querySelector('.pre')?.remove()
+    for (const beat of beats) beat.inner.inert = false
+    release()
+    stage?.destroy()
+    if (objectUrl) URL.revokeObjectURL(objectUrl)
+  }
+  const pre = preload(src, projectHero, { reduced: opts.reduced, quick, decoded })
+  video.addEventListener('error', fallback, { once: true })
+  canvas.addEventListener('webglcontextlost', fallback, { once: true })
+  video.addEventListener('loadeddata', () => {
+    clearTimeout(timeout)
+    release()
+    try { sessionStorage.setItem('ocean-v4-film', '1') } catch { /* private mode */ }
+  }, { once: true })
+  pre.url.then(blob => {
+    if (failed) { if (blob) URL.revokeObjectURL(blob); return }
+    objectUrl = blob
+    timeout = window.setTimeout(fallback, 10000)
     video.src = blob ?? src
     video.preload = 'auto'
     video.load()
-    try {
-      sessionStorage.setItem('ocean-v4-film', '1')
-    } catch {
-      /* noop */
-    }
   })
   let intro = 0 // 0 → 1 cuando el negro se abre
   let introStart = -1
@@ -271,13 +293,14 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   }
 
   function tick(now: number) {
+    if (failed) return
     const elapsed = (now - prev) / 1000
     const dt = Math.min(0.05, elapsed)
     prev = now
     clock += dt
 
     // el negro se abre: la exposición sube como un amanecer
-    if (introStart >= 0) intro = clamp((now - introStart) / 1900)
+    if (introStart >= 0) intro = clamp((now - introStart) / (quick || opts.reduced ? 420 : 1200))
     const introE = intro * intro * (3 - 2 * intro)
 
     const y = scrollY
@@ -298,8 +321,8 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     const m = frame.medium.w
     for (let k = 0; k < 4; k++) m[k] = mtmp[k] * on
     frame.flash = opts.reduced ? 0 : flash(u) * 0.8
-    if (y <= reelTop + DUR * sps + V || !started) stage!.render(frame, mouse, dt)
-    if (!started && stage!.ready && intro > 0) {
+    if (stage!.ready && (y <= reelTop + DUR * sps + V || !started)) stage!.render(frame, mouse, dt)
+    if (!started && stage!.ready) {
       started = true
       html.classList.add('has-stage')
     }

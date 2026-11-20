@@ -63,14 +63,14 @@ html::-webkit-scrollbar {
 }
 .stage__gl {
   opacity: 0;
-  transition: opacity 1.2s var(--ease);
+  transition: none;
 }
 html.has-stage .stage__gl {
   opacity: 1;
 }
 html.has-stage .stage__poster {
   visibility: hidden;
-  transition: visibility 0s 1.2s;
+
 }
 .stage__src {
   position: absolute;
@@ -139,11 +139,11 @@ html.pre-on {
   stroke-linecap: round;
 }
 .pre__rim {
-  stroke: #cfe7ff;
+  stroke: var(--snow);
   stroke-width: 1.5;
 }
 .pre__halo {
-  stroke: #2f86ff;
+  stroke: var(--mist);
   stroke-width: 9;
   filter: url(#preGlow);
   opacity: 0.85;
@@ -164,7 +164,7 @@ html.pre-on {
   top: -13px;
   color: #fff;
   fill: currentColor;
-  filter: drop-shadow(0 0 10px rgba(140, 200, 255, 0.9)) drop-shadow(0 0 26px rgba(70, 140, 255, 0.6));
+  filter: drop-shadow(0 0 10px rgba(224, 231, 237, 0.9)) drop-shadow(0 0 26px rgba(178, 192, 204, 0.6));
   transition: transform 1.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 1.4s ease;
 }
 .pre__top {
@@ -232,7 +232,7 @@ html.pre-on {
   font-variant-numeric: tabular-nums;
 }
 /* al 100 %: el negro se abre, la cifra se va, el símbolo se vuelve el sol en el borde; la línea queda sobre el borde real */
-.pre.is-done {
+html.js .pre.is-done {
   background: rgba(0, 0, 0, 0);
 }
 .pre.is-done .pre__count {
@@ -251,7 +251,7 @@ html.pre-on {
 }
 .pre.is-done .pre__svg {
   opacity: 0;
-  transition: opacity 2.6s ease 0.6s;
+  transition: opacity 1.2s ease;
 }
 
 /* ---------- la secuencia ---------- */
@@ -259,12 +259,12 @@ html.pre-on {
   position: relative;
   z-index: 2;
 }
-html.js .reel {
+html.js:not(.no-stage) .film-track {
   position: relative;
   /* la película entera + una pantalla de luz blanca antes del epílogo */
   height: calc(67.5 * var(--sps, 560px) + 70lvh);
 }
-html.js .beat {
+html.js:not(.no-stage) .beat {
   position: absolute;
   left: 0;
   right: 0;
@@ -278,7 +278,7 @@ html.js .beat {
   position: relative;
   padding: calc(var(--nav-h) + 40px) var(--gutter) 120px;
 }
-html.js .beat__in {
+html.js:not(.no-stage) .beat__in {
   position: fixed;
   inset: 0;
   z-index: 3;
@@ -968,7 +968,7 @@ html.nav-light .alti {
 
 /* ---------- teléfono ---------- */
 @media (max-width: 900px) {
-  html.js .beat__in {
+  html.js:not(.no-stage) .beat__in {
     align-content: end;
     padding: calc(var(--nav-h) + 16px) var(--gutter) 96px;
   }
@@ -1060,4 +1060,26 @@ html.nav-light .alti {
   .mega--loud {
     font-size: 13vw;
   }
+}
+
+html.pre-on .stage__poster { visibility: hidden; }
+html.js .pre--quick, .pre--quick.is-done .pre__svg { transition-duration: .35s; }
+html.no-stage .beat__in { visibility: visible; position: relative; }
+html.no-stage .beat { position: relative; pointer-events: auto; background: rgba(3,6,12,.65); }
+html.no-stage .beat--hero { min-height: 100svh; background: transparent; }
+html.no-stage .beat__in [data-k], html.no-stage .beat__in .ch { opacity: 1; filter: none; transform: none; }
+html.no-stage .scrub, html.no-stage .alti, html.no-stage .callouts, html.no-stage .berg { display: none; }
+html.no-stage .phone-ov { position: static; display: block; margin-top: 24px; }
+html.no-stage .beat--berg .low__l .lts { display: grid; }
+html.no-stage .beat--hero .beat__in { min-height: 100svh; }
+@media (max-width: 900px) {
+  .berg b { font-size: clamp(24px, 7vw, 52px); }
+  .berg span { max-width: 21ch; font-size: 10px; }
+  .berg__low { top: min(calc(var(--wl, 52%) + 12px), 58%); }
+  .beat--hero .hero__title { font-size: clamp(46px, 14vw, 96px); }
+}
+@media (max-height: 660px) {
+  html.js .beat--hero .beat__in { padding-block: calc(var(--nav-h) + 8px) 58px; }
+  .film .hero__title { font-size: min(10vw, 14svh); }
+  .hero__foot .actions { margin-top: 8px; }
 }

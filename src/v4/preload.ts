@@ -21,7 +21,7 @@ export interface Preload {
 const clamp = (x: number, a = 0, b = 1) => (x < a ? a : x > b ? b : x)
 const ease = (x: number) => 1 - Math.pow(1 - x, 3)
 
-export function preload(src: string, project: Project, opts: { reduced: boolean; quick: boolean }): Preload {
+export function preload(src: string, project: Project, opts: { reduced: boolean; quick: boolean; decoded: Promise<void> }): Preload {
   const root = document.querySelector<HTMLElement>('.pre')
   const svg = root?.querySelector<SVGSVGElement>('.pre__svg')
   const rim = root?.querySelector<SVGPathElement>('.pre__rim')
@@ -40,8 +40,10 @@ export function preload(src: string, project: Project, opts: { reduced: boolean;
 
   // ---- la descarga ----
   const url = (async (): Promise<string | null> => {
+    const abort = new AbortController()
+    let idle = window.setTimeout(() => abort.abort(), 12000)
     try {
-      const res = await fetch(src, { cache: 'force-cache' })
+      const res = await fetch(src, { cache: 'force-cache', signal: abort.signal })
       if (!res.ok || !res.body) throw new Error(String(res.status))
       total = Number(res.headers.get('content-length')) || 0
       const reader = res.body.getReader()
@@ -49,6 +51,8 @@ export function preload(src: string, project: Project, opts: { reduced: boolean;
       for (;;) {
         const { done: end, value } = await reader.read()
         if (end) break
+        clearTimeout(idle)
+        idle = window.setTimeout(() => abort.abort(), 12000)
         chunks.push(value)
         loaded += value.byteLength
         real = total ? loaded / total : Math.min(0.95, real + 0.01)
@@ -58,11 +62,15 @@ export function preload(src: string, project: Project, opts: { reduced: boolean;
     } catch {
       real = 1
       return null
+    } finally {
+      clearTimeout(idle)
     }
   })()
 
+  let decoded = false
+  opts.decoded.then(() => { decoded = true })
   if (!root || !svg || !rim || !halo || !head || !num) {
-    url.then(() => resolveOpened())
+    opts.decoded.then(() => resolveOpened())
     return { url, opened }
   }
 
@@ -95,14 +103,17 @@ export function preload(src: string, project: Project, opts: { reduced: boolean;
   addEventListener('resize', geometry)
 
   const t0 = performance.now()
-  const minMs = opts.quick ? 900 : MIN_MS
+  const minMs = opts.quick ? 250 : MIN_MS
   let shown = 0
   let openAt = 0
+  let previous = t0
+  root.classList.toggle('pre--quick', opts.quick || opts.reduced)
 
   function frame(now: number) {
     const timeK = clamp((now - t0) / minMs)
-    const target = Math.min(real, ease(timeK))
-    shown += (target - shown) * 0.18
+    const target = Math.min(real, decoded ? 1 : 0.98, ease(timeK))
+    shown += (target - shown) * (1 - Math.exp(-(now - previous) / 45))
+    previous = now
     if (target >= 1 && shown > 0.995) shown = 1
     const off = len * (1 - shown)
     rim!.style.strokeDashoffset = String(off)
@@ -122,7 +133,7 @@ export function preload(src: string, project: Project, opts: { reduced: boolean;
       html.classList.add('pre-open')
       resolveOpened()
     }
-    if (done && now - openAt > 3600) {
+    if (done && now - openAt > (opts.quick ? 500 : 1400)) {
       root!.remove()
       removeEventListener('resize', geometry)
       html.classList.remove('pre-on')
@@ -133,14 +144,15 @@ export function preload(src: string, project: Project, opts: { reduced: boolean;
   html.classList.add('pre-on')
   if (opts.reduced) {
     // sin dibujo: el número y luego un fundido
-    url.then(() => {
+    opts.decoded.then(() => {
       root.classList.add('is-done')
       html.classList.add('pre-open')
       resolveOpened()
       setTimeout(() => {
         root.remove()
+        removeEventListener('resize', geometry)
         html.classList.remove('pre-on')
-      }, 900)
+      }, 450)
     })
     return { url, opened }
   }
