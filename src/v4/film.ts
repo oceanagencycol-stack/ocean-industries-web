@@ -14,7 +14,7 @@
  */
 import { lang, onLang } from '../ui/i18n'
 import { SCRIPT } from '../ui/live'
-import { createStage, type Look, type Stage, type StageFrame } from './stage'
+import { createStage, SCRIMS, type Look, type Stage, type StageFrame } from './stage'
 import { ALT, CALLOUTS as CALLOUT_DEFS, FOCUS, MEDIA, WATERLINE, flash, formatAlt, look, num, vec } from './script'
 import { preload } from './preload'
 import timing from './film.json'
@@ -43,10 +43,62 @@ interface Beat {
   ch: number
   lines: { el: HTMLElement; at: number; last: number }[]
   shade: number[]
+  /** cajas del texto (l, t, r, b en px de pantalla) que el shader recoge detrás del rótulo */
+  scrims: number[]
+  /** fuerza de esa luz de lectura (data-scrim, 1 por defecto) */
+  scrimK: number
   a: number
   e: number
   on: boolean
 }
+
+type Box = [number, number, number, number]
+
+/** une cajas vecinas (a menos de `gap` px) y deja como mucho `max`, uniendo las que menos área agregan */
+function cluster(boxes: Box[], gap: number, max: number): Box[] {
+  const join = (a: Box, c: Box) => {
+    a[0] = Math.min(a[0], c[0])
+    a[1] = Math.min(a[1], c[1])
+    a[2] = Math.max(a[2], c[2])
+    a[3] = Math.max(a[3], c[3])
+  }
+  for (let again = true; again; ) {
+    again = false
+    for (let i = 0; i < boxes.length && !again; i++) {
+      for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i], c = boxes[j]
+        if (a[0] - gap < c[2] && c[0] - gap < a[2] && a[1] - gap < c[3] && c[1] - gap < a[3]) {
+          join(a, c)
+          boxes.splice(j, 1)
+          again = true
+          break
+        }
+      }
+    }
+  }
+  const area = (a: Box) => (a[2] - a[0]) * (a[3] - a[1])
+  while (boxes.length > max) {
+    let bi = 0, bj = 1, best = Infinity
+    for (let i = 0; i < boxes.length; i++) {
+      for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i], c = boxes[j]
+        const grown = (Math.max(a[2], c[2]) - Math.min(a[0], c[0])) * (Math.max(a[3], c[3]) - Math.min(a[1], c[1])) - area(a) - area(c)
+        if (grown < best) {
+          best = grown
+          bi = i
+          bj = j
+        }
+      }
+    }
+    join(boxes[bi], boxes[bj])
+    boxes.splice(bj, 1)
+  }
+  return boxes
+}
+
+/** lo que se lee en un rótulo: palabras de los titulares, etiquetas, textos, botones, cifras */
+// «Arriba» va en tinta abisal sobre el cielo claro: esa no se oscurece
+const READ = '.w, .kicker > span, .deck, .actions > *, .where, .lt, .figs > div, .stat, .berg__low b, .berg__low span, .valeria-open'
 
 function split(root: ParentNode) {
   root.querySelectorAll<HTMLElement>('[data-split]').forEach((el) => {
@@ -109,6 +161,8 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
       ch: Number(el.dataset.ch ?? -1),
       lines,
       shade: (el.dataset.shade ?? '0,0,0,0').split(',').map(Number),
+      scrims: [],
+      scrimK: Number(el.dataset.scrim ?? 1),
       a: -1,
       e: -1,
       on: true,
@@ -191,7 +245,10 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
 
   sd ||= stage.software
   const L: Look = { exposure: 1, contrast: 1, saturation: 1, tint: [1, 1, 1], vignette: 0, grain: 0, fade: 0 }
-  const frame: StageFrame = { t: 0, vel: 0, focus: [0.5, 0.5], zoom: 1.045, look: L, medium: { w: [0, 0, 0, 0] }, flash: 0, shade: [0, 0, 0, 0], hud: 0 }
+  const frame: StageFrame = {
+    t: 0, vel: 0, focus: [0.5, 0.5], zoom: 1.045, look: L, medium: { w: [0, 0, 0, 0] }, flash: 0, shade: [0, 0, 0, 0], hud: 0,
+    scrim: new Float32Array(SCRIMS * 4), scrimA: new Float32Array(SCRIMS), scrimN: 0,
+  }
   const fpos: [number, number] = [0.5, 0.5]
 
   /** del video a la pantalla con el encuadre actual (el mismo cálculo del shader) */
@@ -251,7 +308,11 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     html.classList.remove('has-stage', 'pre-on')
     html.classList.add('no-stage')
     document.querySelector('.pre')?.remove()
-    for (const beat of beats) beat.inner.inert = false
+    for (const beat of beats) {
+      beat.inner.inert = false
+      beat.inner.classList.remove('is-snug', 'is-tight')
+      beat.inner.style.removeProperty('--fit')
+    }
     release()
     stage?.destroy()
     if (objectUrl) URL.revokeObjectURL(objectUrl)
@@ -310,17 +371,113 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   // Measure type after layout or translation. During scroll only compare numbers.
   const obstacles: { t0: number; t1: number; box: DOMRect }[] = []
   const labelSizes = CALLOUTS.map(c => ({ label: c.el?.querySelector<HTMLElement>('.co__label'), w: 0, h: 0, x: 0, y: 0, shown: false }))
+  // ---- que cada rótulo quepa entre la barra y la telemetría ----
+  // Pantallas bajas (iPhone SE, portátiles de 1280 × 720) y textos más largos en EN/PT: primero se recoge lo
+  // secundario (.is-tight: el problema y la descripción de cada servicio, los países); si aún no cabe, la tipografía
+  // grande baja con --fit. Se mide en el layout (offsetTop), sin las transformaciones de entrada.
+  function room(inner: HTMLElement): number {
+    const cs = getComputedStyle(inner)
+    const avail = inner.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)
+    let top = Infinity, bottom = -Infinity
+    for (const child of inner.children) {
+      const el = child as HTMLElement
+      const st = getComputedStyle(el)
+      if (st.display === 'none' || st.position === 'absolute' || st.position === 'fixed') continue
+      top = Math.min(top, el.offsetTop - parseFloat(st.marginTop))
+      bottom = Math.max(bottom, el.offsetTop + el.offsetHeight + parseFloat(st.marginBottom))
+    }
+    return bottom > top ? avail / (bottom - top) : 1
+  }
+  /** la línea de agua más baja del tramo del iceberg (las leyendas bajan con ella mientras la cámara sube) */
+  function lowestWaterline(b: Beat): number {
+    const z = frame.zoom
+    frame.zoom = 1.045
+    let y = 0
+    for (const t of [b.t0, (b.t0 + b.t1) / 2, b.t1]) {
+      const u = toU(t)
+      focusAt(u)
+      project(0.5, num(WATERLINE, u), pos)
+      y = Math.max(y, pos[1] / V)
+    }
+    frame.zoom = z
+    return y
+  }
+  /** el borde de arriba de la telemetría que vive abajo (el índice; en el teléfono también el altímetro) */
+  function hudTop(): number {
+    let y = V
+    for (const el of [scrub, altiBox]) {
+      const r = el?.getBoundingClientRect()
+      if (r && r.height && r.top > V * 0.6) y = Math.min(y, r.top)
+    }
+    return y
+  }
+  /** la leyenda de «Arriba» y «Debajo» no puede montarse sobre el capítulo, la barra ni la telemetría */
+  function bergCollides(inner: HTMLElement): boolean {
+    const col = inner.querySelector('.low__l')
+    if (!col) return false
+    const marks = [...inner.querySelectorAll('.berg__low > *, .berg__top > *')].map(e => e.getBoundingClientRect()).filter(r => r.height)
+    const navBottom = document.querySelector('.nav')?.getBoundingClientRect().bottom ?? 0
+    const floor = hudTop() - 6
+    if (marks.some(m => m.bottom > floor || m.top < navBottom + 4)) return true
+    const text = [...col.querySelectorAll('.kicker > span, .w, .lt')].map(e => e.getBoundingClientRect()).filter(r => r.height)
+    return marks.some(m => text.some(r => m.left < r.right + 6 && r.left < m.right + 6 && m.top < r.bottom + 6 && r.top < m.bottom + 6))
+  }
+  function fit() {
+    // lecturas y escrituras por tandas: unas pocas maquetaciones en total, no una por rótulo
+    const all = beats.map(b => b.inner)
+    for (const el of all) {
+      el.classList.remove('is-snug', 'is-tight')
+      el.style.removeProperty('--fit')
+    }
+    // el iceberg se mide en el peor momento de su tramo; el reloj vuelve a poner su línea al dibujar
+    const bergBeat = berg ? beats.find(b => b.inner.contains(berg)) : undefined
+    if (berg && bergBeat) berg.style.setProperty('--wl', `${(lowestWaterline(bergBeat) * 100).toFixed(2)}%`)
+    const fails = (el: HTMLElement) => room(el) < 0.995 || bergCollides(el)
+    // 1 · menos aire entre los bloques
+    let todo = all.filter(fails)
+    for (const el of todo) el.classList.add('is-snug')
+    // 2 · se recoge lo secundario
+    todo = todo.filter(fails)
+    for (const el of todo) el.classList.add('is-tight')
+    // 3 · la tipografía grande baja hasta caber: bisección entre 0,62 y 1, por tandas
+    const lo = new Map<HTMLElement, number>(), hi = new Map<HTMLElement, number>()
+    for (const el of todo) {
+      lo.set(el, 0.62)
+      hi.set(el, 1)
+    }
+    for (let i = 0; i < 6 && todo.length; i++) {
+      for (const el of todo) el.style.setProperty('--fit', ((lo.get(el)! + hi.get(el)!) / 2).toFixed(3))
+      for (const el of todo) {
+        const s = (lo.get(el)! + hi.get(el)!) / 2
+        if (fails(el)) hi.set(el, s)
+        else lo.set(el, s)
+      }
+    }
+    for (const el of todo) el.style.setProperty('--fit', lo.get(el)!.toFixed(3))
+  }
+
+  let altiScrim: number[] = []
   function refreshBounds() {
+    if (!html.classList.contains('no-stage')) fit()
     obstacles.length = 0
     for (const b of beats) {
-      for (const node of b.inner.querySelectorAll('.w,.lt,.figs,.stat,.actions,.phone-ov,.deck,.kicker,.where,.berg p')) {
+      for (const node of b.inner.querySelectorAll('.w,.lt,.figs,.stat,.actions,.phone-ov,.deck,.kicker > span,.where,.berg p,.valeria-open')) {
         const box = node.getBoundingClientRect()
         if (box.width && box.height) obstacles.push({ t0: b.t0 - .22, t1: b.t1 + .22, box })
       }
+      const boxes: Box[] = []
+      for (const node of b.inner.querySelectorAll(READ)) {
+        if (node.closest('.phone-ov')) continue
+        const r = node.getBoundingClientRect()
+        if (r.width > 1 && r.height > 1) boxes.push([r.left, r.top, r.right, r.bottom])
+      }
+      b.scrims = cluster(boxes, 24, 6).flat()
     }
     for (const el of [altiBox, scrub, document.querySelector('.nav')]) {
       if (el) obstacles.push({ t0: -1, t1: DUR + 1, box: el.getBoundingClientRect() })
     }
+    const a = altiBox?.getBoundingClientRect()
+    altiScrim = a && a.height ? [a.left, a.top, a.right, a.bottom] : []
     for (const size of labelSizes) {
       size.w = size.label?.offsetWidth ?? 0
       size.h = size.label?.offsetHeight ?? 0
@@ -416,6 +573,8 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
 
     // los rótulos de la película
     let sl = 0, sb = 0, sc = 0, sr = 0
+    const scR = frame.scrim, scA = frame.scrimA
+    let scN = 0
     for (const b of beats) {
       if (!b.on && (tS < b.t0 - .28 || tS > b.t1 + .28)) continue
       const first = b.t0 <= 0
@@ -443,8 +602,26 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
         sb += b.shade[1] * vis
         sc += b.shade[2] * vis
         sr += b.shade[3] * vis
+        // la luz de lectura sigue al rótulo: entra y sale con él
+        const k = vis * b.scrimK
+        for (let q = 0; k > 0.001 && q < b.scrims.length && scN < SCRIMS - 1; q += 4, scN++) {
+          scR[scN * 4] = b.scrims[q] / W
+          scR[scN * 4 + 1] = 1 - b.scrims[q + 3] / V
+          scR[scN * 4 + 2] = b.scrims[q + 2] / W
+          scR[scN * 4 + 3] = 1 - b.scrims[q + 1] / V
+          scA[scN] = k
+        }
       }
     }
+    // y la telemetría, mientras se ve
+    if (altiScrim.length && frame.hud > 0.01 && scN < SCRIMS) {
+      scR[scN * 4] = altiScrim[0] / W
+      scR[scN * 4 + 1] = 1 - altiScrim[3] / V
+      scR[scN * 4 + 2] = altiScrim[2] / W
+      scR[scN * 4 + 3] = 1 - altiScrim[1] / V
+      scA[scN++] = frame.hud * 0.85
+    }
+    frame.scrimN = scN
     frame.shade[0] = Math.min(1, sl)
     frame.shade[1] = Math.min(1, sb)
     frame.shade[2] = Math.min(1, sc)
@@ -514,13 +691,21 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
         geometry(el, c.ang ?? -32, c.len ?? 90)
       }
       const angle = (W < 700 ? (c.side < 0 ? 205 : -25) : c.ang ?? -32) * Math.PI / 180
-      const dx = Math.cos(angle) * (W < 700 ? 44 : c.len ?? 90)
+      const len = W < 700 ? 44 : c.len ?? 90
+      const dx = Math.cos(angle) * len
+      const dy = Math.sin(angle) * len
       const x = pos[0] + dx + (dx < 0 ? -8 - size.w : 8)
-      const y = pos[1] + Math.sin(angle) * (W < 700 ? 44 : c.len ?? 90) - size.h / 2
+      const y = pos[1] + dy - size.h / 2
       let blocked = x < 8 || y < 8 || x + size.w > W - 8 || y + size.h > V - 8
       for (let j = 0; !blocked && j < obstacles.length; j++) {
         const r = obstacles[j], box = r.box
-        blocked = tS >= r.t0 && tS <= r.t1 && x < box.right + 5 && x + size.w > box.left - 5 && y < box.bottom + 5 && y + size.h > box.top - 5
+        if (tS < r.t0 || tS > r.t1) continue
+        blocked = x < box.right + 5 && x + size.w > box.left - 5 && y < box.bottom + 5 && y + size.h > box.top - 5
+        // ni la etiqueta, ni la línea, ni el punto cruzan el texto
+        for (let s = 0; !blocked && s <= 4; s++) {
+          const px = pos[0] + dx * s * 0.25, py = pos[1] + dy * s * 0.25
+          blocked = px > box.left - 6 && px < box.right + 6 && py > box.top - 6 && py < box.bottom + 6
+        }
       }
       for (let j = 0; !blocked && j < ci; j++) {
         const r = labelSizes[j]

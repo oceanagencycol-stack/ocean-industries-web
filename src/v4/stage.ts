@@ -38,7 +38,14 @@ export interface StageFrame {
   flash: number
   shade: [number, number, number, number]
   hud: number
+  /** las luces de lectura: cajas del texto visible (x0, y0, x1, y1 en 0–1, y hacia arriba) y su fuerza */
+  scrim: Float32Array
+  scrimA: Float32Array
+  scrimN: number
 }
+
+/** cuántas cajas de texto puede recoger el shader a la vez (dos rótulos cruzándose + la telemetría) */
+export const SCRIMS = 16
 
 const VERT = `#version 300 es
 in vec2 aPos;
@@ -52,6 +59,9 @@ out vec4 o;
 uniform sampler2D uTex, uNext;
 uniform float uMix, uHud;
 uniform vec4 uShade;
+uniform vec4 uScrim[16];
+uniform float uScrimA[16];
+uniform int uScrimN;
 uniform vec2 uRes, uVid, uFocus, uShift;
 uniform float uZoom, uVel, uTime, uExposure, uContrast, uSat, uVig, uGrain, uFade, uFlash, uReady;
 uniform vec3 uTint;
@@ -103,6 +113,23 @@ void main(){
   // viñeta
   float d = length(e*vec2(1.0, 0.82));
   col *= mix(1., smoothstep(0.98, 0.18, d), uVig);
+  // Reading lights: behind the measured text boxes the highlights compress
+  // smoothly (Reinhard-like), shadows barely move. White text keeps >= 9:1 and
+  // --mist >= 5:1 over the brightest frame; the soft edge reads as exposure.
+  if (uScrimN > 0) {
+    vec2 px = vUv * uRes;
+    float fe = uRes.y * .13;
+    float sc = 0.;
+    for (int i = 0; i < 16; i++) {
+      if (i >= uScrimN) break;
+      vec4 r = uScrim[i] * uRes.xyxy;
+      vec2 q = abs(px - (r.xy + r.zw) * .5) - (r.zw - r.xy) * .5;
+      float sd = length(max(q, 0.)) + min(max(q.x, q.y), 0.);
+      sc = max(sc, uScrimA[i] * (1. - smoothstep(0., fe, sd)));
+    }
+    float lum = dot(col, vec3(.2126, .7152, .0722));
+    col *= mix(1., 1. / (1. + max(lum, 0.) * 2.7), sc);
+  }
   // fundido
   col = uFade >= 0. ? mix(col, vec3(0.878,0.906,0.929), uFade) : mix(col, vec3(0.012,0.024,0.047), -uFade);
   // grano animado
@@ -273,6 +300,7 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
   const u = {
     tex: U(prog, 'uTex'), next: U(prog, 'uNext'), mix: U(prog, 'uMix'), res: U(prog, 'uRes'), vid: U(prog, 'uVid'), focus: U(prog, 'uFocus'), shift: U(prog, 'uShift'),
     shade: U(prog, 'uShade'), hud: U(prog, 'uHud'),
+    scrim: U(prog, 'uScrim'), scrimA: U(prog, 'uScrimA'), scrimN: U(prog, 'uScrimN'),
     zoom: U(prog, 'uZoom'), vel: U(prog, 'uVel'), time: U(prog, 'uTime'), exposure: U(prog, 'uExposure'),
     contrast: U(prog, 'uContrast'), sat: U(prog, 'uSat'), vig: U(prog, 'uVig'), grain: U(prog, 'uGrain'),
     fade: U(prog, 'uFade'), flash: U(prog, 'uFlash'), tint: U(prog, 'uTint'), ready: U(prog, 'uReady'),
@@ -431,6 +459,12 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
     gl.uniform2f(u.shift, shiftX, -shiftY)
     gl.uniform4f(u.shade, f.shade[0], f.shade[1], f.shade[2], f.shade[3])
     gl.uniform1f(u.hud, f.hud)
+    const scrims = Math.min(f.scrimN, SCRIMS)
+    gl.uniform1i(u.scrimN, scrims)
+    if (scrims > 0) {
+      gl.uniform4fv(u.scrim, f.scrim, 0, scrims * 4)
+      gl.uniform1fv(u.scrimA, f.scrimA, 0, scrims)
+    }
     gl.uniform1f(u.zoom, f.zoom)
     gl.uniform1f(u.vel, f.vel)
     gl.uniform1f(u.time, clock)

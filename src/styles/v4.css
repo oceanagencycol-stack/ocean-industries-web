@@ -281,10 +281,10 @@ html.js [data-k] {
   text-wrap: balance;
 }
 .film .title {
-  font-size: clamp(40px, 5.6vw, 104px);
+  font-size: calc(clamp(40px, 5.6vw, 104px) * var(--fit, 1));
 }
 .film .title--xl {
-  font-size: clamp(54px, 8.4vw, 156px);
+  font-size: calc(clamp(54px, 8.4vw, 156px) * var(--fit, 1));
 }
 .ln--em {
   color: var(--mist);
@@ -327,7 +327,7 @@ html.js .beat--hero .beat__in {
   text-transform: uppercase;
   letter-spacing: -0.012em;
   line-height: 0.84;
-  font-size: clamp(60px, 11.2vw, 220px);
+  font-size: calc(clamp(60px, 11.2vw, 220px) * var(--fit, 1));
 }
 .beat--hero .hero__title .ln--em {
   color: transparent;
@@ -412,7 +412,7 @@ html.js .beat--mega .beat__in {
   font-family: var(--display);
   font-stretch: 64%;
   font-weight: 800;
-  font-size: clamp(52px, 5.4vw, 92px);
+  font-size: calc(clamp(52px, 5.4vw, 92px) * var(--fit, 1));
   line-height: 0.9;
   color: var(--white);
   font-variant-numeric: tabular-nums;
@@ -439,7 +439,7 @@ html.js .beat--mega .beat__in {
   margin: 28px 0 0;
 }
 .figs dt {
-  font-size: clamp(40px, 4.2vw, 72px);
+  font-size: calc(clamp(40px, 4.2vw, 72px) * var(--fit, 1));
 }
 .figs dd {
   margin: 8px 0 0;
@@ -488,10 +488,6 @@ html.js .beat--mega .beat__in {
   font-size: 13.5px;
   line-height: 1.55;
   color: var(--snow);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 .lt .svc__link {
   margin-top: 4px;
@@ -527,11 +523,11 @@ html.js .phone-ov[data-k] {
   text-wrap: balance;
 }
 .mega--loud {
-  font-size: clamp(54px, 10.5vw, 196px);
+  font-size: calc(clamp(54px, 10.5vw, 196px) * var(--fit, 1));
 }
 .mega--giant {
   max-width: none;
-  font-size: clamp(64px, 17vw, 330px);
+  font-size: calc(clamp(64px, 17vw, 330px) * var(--fit, 1));
   line-height: 0.8;
 }
 .mega--quiet {
@@ -540,7 +536,7 @@ html.js .phone-ov[data-k] {
   font-stretch: 100%;
   text-transform: none;
   font-weight: 500;
-  font-size: clamp(22px, 2.6vw, 44px);
+  font-size: calc(clamp(22px, 2.6vw, 44px) * var(--fit, 1));
   line-height: 1.15;
   letter-spacing: -0.02em;
   color: var(--snow);
@@ -573,7 +569,7 @@ html.js .phone-ov[data-k] {
   font-family: var(--display);
   font-stretch: 64%;
   font-weight: 800;
-  font-size: clamp(72px, 11vw, 200px);
+  font-size: calc(clamp(72px, 11vw, 200px) * var(--fit, 1));
   line-height: 0.8;
   color: var(--white);
 }
@@ -596,6 +592,9 @@ html.js .phone-ov[data-k] {
 }
 .berg__low {
   top: calc(var(--wl, 52%) + 22px);
+}
+.berg__low b {
+  margin-bottom: 0.16em;
 }
 .berg::after {
   content: '';
@@ -676,7 +675,7 @@ html.no-stage .epi {
   font-size: 10px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--haze);
+  color: var(--mist);
 }
 .alti__val {
   font-family: var(--display);
@@ -880,6 +879,7 @@ html.nav-light .alti {
 @media (max-width: 900px) {
   html.js:not(.no-stage) .beat__in {
     align-content: end;
+    align-content: safe end;
     padding: calc(var(--nav-h) + 16px) var(--gutter) 96px;
   }
   html.js .beat--mega .beat__in {
@@ -926,15 +926,12 @@ html.nav-light .alti {
     gap: 14px;
     margin-top: 22px;
   }
-  .lt .svc__desc {
-    -webkit-line-clamp: 2;
-  }
   .lts--row .lt:nth-child(2) .svc__desc,
   .lt .svc__problem {
     display: none;
   }
   .film .hero__title {
-    font-size: clamp(52px, 15.5vw, 96px);
+    font-size: calc(clamp(52px, 15.5vw, 96px) * var(--fit, 1));
   }
   .berg p {
     left: var(--gutter);
@@ -956,19 +953,19 @@ html.nav-light .alti {
     gap: 14px;
   }
   .figs dt {
-    font-size: 40px;
+    font-size: calc(40px * var(--fit, 1));
   }
   .mega {
     max-width: 100%;
   }
   .mega--quiet {
-    font-size: 19px;
+    font-size: calc(19px * var(--fit, 1));
   }
   .mega--giant {
-    font-size: 15.5vw;
+    font-size: calc(15.5vw * var(--fit, 1));
   }
   .mega--loud {
-    font-size: 13vw;
+    font-size: calc(13vw * var(--fit, 1));
   }
 }
 
@@ -982,14 +979,18 @@ html.no-stage .phone-ov { position: static; display: block; margin-top: 24px; }
 html.no-stage .beat--berg .low__l .lts { display: grid; }
 html.no-stage .beat--hero .beat__in { min-height: 100svh; }
 @media (max-width: 900px) {
-  .berg b { font-size: clamp(24px, 7vw, 52px); }
+  .berg b { font-size: calc(clamp(24px, 7vw, 52px) * var(--fit, 1)); }
   .berg span { max-width: 21ch; font-size: 10px; }
   .berg__low { top: min(calc(var(--wl, 52%) + 12px), 58%); }
-  .beat--hero .hero__title { font-size: clamp(46px, 14vw, 96px); }
+  .beat--hero .hero__title { font-size: calc(clamp(46px, 14vw, 96px) * var(--fit, 1)); }
 }
 @media (max-height: 660px) {
   html.js .beat--hero .beat__in { padding-block: calc(var(--nav-h) + 8px) 58px; }
-  .film .hero__title { font-size: min(10vw, 14svh); }
+}
+@media (max-height: 660px) and (max-width: 900px) {
+  /* en el teléfono la telemetría vive abajo: el hero no se le monta (fit recoge lo que sobre) */
+  html.js .beat--hero .beat__in { padding-bottom: 96px; }
+  .film .hero__title { font-size: calc(min(10vw, 14svh) * var(--fit, 1)); }
   .hero__foot .actions { margin-top: 8px; }
 }
 
@@ -1012,4 +1013,71 @@ html.js .ln.is-set .ch { filter: none; transform: none; opacity: 1; }
 .beat--plunge .mega { mix-blend-mode: normal; text-shadow: 0 2px 26px rgba(3,6,12,.75); }
 @media (max-width: 900px) {
   .beat--left .title, .beat--low .title { text-shadow: 0 2px 16px rgba(3,6,12,.8); }
+}
+
+/* ---------- que cada rótulo quepa (film.ts → fit): pantallas bajas y textos largos en EN/PT ---------- */
+/* 1 · menos aire entre los bloques */
+html.js:not(.no-stage) .is-snug .title { margin-top: 12px; }
+html.js:not(.no-stage) .is-snug .stat,
+html.js:not(.no-stage) .is-snug .figs { margin-top: 16px; }
+html.js:not(.no-stage) .is-snug .figs { row-gap: 10px; }
+html.js:not(.no-stage) .is-snug .lts { margin-top: 18px; gap: 12px 26px; }
+html.js:not(.no-stage) .is-snug .lt { padding-top: 12px; }
+html.js:not(.no-stage) .is-snug .actions { margin-top: 18px; }
+html.js:not(.no-stage) .is-snug .where { margin-top: 14px; }
+html.js:not(.no-stage) .is-snug .deck { margin-top: 14px; }
+html.js:not(.no-stage) .beat--hero .is-snug .deck { margin-top: 0; }
+/* 2 · lo secundario se recoge entero (nunca a media palabra) */
+html.js:not(.no-stage) .is-tight .svc__problem,
+html.js:not(.no-stage) .is-tight .svc__desc,
+html.js:not(.no-stage) .is-tight .where,
+html.js:not(.no-stage) .is-tight .berg span { display: none; }
+html.js:not(.no-stage) .is-tight .berg__low b { margin-bottom: 0; }
+
+/* ---------- el índice en el teléfono y la tableta: la palabra y sus dos líneas en una fila ---------- */
+@media (max-width: 1080px) {
+  .nav__menu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: auto;
+    min-width: 44px;
+    padding: 0 4px;
+    margin-right: -4px;
+  }
+  .nav__index {
+    font-size: 13px;
+    line-height: 1;
+    color: var(--snow);
+  }
+  .nav__menu-icon {
+    width: 18px;
+  }
+}
+@media (max-width: 480px) {
+  .nav__index { display: none; }
+}
+
+/* el iceberg: en el computador la columna del capítulo no llega debajo de «Arriba» y «Debajo» */
+@media (min-width: 901px) {
+  html.js .beat--berg .low__l { max-width: min(600px, 44vw); }
+}
+
+/* Valeria en pantallas bajas: el teléfono cabe entre la barra y la telemetría; los primeros mensajes suben y se
+   ocultan arriba, como en un chat que avanza */
+@media (min-width: 901px) {
+  .phone-ov {
+    display: flex;
+    max-height: calc(100dvh - var(--nav-h) - 128px);
+  }
+  .phone-ov .live__chat {
+    min-height: 0;
+    max-height: 100%;
+  }
+  .phone-ov .live__msgs {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
 }
