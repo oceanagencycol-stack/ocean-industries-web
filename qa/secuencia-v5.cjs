@@ -30,10 +30,18 @@ function observeStage() {
     if (uniforms.get(location) === 'uMix') mix = value
     if (uniforms.get(location) === 'uVel') velocity = value
   })
+  const draw = CanvasRenderingContext2D.prototype.drawImage
+  CanvasRenderingContext2D.prototype.drawImage = function (...args) {
+    const result = draw.apply(this, args)
+    const source = args[0]
+    if (source instanceof HTMLVideoElement) frames.set(this.canvas, Math.floor(source.currentTime * 24 + .001))
+    return result
+  }
   for (const upload of ['texImage2D', 'texSubImage2D']) {
     observe(upload, (_, args) => {
       const source = args.at(-1)
       if (source instanceof HTMLVideoElement) frames.set(bindings[unit], Math.floor(source.currentTime * 24 + 0.001))
+      else if (frames.has(source)) frames.set(bindings[unit], frames.get(source))
     })
   }
   observe('drawArrays', (gl, args) => {

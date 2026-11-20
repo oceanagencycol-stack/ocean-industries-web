@@ -285,15 +285,34 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
   let clock = 0
   let shiftX = 0, shiftY = 0
 
+  // A software GL driver synchronously converts a video texture through an FBO.
+  // Rasterize once per decoded frame into one reusable CPU surface instead.
+  const staging = software ? document.createElement('canvas').getContext('2d', {
+    alpha: false, willReadFrequently: true,
+  }) : null
+
   const upload = (src: TexImageSource, w: number, h: number) => {
     // Preserve the neighbour closest to the sample we are about to upload.
     const slot = pair[0].frame < 0 ? pair[0] : pair[1].frame < 0 ? pair[1]
       : Math.abs(pair[0].frame - requested) >= Math.abs(pair[1].frame - requested) ? pair[0] : pair[1]
+    let pixels = src
+    let width = w, height = h
+    if (staging && src === video) {
+      width = Math.min(w, 832)
+      height = Math.round(h * width / w)
+      const surface = staging.canvas
+      if (surface.width !== width || surface.height !== height) {
+        surface.width = width
+        surface.height = height
+      }
+      staging.drawImage(video, 0, 0, width, height)
+      pixels = surface
+    }
     gl.bindTexture(gl.TEXTURE_2D, slot.texture)
-    if (slot.width === w && slot.height === h) gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, src)
-    else gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src)
-    slot.width = w
-    slot.height = h
+    if (slot.width === width && slot.height === height) gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
+    else gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
+    slot.width = width
+    slot.height = height
     slot.frame = src === video ? requested : -1
     vidW = w
     vidH = h
