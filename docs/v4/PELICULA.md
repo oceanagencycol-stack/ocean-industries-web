@@ -73,3 +73,45 @@ Placa de apertura 2 × 1.827 y siete tomas Kling 3 Pro (6 × 6.787 + 5.430) = **
 `npm run build && npx vite preview --port 4175`; `node qa/overflow.cjs http://localhost:4175/` («nada se sale de la
 pantalla», ES/EN/PT, 320–1440 px). Recorrido con capturas por capítulo: ver `qa/` de la sesión (Playwright con
 SwiftShader; sin GPU el loop corre lento y el amortiguado tarda más en llegar, en un equipo real va a 60 fps).
+
+## v5
+
+La rama `v5-secuencia` continúa desde `6ef0e3c`. El recorrido conserva ambos MP4, los 1.621 fotogramas de origen, las siete tomas y los servicios de OCEAN. El primer y el último fotograma distan 67,5 segundos. El navegador sigue buscando en el mismo video al avanzar y retroceder.
+
+### Diagnóstico de la versión recibida
+
+Se recorrieron los trece momentos, el epílogo y el pie en Chromium, a 1440 × 900 y 390 × 844. El reloj y los textos cambiaban de capítulo mientras el escenario seguía mostrando la Tierra o el satélite. En el barrido lento de escritorio, la textura recibió cero imágenes nuevas durante cuatro segundos. El siguiente `currentTime` invalidaba el cuadro que acababa de decodificarse. En la edición sin WebGL2 quedaron ocultos los trece rótulos. La regla de altura de la película también se aplicaba a los tres reels sociales. En la prueba del respaldo cada reel medía 38.391 px de alto.
+
+| Capturas por momento | Escritorio | Teléfono |
+| --- | --- | --- |
+| Antes de editar | [Recorrido original](qa-v5/escritorio-antes.webp) | [Recorrido original](qa-v5/movil-antes.webp) |
+| Tras el ajuste de cámara y composición | [Recorrido corregido](qa-v5/escritorio-despues.webp) | [Recorrido corregido](qa-v5/movil-despues.webp) |
+
+### Cámara, rótulos y apertura
+
+- La posición vertical determina directamente el tiempo del máster. Cada búsqueda se dirige al interior de un fotograma. El escenario consume el cuadro confirmado por el decodificador antes de solicitar otro. Guarda dos texturas reutilizables y puede interpolar dos cuadros contiguos durante el scroll lento. En los saltos largos usa el más cercano disponible. El presupuesto de resolución se adapta al coste de dibujar. Un rasterizador por software recibe el máster SD.
+- La gradación y las partículas conservan el guion original. El desenfoque radial tiene menor alcance. Los saltos de ancla y el movimiento reducido prescinden de ese efecto. Las cajas de texto y telemetría se miden al cargar las fuentes, cambiar el idioma o redimensionar. Un rótulo anclado que invadiría una de ellas cede espacio.
+- El preloader espera a que haya una imagen de video decodificada. El arco y la cámara usan la relación de aspecto del máster y la misma convención de coordenadas. El negro da paso a la exposición del escenario. Una revisita abre con un fundido corto. Una descarga interrumpida puede continuar por la URL directa. Si falla también el video, o se pierde WebGL, la portada y el contenido siguen disponibles en HTML.
+- El hero ocupa la pantalla y mantiene los dos botones visibles. En el teléfono se puede abrir la conversación de ejemplo con Valeria. El iceberg explica las partes visibles e internas de la operación mediante palabras. El epílogo comparte el color final de la película y los reels recuperan su altura natural.
+
+### Verificación
+
+Las pruebas usaron Chromium con SwiftShader en Linux y dos CPU lógicas. El teléfono fue emulado. Se recorrió toda la película y se compararon barridos lentos y rápidos en ambos sentidos. `node qa/secuencia-v5.cjs http://localhost:4175/` relaciona las texturas subidas con la mezcla que recibe el shader al dibujar. Registra también la diferencia entre el reloj y el scroll, y la intensidad del desenfoque. La prueba se puede repetir en un equipo con GPU.
+
+- En 320, 360, 390, 600, 768, 900, 1024, 1280 y 1440 px se midieron palabras, botones, llamadas a la acción y telemetría en ES, EN y PT. Los elementos medidos quedaron dentro del ancho de pantalla.
+- Se comprobó que ambos botones del hero caben a 1440 × 900, 1280 × 800, 2360 × 900 y 390 × 844. La desviación máxima medida del trazo respecto al círculo de referencia fue de 0,36 px de pantalla. La prueba mide la geometría; la atmósfera fotografiada tiene un borde luminoso de varios píxeles.
+- En el teléfono emulado, desde la navegación hasta retirar el preloader se midieron 4,79 s en la primera visita y 2,18 s al volver en la misma sesión. La duración incluye carga y decodificación. Se ensayaron el error de red, la ausencia de WebGL2 y el movimiento reducido.
+- Se verificaron la conversación de Valeria, el chat contra el simulado local, los enlaces contextuales de WhatsApp, los tres proyectos, el sonido de los reels, el destino de Cal.com y el cálculo previo de Wompi. La página arrancó en silencio. GA4 permaneció inactivo en la vista local.
+
+| Barrido | Mayor intervalo de imagen en escritorio | Mayor intervalo de imagen en teléfono emulado |
+| --- | ---: | ---: |
+| Lento, del segundo 12 al 16 en 5 s | 1.401 ms | 402 ms |
+| Lento, del 16 al 12 en 5 s | 507 ms | 259 ms |
+| Rápido, del 12 al 50 en 4 s | 699 ms | 387 ms |
+| Rápido, del 50 al 12 en 4 s | 613 ms | 354 ms |
+
+El reloj coincidió con la posición del scroll en todas las muestras de dibujo (error máximo registrado de 0 s). En el barrido lento, la intensidad máxima observada del desenfoque fue 0,234 en escritorio y 0,077 en teléfono, en una escala de 0 a 1. La imagen avanzó en los dos sentidos. **El objetivo de 33,3 ms entre imágenes quedó pendiente en este equipo.** El máster aporta un fotograma original cada 41,7 ms a velocidad natural. La interpolación puede producir imágenes intermedias cuando hay dos texturas adyacentes disponibles. Las cifras anteriores miden el cuadro enviado al compositor. La validación de la cadencia en un teléfono físico queda pendiente.
+
+Lighthouse 12.8.2 móvil, una corrida por versión en este entorno, dio 37 → 44 en rendimiento, LCP 6,0 → 5,0 s y CLS 0,001 → 0. El bloqueo total pasó de 107,60 a 4,41 s. La puntuación final todavía es baja. El perfil simula CPU y red sobre un navegador con rasterización por software.
+
+Se ejecutaron instalación, comprobación TypeScript y compilación de Vite después de cada grupo de cambios. Los archivos de película, las marcas, el script de arranque y la CSP conservan su contenido.
