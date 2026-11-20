@@ -127,23 +127,13 @@
     </svg>
     <a class="skip" href="#contenido" data-es="Saltar al contenido" data-en="Skip to content" data-pt="Pular para o conteúdo">Saltar al contenido</a>
 
-    <!-- El preloader: descarga la película entera (para que el scroll nunca espere a la red) y dibuja el borde de la
-         Tierra del primer cuadro. Al llegar al 100 % la línea ES el borde de la Tierra y la película se enciende detrás. -->
+    <!-- El mismo maestro de marca ocupa el centro y se entrega a la navegación sobre la primera imagen. -->
     <div class="pre" aria-hidden="true">
-      <svg class="pre__svg" preserveAspectRatio="none">
-        <defs>
-          <filter id="preGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6" /></filter>
-        </defs>
-        <path class="pre__halo" />
-        <path class="pre__rim" />
-      </svg>
-      <span class="pre__head"><!--SIMBOLO:pre__sym--></span>
-      <div class="pre__top">
+      <svg class="pre__svg" preserveAspectRatio="none"><path class="pre__rim" /></svg>
+      <div class="pre__lockup">
         <span class="pre__brand"><!--LOGO:pre__logo--></span>
-        <span class="pre__meta"><span data-es="Película" data-en="Film" data-pt="Filme">Película</span> · 67 s · 24 fps</span>
+        <div class="pre__track"><i></i></div>
       </div>
-      <p class="pre__count"><span data-pre-n>0</span><small>%</small></p>
-      <p class="pre__status"><span data-es="Del espacio al fondo del mar y a la cumbre" data-en="From space to the ocean floor and to the summit" data-pt="Do espaço ao fundo do mar e ao cume">Del espacio al fondo del mar y a la cumbre</span><b data-pre-mb>0 / 0 MB</b></p>
     </div>
 
     <div class="stage" aria-hidden="true">
