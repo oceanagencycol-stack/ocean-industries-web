@@ -36,6 +36,8 @@ export interface StageFrame {
   look: Look
   medium: Medium
   flash: number
+  shade: [number, number, number, number]
+  hud: number
 }
 
 const VERT = `#version 300 es
@@ -48,7 +50,8 @@ precision highp float;
 in vec2 vUv;
 out vec4 o;
 uniform sampler2D uTex, uNext;
-uniform float uMix;
+uniform float uMix, uHud;
+uniform vec4 uShade;
 uniform vec2 uRes, uVid, uFocus, uShift;
 uniform float uZoom, uVel, uTime, uExposure, uContrast, uSat, uVig, uGrain, uFade, uFlash, uReady;
 uniform vec3 uTint;
@@ -107,6 +110,14 @@ void main(){
   col += g * uGrain;
   // antes del primer cuadro: la noche
   col = mix(vec3(0.012,0.024,0.047), col, uReady);
+  // The four reading lights and top edge used to be five viewport-sized CSS
+  // gradients composited over every frame. Mix their original alpha in one pass.
+  float light = 1. - uShade.x * .82 * max(0., 1.-vUv.x/.58);
+  light *= 1. - uShade.w * .82 * max(0., 1.-(1.-vUv.x)/.58);
+  light *= 1. - uShade.y * .85 * max(0., 1.-vUv.y/.55);
+  light *= 1. - uShade.z * .62 * max(0., 1.-length((vUv-.5)/vec2(.49,.385)));
+  light *= 1. - uHud * .55 * max(0., 1.-(1.-vUv.y)/.14);
+  col = mix(vec3(.012,.024,.047), col, light);
   o = vec4(clamp(col, 0., 1.), 1.);
 }`
 
@@ -261,6 +272,7 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
   const U = (p: WebGLProgram, n: string) => gl.getUniformLocation(p, n)
   const u = {
     tex: U(prog, 'uTex'), next: U(prog, 'uNext'), mix: U(prog, 'uMix'), res: U(prog, 'uRes'), vid: U(prog, 'uVid'), focus: U(prog, 'uFocus'), shift: U(prog, 'uShift'),
+    shade: U(prog, 'uShade'), hud: U(prog, 'uHud'),
     zoom: U(prog, 'uZoom'), vel: U(prog, 'uVel'), time: U(prog, 'uTime'), exposure: U(prog, 'uExposure'),
     contrast: U(prog, 'uContrast'), sat: U(prog, 'uSat'), vig: U(prog, 'uVig'), grain: U(prog, 'uGrain'),
     fade: U(prog, 'uFade'), flash: U(prog, 'uFlash'), tint: U(prog, 'uTint'), ready: U(prog, 'uReady'),
@@ -278,6 +290,9 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
   let quality = software ? 0.55 : 1
   let slow = 0
   let lastRender = 0
+  let drawnTime = -1
+  let drawnFrame = -1
+  let drawnExposure = -1
   let seeking = false
   let want = 0
   let ready = 0
@@ -296,23 +311,20 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
     const slot = pair[0].frame < 0 ? pair[0] : pair[1].frame < 0 ? pair[1]
       : Math.abs(pair[0].frame - requested) >= Math.abs(pair[1].frame - requested) ? pair[0] : pair[1]
     let pixels = src
-    let width = w, height = h
     if (staging && src === video) {
-      width = Math.min(w, 832)
-      height = Math.round(h * width / w)
       const surface = staging.canvas
-      if (surface.width !== width || surface.height !== height) {
-        surface.width = width
-        surface.height = height
+      if (surface.width !== w || surface.height !== h) {
+        surface.width = w
+        surface.height = h
       }
-      staging.drawImage(video, 0, 0, width, height)
+      staging.drawImage(video, 0, 0)
       pixels = surface
     }
     gl.bindTexture(gl.TEXTURE_2D, slot.texture)
-    if (slot.width === width && slot.height === height) gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
+    if (slot.width === w && slot.height === h) gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
     else gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
-    slot.width = width
-    slot.height = height
+    slot.width = w
+    slot.height = h
     slot.frame = src === video ? requested : -1
     vidW = w
     vidH = h
@@ -362,6 +374,7 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
     const w = Math.round(canvas.clientWidth * dpr * quality)
     const h = Math.round(canvas.clientHeight * dpr * quality)
     if (canvas.width !== w || canvas.height !== h) {
+      drawnTime = -1
       canvas.width = w
       canvas.height = h
     }
@@ -372,7 +385,14 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
     want = f.t
     seek()
     const now = performance.now()
-    if (lastRender && now - lastRender > 37 && now - lastRender < 2500) slow++
+    // At rest only grain, particles and pointer drift change. Leave software
+    // rendering capacity free for the next wheel or touch movement.
+    const ambient = software && f.t === drawnTime && uploaded === drawnFrame && f.look.exposure === drawnExposure
+    if (ambient && now - lastRender < 80) return
+    drawnTime = f.t
+    drawnFrame = uploaded
+    drawnExposure = f.look.exposure
+    if (!ambient && lastRender && now - lastRender > 37 && now - lastRender < 2500) slow++
     else slow = Math.max(0, slow - 1)
     if (slow >= 5 && quality > floor) {
       quality = Math.max(floor, quality * 0.8)
@@ -409,6 +429,8 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
     gl.uniform2f(u.vid, vidW, vidH)
     gl.uniform2f(u.focus, f.focus[0], 1 - f.focus[1])
     gl.uniform2f(u.shift, shiftX, -shiftY)
+    gl.uniform4f(u.shade, f.shade[0], f.shade[1], f.shade[2], f.shade[3])
+    gl.uniform1f(u.hud, f.hud)
     gl.uniform1f(u.zoom, f.zoom)
     gl.uniform1f(u.vel, f.vel)
     gl.uniform1f(u.time, clock)

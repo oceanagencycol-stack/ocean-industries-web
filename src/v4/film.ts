@@ -81,7 +81,6 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   const canvas = document.querySelector<HTMLCanvasElement>('.stage__gl')
   const video = document.querySelector<HTMLVideoElement>('.stage__src')
   const poster = document.querySelector<HTMLImageElement>('.stage__poster img')
-  const shadeEl = document.querySelector<HTMLElement>('.stage__shade')
   const reel = document.querySelector<HTMLElement>('.film-track')
   const altiVal = document.querySelector<HTMLElement>('[data-alti]')
   const altiLabel = document.querySelector<HTMLElement>('[data-alti-label]')
@@ -192,7 +191,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
 
   sd ||= stage.software
   const L: Look = { exposure: 1, contrast: 1, saturation: 1, tint: [1, 1, 1], vignette: 0, grain: 0, fade: 0 }
-  const frame: StageFrame = { t: 0, vel: 0, focus: [0.5, 0.5], zoom: 1.045, look: L, medium: { w: [0, 0, 0, 0] }, flash: 0 }
+  const frame: StageFrame = { t: 0, vel: 0, focus: [0.5, 0.5], zoom: 1.045, look: L, medium: { w: [0, 0, 0, 0] }, flash: 0, shade: [0, 0, 0, 0], hud: 0 }
   const fpos: [number, number] = [0.5, 0.5]
 
   /** del video a la pantalla con el encuadre actual (el mismo cálculo del shader) */
@@ -345,7 +344,6 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   const counters = [...document.querySelectorAll<HTMLElement>('[data-count]')].map(el => ({
     el, to: Number(el.dataset.count), beat: beats.find(b => b.el.contains(el)), shown: -1,
   }))
-  const shadows = [-1, -1, -1, -1]
   // ---- el reloj ----
 
   let tS = 0
@@ -397,16 +395,20 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     const m = frame.medium.w
     for (let k = 0; k < 4; k++) m[k] = mtmp[k] * on
     frame.flash = opts.reduced ? 0 : flash(u) * 0.8
-    if (stage!.ready && (!past || !pastFilm || !started)) stage!.render(frame, mouse, dt)
+    const render = stage!.ready && (!past || !pastFilm || !started)
     pastFilm = past
     if (!started && stage!.ready) {
       started = true
       html.classList.add('has-stage')
     }
-    if (!dirty && tS === tPrev && intro === lastIntro) return
+    if (!dirty && tS === tPrev && intro === lastIntro) {
+      if (render) stage!.render(frame, mouse, dt)
+      return
+    }
     dirty = false
     lastIntro = intro
-    const hud = (introE * (1 - clamp(L.fade * 2.2))).toFixed(3)
+    frame.hud = introE * (1 - clamp(L.fade * 2.2))
+    const hud = frame.hud.toFixed(3)
     if (hud !== lastHud) {
       html.style.setProperty('--hud', hud)
       lastHud = hud
@@ -443,12 +445,11 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
         sr += b.shade[3] * vis
       }
     }
-    if (shadeEl) {
-      shadows[0] = setv(shadeEl, '--shade-l', Math.min(1, sl), shadows[0])
-      shadows[1] = setv(shadeEl, '--shade-b', Math.min(1, sb), shadows[1])
-      shadows[2] = setv(shadeEl, '--shade-c', Math.min(1, sc), shadows[2])
-      shadows[3] = setv(shadeEl, '--shade-r', Math.min(1, sr), shadows[3])
-    }
+    frame.shade[0] = Math.min(1, sl)
+    frame.shade[1] = Math.min(1, sb)
+    frame.shade[2] = Math.min(1, sc)
+    frame.shade[3] = Math.min(1, sr)
+    if (render) stage!.render(frame, mouse, dt)
 
     // Valeria: la conversación avanza con su tramo
     if (chatBox && agentes) {

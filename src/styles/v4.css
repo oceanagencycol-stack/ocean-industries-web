@@ -1000,7 +1000,7 @@ html.no-stage .beat--hero .beat__in { min-height: 100svh; }
 }
 @media (min-width: 901px) { .fab { bottom: 58px; } }
 
-html.has-stage .grain { display: none; }
+html.has-stage .grain, html.has-stage .stage__shade { display: none; }
 html.js .ln.is-set .ch { filter: none; transform: none; opacity: 1; }
 
 .beat--plunge .mega { mix-blend-mode: normal; text-shadow: 0 2px 26px rgba(3,6,12,.75); }
