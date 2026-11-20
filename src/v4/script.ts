@@ -126,8 +126,12 @@ function seg<T>(keys: Key<T>[], u: number) {
 
   const n = keys.length - 1
 
+  if (n === 0) {
+    span[0] = span[1] = span[2] = 0
+    return span
+  }
   let i = 0
-  while (i < n && keys[i + 1][0] < u) i++
+  while (i < n - 1 && keys[i + 1][0] < u) i++
   const a = keys[i][0], b = keys[i + 1][0]
   span[0] = i
   span[1] = i + 1
