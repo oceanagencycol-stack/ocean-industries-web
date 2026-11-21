@@ -24,7 +24,7 @@ const PAGES = [
 ]
 
 /** Páginas de desarrollo (noindex, fuera del sitemap): la intro v3 sola, sobre el espacio de M1a. */
-const DEV_PAGES = ['dev-intro', 'dev-world'] as const
+const DEV_PAGES = ['dev-intro', 'dev-world', 'dev-v6-roca'] as const
 
 /** Identificador del build (va en un <meta>: sirve para saber qué versión está viendo alguien). */
 const BUILD_ID = Date.now().toString(36)

@@ -1,0 +1,174 @@
+/* v6 · La roca: la marca oficial grabada en el fondo marino (src/v6/roca.ts). Paleta oscura premium de DESIGN.md. */
+
+.roca {
+  position: relative;
+  height: 320vh;
+  background: var(--space, #03060c);
+}
+.roca__escena {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  --oscuro: 1;
+  --bx: 18%;
+  --by: 62%;
+}
+.roca__placa {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 51% 40%;
+  /* La placa entra más apagada que el original: el haz pone la luz. */
+  filter: brightness(0.78) contrast(1.06) saturate(0.86);
+}
+
+/* La oscuridad que se abre al llegar y el viñeteado fijo del abismo. */
+.roca__escena::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 45%, transparent 40%, rgba(3, 6, 12, 0.72) 100%),
+    rgba(3, 6, 12, calc(var(--oscuro) * 0.9));
+}
+
+/* El haz de los faros: una mancha de luz fría que barre la escena (pantalla). */
+.roca__haz {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(34vmax 22vmax at var(--bx) var(--by), rgba(178, 192, 204, 0.34), rgba(110, 129, 147, 0.12) 45%, transparent 72%),
+    radial-gradient(12vmax 9vmax at var(--bx) var(--by), rgba(224, 231, 237, 0.28), transparent 70%);
+}
+
+/* ---- El grabado ---------------------------------------------------------------------------------------------- */
+.roca__grabado {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7%;
+  --hondo: 2px;
+  --grabado: 0;
+  --luz: 0;
+  --on: 0;
+}
+.roca__glifo {
+  position: relative;
+  display: block;
+  /* El halo del encendido va en el contenedor (sin máscara) para que el desenfoque no se recorte. */
+  filter: drop-shadow(0 0 calc(var(--on) * 1.4vmin) rgba(224, 231, 237, calc(var(--on) * 0.55)));
+}
+.roca__glifo--simbolo {
+  width: 42%;
+  aspect-ratio: 679 / 580.8;
+}
+.roca__glifo--logo {
+  width: 74%;
+  aspect-ratio: 590.42 / 105.24;
+}
+.roca__glifo > i {
+  position: absolute;
+  inset: 0;
+  -webkit-mask: var(--glifo) center / contain no-repeat;
+  mask: var(--glifo) center / contain no-repeat;
+}
+
+/* 1 · La hendidura: la marca más oscura que la piedra (multiplica). */
+.roca__glifo .g-fondo {
+  background: rgba(3, 6, 12, 0.62);
+  mix-blend-mode: multiply;
+  opacity: var(--grabado);
+}
+/* 2 · Filo de sombra (arriba a la izquierda, dentro del corte): glifo menos glifo corrido. */
+.roca__glifo .g-sombra {
+  background: rgba(3, 6, 12, 0.9);
+  opacity: var(--grabado);
+  -webkit-mask:
+    var(--glifo) center / contain no-repeat,
+    var(--glifo) calc(50% + var(--hondo)) calc(50% + var(--hondo)) / contain no-repeat;
+  -webkit-mask-composite: source-out;
+  mask:
+    var(--glifo) center / contain no-repeat subtract,
+    var(--glifo) calc(50% + var(--hondo)) calc(50% + var(--hondo)) / contain no-repeat;
+}
+/* 3 · Filo de luz (abajo a la derecha): el borde que recibe el haz. */
+.roca__glifo .g-filo {
+  background: rgba(178, 192, 204, 0.75);
+  mix-blend-mode: screen;
+  opacity: calc(var(--grabado) * (0.35 + var(--luz) * 0.65));
+  -webkit-mask:
+    var(--glifo) center / contain no-repeat,
+    var(--glifo) calc(50% - var(--hondo)) calc(50% - var(--hondo)) / contain no-repeat;
+  -webkit-mask-composite: source-out;
+  mask:
+    var(--glifo) center / contain no-repeat subtract,
+    var(--glifo) calc(50% - var(--hondo)) calc(50% - var(--hondo)) / contain no-repeat;
+}
+/* 4 · La luz del haz dentro del grabado: brilla donde pasa el faro. */
+.roca__glifo .g-luz {
+  background: radial-gradient(60% 90% at var(--lx, -50%) var(--ly, 50%), rgba(224, 231, 237, 0.95), rgba(178, 192, 204, 0.35) 38%, transparent 70%);
+  mix-blend-mode: screen;
+  opacity: var(--luz);
+}
+/* 5 · El encendido: la marca en blanco pleno (resultado = blanco que se enciende). */
+.roca__glifo .g-on {
+  background: linear-gradient(180deg, #ffffff, #e0e7ed 70%, #b2c0cc);
+  opacity: calc(var(--on) * 0.92);
+}
+
+/* Grano de película (DESIGN.md: soft-light al 0,06). */
+.roca__grano {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: url('/v3/grano.png') repeat;
+  mix-blend-mode: soft-light;
+  opacity: 0.06;
+}
+
+/* Rótulo final, sobre el fondo: el epílogo de la v6 se monta aquí. */
+.roca__rotulo {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: 7vh;
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--snow, #e0e7ed);
+  font: 500 clamp(11px, 0.85vw, 13px) / 1 Geist, system-ui, sans-serif;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+.roca[data-fase='marca'] .roca__rotulo {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roca {
+    height: auto;
+  }
+  .roca__escena {
+    position: relative;
+  }
+  .roca__rotulo {
+    transition: none;
+  }
+}
