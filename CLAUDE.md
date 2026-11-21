@@ -95,8 +95,8 @@ La v2 quedó en `dpl_DhkVanu9RLzNPmZ2ynUvrGbP2tkA` (`main` 2f12397) para volver 
 - **Barra**: enlaces desde 1081 px; el menú desde 1080 px hacia abajo. «Habla con OCEAN» solo en el computador.
 - **Sonido v3** (`src/v3/SONIDO.md`): cero audio hasta el primer clic o toque (nunca una tecla, formulario, idioma o «Saltar intro») o el botón de la barra; motor `sound.ts` por import dinámico, ambientes por tramo con paso bajo bajo el agua, efectos en los cruces; se calla con el chat o un reel con sonido; ahorro de datos = apagado. Audio en `public/v3/audio/` (`node tools/audio.mjs`); `node qa/sonido.cjs`.
 - Honestidad: nada de cifras, clientes, logos ni testimonios que no estén aprobados (48 h, 24/7, 11 s y los siete casos:
-  Súper Machi, Humberto Garcés, Qora, Sancho, Outstanding, Naidikó, Álvaro Arroyo). Súper Machi y Sancho van sin enlace
-  mientras su web diga «vista previa privada»; las capturas de los casos van en `public/v3/casos/` (1440×756, WebP).
+  Súper Machi, Humberto Garcés, Qora, Sancho, Outstanding, Naidikó, Álvaro Arroyo). Súper Machi y Sancho, lanzadas y aprobadas
+  por el restaurante (20-nov), llevan enlace; las capturas de los casos van en `public/v3/casos/` (1440×756, WebP).
   Los paisajes son ilustraciones con IA y el pie lo dice.
 - Sin secretos en el repo. Commits con identidad `oceanagencycol-stack <oceanagencycol@gmail.com>`.
 
@@ -111,12 +111,13 @@ privacidad) · `api/` (agente, firma de Wompi, reels) · `public/v3/` (placas, g
 ## QA (con `npm run build && npx vite preview --port 4175`)
 - `node qa/shoot.cjs http://localhost:4175/ <carpeta> both [--lang=en|pt] [--world] [--full]`: cada tramo en escritorio
   1440×900 y teléfono 390×844, consola, red, desborde y que todo haya entrado. Termina en «sin problemas».
-- `node qa/flows.cjs http://localhost:4175/`: idioma, WhatsApp, la E, barra clara, chat simulado, escenas, Valeria,
-  reels, Cal.com, pagos sin pagar, menú del teléfono, intro (velo y salida), movimiento reducido, sin JS, 404 y
-  privacidad. Termina en «todo en verde».
+- `node qa/flujos-v5.cjs http://localhost:4175/`: los recorridos de la v5: idioma y WhatsApp, rótulos de la película
+  en su tramo, chat simulado, servicios y preguntas, los siete casos con enlace y captura, Valeria (de ejemplo), reels,
+  Cal.com, barra clara, pagos sin pagar, pie, índice del teléfono, movimiento reducido, sin JS, 404, privacidad y una
+  página de servicio. Termina en «todo en verde». (`qa/flows.cjs` es el de la v3: busca placas que la v5 no tiene.)
 - `node qa/paginas-seo.cjs http://localhost:4175/`: servicios, `/en` y los bloques de la home (un H1, título y
   descripción, JSON-LD, desborde de 320 a 1440 px, consola, preguntas que abren, enlaces internos vivos). Termina en
-  «páginas sin problemas». (`qa/flows.cjs` es de la v3 y busca las placas: no aplica a la v5 hasta reescribirlo.)
+  «páginas sin problemas».
 - `node qa/overflow.cjs http://localhost:4175/`: nada se sale de 320 a 1440 px en ES/EN/PT («nada se sale de la pantalla»).
 - `node qa/intro-pagina.cjs http://localhost:4175/ <carpeta>`: intro a petición, capturas en el tiempo.
 - `node qa/intro-v3.cjs` (del paquete de la intro).

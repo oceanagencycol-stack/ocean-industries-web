@@ -59,9 +59,10 @@ export const CASOS = {
   supermachi: {
     nombre: 'El Mesón de Súper Machi',
     lugar: 'Miami, Florida (EE. UU.)',
+    url: 'https://supermachirestaurante.com/',
     texto:
-      'Restaurante español y cubano con show en vivo casi cada viernes y sábado. Web nueva en español e inglés: la cocina en video, los platos con su precio, la cartelera con una página por show, el menú digital con buscador y reservas por WhatsApp. Estado: menú digital en vivo; la web, en su dominio y en revisión final con el restaurante.',
-    en: 'A Spanish and Cuban restaurant with a live show almost every Friday and Saturday. A new site in Spanish and English: the kitchen on video, dishes with prices, a show calendar with a page per night, a searchable digital menu and WhatsApp bookings. Status: digital menu live; the site is on its domain, in final review with the restaurant.',
+      'Restaurante español y cubano con show en vivo casi cada viernes y sábado. Web nueva en español e inglés: la cocina en video, los platos con su precio, la cartelera con una página por show, el menú digital con buscador y reservas por WhatsApp. Web y menú digital publicados y en operación en supermachirestaurante.com.',
+    en: 'A Spanish and Cuban restaurant with a live show almost every Friday and Saturday. A new site in Spanish and English: the kitchen on video, dishes with prices, a show calendar with a page per night, a searchable digital menu and WhatsApp bookings. Website and digital menu live at supermachirestaurante.com.',
   },
   humberto: {
     nombre: 'Humberto Garcés',
@@ -82,9 +83,10 @@ export const CASOS = {
   sancho: {
     nombre: 'Sancho Restaurant',
     lugar: 'Miami, Florida (EE. UU.)',
+    url: 'https://sanchorestaurantemiami.com/',
     texto:
-      'La casa del cochinillo en la Calle Ocho, con una promoción distinta cada día. Web nueva en español e inglés: un sol que muestra la promoción de hoy sobre el plato a pantalla completa, la semana en fotos, pedidos en línea y reservas por WhatsApp. Estado: en su dominio, en revisión final con el restaurante.',
-    en: 'The home of roast suckling pig on Calle Ocho, with a different offer every day. A new site in Spanish and English: a sun that shows today’s offer over a full-screen dish, the week in photos, online ordering and WhatsApp bookings. Status: on its domain, in final review with the restaurant.',
+      'La casa del cochinillo en la Calle Ocho, con una promoción distinta cada día. Web nueva en español e inglés: un sol que muestra la promoción de hoy sobre el plato a pantalla completa, la semana en fotos, pedidos en línea y reservas por WhatsApp. Publicada y en operación en sanchorestaurantemiami.com.',
+    en: 'The home of roast suckling pig on Calle Ocho, with a different offer every day. A new site in Spanish and English: a sun that shows today’s offer over a full-screen dish, the week in photos, online ordering and WhatsApp bookings. Live at sanchorestaurantemiami.com.',
   },
   outstanding: {
     nombre: 'Outstanding Garage Doors',
