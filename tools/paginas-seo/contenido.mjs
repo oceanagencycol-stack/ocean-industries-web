@@ -9,6 +9,9 @@
 export const SITE = 'https://www.oceanindustries.com.co'
 export const UPDATED = '2026-11-20'
 export const WA = '573138721665'
+// línea de EE. UU. para llamadas y SMS (Juan Diego, 21-nov-2026)
+export const US_TEL = '+12028285095'
+export const US_TEL_TXT = '+1 (202) 828-5095'
 export const CAL = 'https://cal.com/ocean-industries-2e5al7/agenda-demo-gratuita'
 
 export const ORG = {
@@ -316,7 +319,7 @@ export const SERVICIOS = [
 export const FAQ_GENERAL = [
   ['¿Qué es OCEAN?', ORG.resumen],
   ['¿Dónde está OCEAN?', 'El equipo trabaja desde Cali y Bogotá, en Colombia, y OCEAN tiene presencia en Miami. Atiende empresas en Colombia, Estados Unidos y Latinoamérica, también por videollamada.'],
-  ['¿Cómo empiezo?', 'Escríbenos por WhatsApp al +57 313 872 1665 o agenda una videollamada de 45 minutos, gratis. En 24 a 48 horas te mostramos un primer prototipo funcionando.'],
+  ['¿Cómo empiezo?', 'Escríbenos por WhatsApp al +57 313 872 1665, llámanos o escríbenos por SMS en EE. UU. al +1 (202) 828-5095, o agenda una videollamada de 45 minutos, gratis. En 24 a 48 horas te mostramos un primer prototipo funcionando.'],
   ['¿Cómo se paga?', 'En pesos colombianos con tarjeta, PSE, Nequi o Bancolombia a través de Wompi; los valores en dólares se cobran en pesos a la tasa del día. Los datos de la tarjeta nunca pasan por OCEAN.'],
 ]
 
@@ -348,6 +351,6 @@ export const EN = {
     ['Why build with a team in Colombia?', 'You get an engineering team that works in your time zone, speaks English and Spanish and builds with the same tools a US team would use.'],
     ['How fast can we start?', 'Book a free 45-minute call. Within 24 to 48 hours you see a working prototype or an AI agent answering with your business information.'],
     ['Do you work with US companies?', 'Yes. In Miami we built the websites of El Mesón de Súper Machi and Sancho Restaurant and the AI agents of Outstanding Garage Doors; in Washington, D.C., the sites of Humberto Garcés and Qora Technologies.'],
-    ['How do I reach you?', 'WhatsApp +57 313 872 1665 or book a call on Cal.com.'],
+    ['How do I reach you?', 'Call or text us in the US at +1 (202) 828-5095, message us on WhatsApp at +57 313 872 1665, or book a call on Cal.com.'],
   ],
 }

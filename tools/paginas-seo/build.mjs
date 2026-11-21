@@ -8,7 +8,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { SITE, UPDATED, WA, CAL, ORG, STACK, PROCESO, CASOS, SERVICIOS, FAQ_GENERAL, EN } from './contenido.mjs'
+import { SITE, UPDATED, WA, US_TEL, US_TEL_TXT, CAL, ORG, STACK, PROCESO, CASOS, SERVICIOS, FAQ_GENERAL, EN } from './contenido.mjs'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const out = (rel, text) => {
@@ -36,6 +36,10 @@ const ORG_LD = {
   logo: absUrl('/icon-512.png'),
   description: ORG.resumen,
   sameAs: ['https://www.instagram.com/oceanind.co/', 'https://share.google/Vqaeb84X8b2NTu0QD'],
+  contactPoint: [
+    { '@type': 'ContactPoint', contactType: 'sales', telephone: '+1-202-828-5095', areaServed: 'US', availableLanguage: ['en', 'es'] },
+    { '@type': 'ContactPoint', contactType: 'sales', telephone: '+57-313-872-1665', areaServed: ['CO', 'US'], availableLanguage: ['es', 'en', 'pt'] },
+  ],
 }
 
 function head({ lang, path, title, description, ld, alternates = [] }) {
@@ -105,6 +109,7 @@ ${SERVICIOS.map((s) => `          <a href="/servicios/${s.slug}"${es ? '' : ' hr
         </nav>
         <div>
           <p class="sp-foot__label">${es ? 'Contacto' : 'Contact'}</p>
+          <a href="tel:${US_TEL}">${es ? 'Llamadas y SMS (EE. UU.)' : 'Call or text (US)'} ${US_TEL_TXT}</a>
           <a href="${esc(wa(es ? 'Hola OCEAN 👋' : 'Hi OCEAN 👋'))}" target="_blank" rel="noopener">WhatsApp +57 313 872 1665</a>
           <a href="${CAL}" target="_blank" rel="noopener">${es ? 'Agendar una llamada' : 'Book a call'}</a>
           <a href="https://www.instagram.com/oceanind.co/" target="_blank" rel="noopener">Instagram @oceanind.co</a>
@@ -121,7 +126,8 @@ ${SERVICIOS.map((s) => `          <a href="/servicios/${s.slug}"${es ? '' : ' hr
 
 const actions = (waHref, es = true) => `<div class="actions">
           <a class="btn btn--primary" href="${esc(waHref)}" target="_blank" rel="noopener">${ICO_WA}<span>${es ? 'Cotizar por WhatsApp' : 'Message us on WhatsApp'}</span></a>
-          <a class="btn btn--line" href="${CAL}" target="_blank" rel="noopener"><span>${es ? 'Agendar diagnóstico gratis' : 'Book a free call'}</span>${ICO_ARROW}</a>
+          <a class="btn btn--line" href="${CAL}" target="_blank" rel="noopener"><span>${es ? 'Agendar diagnóstico gratis' : 'Book a free call'}</span>${ICO_ARROW}</a>${es ? '' : `
+          <a class="btn btn--line" href="tel:${US_TEL}"><span>Call or text ${US_TEL_TXT}</span></a>`}
         </div>`
 
 const faqHtml = (faq, title) => `      <section class="sp-sec" id="${title.id}" aria-labelledby="${title.id}-t">
@@ -359,7 +365,7 @@ function ingles() {
       areaServed: ['United States', 'Colombia', 'Latin America'],
       knowsLanguage: ['en', 'es', 'pt'],
       address: { '@type': 'PostalAddress', addressLocality: 'Cali', addressRegion: 'Valle del Cauca', addressCountry: 'CO' },
-      telephone: '+57 313 872 1665',
+      telephone: '+1 202 828 5095',
       hasOfferCatalog: {
         '@type': 'OfferCatalog',
         name: 'Services',
@@ -490,6 +496,7 @@ ${Object.values(CASOS).map((c) => `- ${c.nombre} (${c.lugar}): ${c.texto}`).join
 - Respuesta media de 11 s, medida en la línea de WhatsApp de OCEAN.
 
 ## Contacto
+- Llamadas y SMS en EE. UU.: [${US_TEL_TXT}](tel:${US_TEL})
 - [WhatsApp +57 313 872 1665](https://wa.me/${WA})
 - [Agendar una llamada (Cal.com, 45 min, gratis)](${CAL})
 - [Instagram @oceanind.co](https://www.instagram.com/oceanind.co/)
@@ -545,7 +552,7 @@ ${EN.servicios.map(([n, d]) => `- **${n}.** ${d}`).join('\n')}
 ${EN.faq.map(([q, a]) => `**${q}**\n${a}`).join('\n\n')}
 
 ## Contacto
-WhatsApp +57 313 872 1665 (https://wa.me/${WA}) · Agenda: ${CAL} · Instagram: https://www.instagram.com/oceanind.co/
+Call or text (US) ${US_TEL_TXT} · WhatsApp +57 313 872 1665 (https://wa.me/${WA}) · Agenda: ${CAL} · Instagram: https://www.instagram.com/oceanind.co/
 `
 }
 
