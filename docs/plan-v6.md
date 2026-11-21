@@ -109,3 +109,14 @@ los tres idiomas. Se puede probar aparte, sin compromiso, la versión «tallada 
 
 Saldo al empezar (21-nov 14:20): **60.611 créditos** (renueva el 2-dic). Las facetas 1 a 4 caben con margen.
 Comparación de video (estimado por toma): seedance-v2.5 16.804 · veo-3.1 19.392 · veo-3.1-fast 7.272.
+
+### Decisiones de Juan Diego (21-nov 14:20–14:22)
+- **La web termina en el fondo del mar**, no en la montaña. La cumbre nevada de la v5 sale del recorrido; el cierre (pie, contacto,
+  casos) se monta sobre el fondo marino con el logo en la roca.
+- **Sin velero:** cuando aparece el mar no hay barco; el protagonista único es la nave.
+- **Personas:** si aparece una, tiene que verse real y viva (piel, ojos, gesto); si no se logra, no va ninguna.
+- **Realismo ante todo:** «que se vea lo más realista posible». Referencia: sumergible de cabina de burbuja visto de frente,
+  gran angular, grano de película.
+- **Diseño base elegido** (por Claude, con la referencia): alas de manta + cabina de burbuja + tres líneas de luz al frente
+  (generación `OVHYCTNBtwjZui2jwfC9`, nodo `T4A3F0KmgUzxDiZUzfWB` del flujo `kwtfgVEScg4Co9buhGuN`). En órbita la misma
+  familia funciona (`1UxDzmLha5ENv03dV7VB`). Pendiente: pasada de realismo (flux-3 vs gemini-3-pro) con piloto humano creíble.
