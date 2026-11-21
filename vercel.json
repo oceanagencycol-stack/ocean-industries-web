@@ -69,6 +69,40 @@
       ]
     },
     {
+      "source": "/(en|pt)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "Vercel-CDN-Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/(en|pt)/index.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "Vercel-CDN-Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
       "source": "/assets/:file",
       "headers": [
         {
@@ -91,7 +125,7 @@
       ]
     },
     {
-      "source": "/(robots.txt|sitemap.xml|llms.txt)",
+      "source": "/(robots.txt|sitemap.xml|llms.txt|llms-full.txt)",
       "headers": [
         {
           "key": "Cache-Control",

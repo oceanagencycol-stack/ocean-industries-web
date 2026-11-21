@@ -1,19 +1,23 @@
 /**
- * Three languages, one page. The HTML is served in Spanish (the canonical, es_CO); every element that changes carries
- * its own words: data-es / data-en / data-pt for the text, data-*-aria for an accessible name, data-*-ph for a
- * placeholder. The language changes only when the visitor picks it (or picked it before: localStorage), never by
- * guessing from the browser: that left <html lang="en"> over Spanish content (the 2-sep audit).
+ * Three languages, one page, three URLs. Every element that changes carries its own words: data-es / data-en / data-pt
+ * for the text, data-*-aria for an accessible name, data-*-ph for a placeholder. The build (tools/seo.ts) serves each
+ * language already written at its own URL: `/` Spanish (x-default), `/en`, `/pt`. The URL decides the language, over
+ * anything saved; picking another language changes the text in place and moves the address to that language's URL
+ * (history, no reload: the film keeps its place). Never guessed from the browser: that left <html lang="en"> over
+ * Spanish content (the 2-sep audit). The tab title is a [data-es] element like any other (<title data-es …>).
  */
 import { store } from '../core/storage'
 
 export type Lang = 'es' | 'en' | 'pt'
 const KEY = 'ocean-lang'
 const LANGS: Lang[] = ['es', 'en', 'pt']
+/** Same paths as tools/seo.ts (no trailing slash: Vercel redirects /en/ → /en). */
+const PATH: Record<Lang, string> = { es: '/', en: '/en', pt: '/pt' }
 
-const TITLES: Record<Lang, string> = {
-  es: 'OCEAN — Estudio de tecnología: agentes de IA, automatización y webs',
-  en: 'OCEAN — Technology studio: AI agents, automation and websites',
-  pt: 'OCEAN — Estúdio de tecnologia: agentes de IA, automação e sites',
+/** The language of an address: /en and /pt (with or without the slash, or /en/index.html), else Spanish. */
+function fromPath(path: string): Lang {
+  const m = path.match(/^\/(en|pt)(?:\/|$)/)
+  return m ? (m[1] as Lang) : 'es'
 }
 
 let current: Lang = 'es'
@@ -48,20 +52,33 @@ export function setLang(l: Lang, root: ParentNode = document): void {
     if (v !== null) el.placeholder = v
   })
   document.documentElement.lang = l
-  document.title = TITLES[l]
   document.querySelectorAll<HTMLButtonElement>('[data-lang]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === l)))
   store.set(KEY, l)
   listeners.forEach((fn) => fn(l))
 }
 
 export function initLang(): void {
-  const saved = store.get(KEY) as Lang | null
   document.documentElement.removeAttribute('data-lang-pending')
-  if (saved && LANGS.includes(saved) && saved !== 'es') setLang(saved)
+  const l = fromPath(location.pathname)
+  if (l !== 'es') setLang(l)
+  else store.set(KEY, l)
   document.addEventListener('click', (e) => {
     const b = (e.target as Element | null)?.closest?.<HTMLButtonElement>('[data-lang]')
     if (!b) return
-    const l = b.dataset.lang as Lang
-    if (LANGS.includes(l) && l !== current) setLang(l)
+    const next = b.dataset.lang as Lang
+    if (!LANGS.includes(next) || next === current) return
+    setLang(next)
+    if (fromPath(location.pathname) !== next) {
+      try {
+        history.pushState(null, '', PATH[next] + location.search + location.hash)
+      } catch {
+        /* the text already changed; the address stays */
+      }
+    }
+  })
+  // back / forward between language URLs
+  addEventListener('popstate', () => {
+    const at = fromPath(location.pathname)
+    if (at !== current) setLang(at)
   })
 }

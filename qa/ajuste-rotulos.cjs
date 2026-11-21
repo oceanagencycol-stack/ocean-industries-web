@@ -9,7 +9,8 @@ const SIZES = (process.env.SIZES ? JSON.parse(process.env.SIZES) : [[360, 640, 1
     const ctx = await b.newContext({ viewport: { width: w, height: h }, isMobile: !!mobile, hasTouch: !!mobile })
     await ctx.addInitScript(l => { try { sessionStorage.setItem('ocean-v4-film', '1'); if (l) localStorage.setItem('ocean-lang', l) } catch {} }, lang)
     const p = await ctx.newPage()
-    await p.goto(process.argv[2] + '?qa=1', { waitUntil: 'load' })
+    // el idioma va en la URL (/en, /pt), que manda sobre lo guardado
+    await p.goto(new URL(lang || '.', process.argv[2].replace(/\/?$/, '/')).href + '?qa=1', { waitUntil: 'load' })
     await p.waitForFunction(() => window.__film && __film.intro >= 1, null, { timeout: 60000 }).catch(() => {})
     const beats = await p.evaluate(() => [...document.querySelectorAll('.beat[data-t]')].map(b => b.dataset.t))
     const out = []

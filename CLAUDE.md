@@ -70,6 +70,12 @@ sobre `v3.css`. Película en `public/v4/`, cortes en `src/v4/film.json`. Todo en
 - **La cumbre y el pie van sobre la nieve** (`[data-light]`): la barra se vuelve clara encima (`html.nav-light`).
 - **Pausar el movimiento** (WCAG 2.2.2): controles en la barra y el pie con el mundo real; suelta el mundo, deja las placas y se
   recuerda (`ocean-motion-paused`).
+- **Idiomas con URL propia** (`tools/seo.ts`, 20-nov): `/` español (x-default), `/en` y `/pt` (sin barra final: Vercel
+  manda `/en/` → `/en`). El build escribe `dist/en/index.html` y `dist/pt/index.html` desde el index final, con el texto
+  de `data-en`/`data-pt` ya en el HTML, `<html lang>`, título, description, OG, canonical, hreflang recíproco y JSON-LD
+  del idioma (`<!--SEO_TITLE-->`, `<!--SEO_HEAD-->`, `<!--SEO_JSONLD-->` en `index.html`). La URL manda sobre lo
+  guardado; el botón de idioma cambia el texto en su sitio y mueve la dirección (`history.pushState`). Todo texto
+  `[data-es]` debe ser plano (el build falla si lleva etiquetas dentro). QA de idioma: abrir `/en` o `/pt`.
 - **CSP**: el script de arranque va por hash en `vercel.json`; si cambia, el build falla y da el hash nuevo. Wompi
   necesita `https://checkout.wompi.co` en `script-src`.
 - **Pagos**: la tarjeta nunca toca a OCEAN (widget de Wompi); la firma sale de `/api/pago-wompi`; el regreso de Wompi no

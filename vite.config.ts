@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
+import { seoPages } from './tools/seo.ts'
 
 /** Carpeta del proyecto (ESM: no hay __dirname). */
 const ROOT = fileURLToPath(new URL('.', import.meta.url))
@@ -10,7 +11,10 @@ const ROOT = fileURLToPath(new URL('.', import.meta.url))
 /** Dominio canónico (producción). Se puede forzar con SITE_URL. */
 const SITE_URL = (process.env.SITE_URL || 'https://www.oceanindustries.com.co').replace(/\/$/, '')
 
-/** Páginas: la web es una sola (index), la privacidad y la 404 que Vercel sirve en cualquier ruta que no existe. */
+/**
+ * Páginas: la web es una sola (index), la privacidad y la 404 que Vercel sirve en cualquier ruta que no existe. El index
+ * sale también en inglés y portugués (`/en`, `/pt`): lo escribe `seoPages` (tools/seo.ts) al terminar el build.
+ */
 const PAGES = ['index', 'privacidad', '404'] as const
 
 /** Páginas de desarrollo (noindex, fuera del sitemap): la intro v3 sola, sobre el espacio de M1a. */
@@ -277,7 +281,7 @@ function devApiMocks(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [devApiMocks(), oceanBrand(), preloadFonts(), inlineCSS(), bootScriptCSP(), devIntroPage()],
+  plugins: [devApiMocks(), oceanBrand(), seoPages(SITE_URL), preloadFonts(), inlineCSS(), bootScriptCSP(), devIntroPage()],
   server: { port: 5175 },
   build: {
     target: 'es2022',

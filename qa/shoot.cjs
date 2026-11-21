@@ -45,7 +45,8 @@ const SIZES = {
       if (!/google|wompi|cal\.com|er-api/.test(u)) problems.push(`[${name}] requestfailed: ${u} ${why}`)
     })
     const q = withWorld ? '?qa=1&world' : '?qa=1&noworld'
-    await p.goto(url + q, { waitUntil: 'load' })
+    // el idioma va en la URL (/en, /pt), que manda sobre lo guardado
+    await p.goto(new URL(lang || '.', url.replace(/\/?$/, '/')).href + q, { waitUntil: 'load' })
     await p.waitForTimeout(withWorld ? 6000 : 1800)
     const sx = await p.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
     if (sx > 1) problems.push(`[${name}] desborde horizontal: ${sx}px`)
