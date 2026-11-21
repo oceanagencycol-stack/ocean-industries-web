@@ -16,6 +16,7 @@
   --mist: #b2c0cc;
   --snow: #e0e7ed;
   --white: #ffffff;
+  --signal: #a5ffd0;
 
   --line: rgba(178, 192, 204, 0.16);
   --line-2: rgba(178, 192, 204, 0.3);
@@ -657,6 +658,38 @@ html.nav-light .nav.is-scrolled .btn--primary {
   opacity: 0.7;
   transition: opacity 0.25s;
 }
+
+.motion {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin-right: -8px;
+  border-radius: var(--r);
+  color: inherit;
+  opacity: 0.76;
+}
+
+.motion .ico {
+  width: 18px;
+  height: 18px;
+}
+
+.motion__play,
+.motion[aria-pressed='true'] .motion__pause {
+  display: none;
+}
+
+.motion[aria-pressed='true'] .motion__play {
+  display: block;
+}
+
+@media (hover: hover) {
+  .motion:hover {
+    opacity: 1;
+  }
+}
 .snd.is-on {
   opacity: 1;
 }
@@ -881,17 +914,25 @@ main {
 }
 
 .plate picture {
-  display: contents;
+  display: block;
+  height: 100%;
+}
+
+.plate__frame {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100lvh;
+  overflow: hidden;
 }
 
 .plate img {
-  position: sticky;
-  top: 0;
   width: 100%;
-  height: 100vh;
-  height: 100lvh;
+  height: 100%;
   max-width: none;
   object-fit: cover;
+  object-position: var(--plate-position, 50%) 50%;
+  transform: scale(1.045);
 }
 
 /* las sombras que dejan leer el texto sobre la foto (la foto no cambia: cambia la luz encima) */
@@ -906,23 +947,26 @@ html.has-world .plate {
   display: none;
 }
 
-.plate--m1a img {
-  object-position: 50% 50%;
+.plate--m1sb {
+  --plate-position: 62%;
 }
-.plate--m1sb img {
-  object-position: 62% 50%;
+.plate--m3b {
+  --plate-position: 64%;
 }
-.plate--m3b img {
-  object-position: 64% 50%;
+.plate--m4v2a {
+  --plate-position: 40%;
 }
-.plate--m4v2a img {
-  object-position: 40% 50%;
+.plate--m5a {
+  --plate-position: 58%;
 }
-.plate--m5a img {
-  object-position: 58% 50%;
+.plate--m6a {
+  --plate-position: 60%;
 }
-.plate--m6a img {
-  object-position: 60% 50%;
+
+@media (max-aspect-ratio: 4/5) {
+  .plate {
+    --plate-position: 50%;
+  }
 }
 
 /* ---------- la portada ---------- */
@@ -931,10 +975,10 @@ html.has-world .plate {
   min-height: 100svh;
   max-width: calc(var(--max) + 2 * var(--gutter));
   margin: 0 auto;
-  padding: calc(var(--nav-h) + 48px) var(--gutter) clamp(96px, 16vh, 168px);
+  padding: calc(var(--nav-h) + 52px) var(--gutter) clamp(110px, 17vh, 176px);
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 .hero::before {
@@ -943,61 +987,109 @@ html.has-world .plate {
   inset: 0 calc(50% - 50vw);
   z-index: -1;
   background:
-    linear-gradient(to top, rgba(3, 6, 12, 0.85), rgba(3, 6, 12, 0) 55%),
-    linear-gradient(100deg, rgba(3, 6, 12, 0.55), rgba(3, 6, 12, 0) 60%);
+    linear-gradient(to top, rgba(3, 6, 12, 0.94), rgba(3, 6, 12, 0) 43%),
+    linear-gradient(100deg, rgba(3, 6, 12, 0.75), rgba(3, 6, 12, 0.13) 57%, transparent 78%);
   pointer-events: none;
 }
 
+.hero__label {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.hero__beacon {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--signal);
+  box-shadow: 0 0 14px rgba(165, 255, 208, 0.55);
+}
+
 .hero__title {
-  margin-top: 22px;
-  font-size: clamp(46px, 8.2vw, 128px);
-  line-height: 0.98;
+  margin-top: 25px;
+  font-size: clamp(42px, 7.15vw, 108px);
+  line-height: 0.99;
+  letter-spacing: -0.07em;
 }
 
 .hero__lead {
   margin-top: 28px;
   max-width: 31em;
-  color: var(--mist);
+  color: var(--snow);
   font-size: clamp(17px, 1.45vw, 20px);
   line-height: 1.55;
   text-wrap: pretty;
 }
 
-.hero__live {
+.tramo > .hero__footer {
+  position: absolute;
+  inset: auto var(--gutter) 0;
+  width: auto;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 0 max(20px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line-2);
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 28px;
-  font-size: 14px;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 11px;
+  font-weight: 550;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--mist);
 }
 
 .descend {
-  position: absolute;
-  right: var(--gutter);
-  bottom: 40px;
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
   align-items: center;
-  gap: 14px;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--mist);
-  writing-mode: vertical-rl;
+  min-height: 44px;
+  gap: 10px;
+  color: var(--snow);
 }
 
-.descend i {
-  display: block;
-  width: 1px;
-  height: 56px;
-  background: linear-gradient(var(--mist), transparent);
+.descend .ico {
+  color: var(--signal);
+  transform: rotate(90deg);
+  width: 18px;
+  height: 18px;
+}
+
+.hero__regions {
+  margin: 0;
+  text-align: right;
+}
+
+@media (hover: hover) {
+  .descend:hover {
+    color: var(--signal);
+  }
 }
 
 @media (max-width: 760px) {
-  .descend {
-    display: none;
+  .hero {
+    justify-content: flex-end;
+    padding-bottom: 120px;
+  }
+
+  .hero__title {
+    font-size: clamp(40px, 10.7vw, 70px);
+  }
+
+  .hero__lead {
+    margin-top: 20px;
+  }
+
+  .tramo > .hero__footer {
+    font-size: 9px;
+    letter-spacing: 0.09em;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+
+  .hero__regions {
+    max-width: 15em;
   }
 }
 
@@ -1060,7 +1152,7 @@ html.has-world .plate {
     background: linear-gradient(to bottom, rgba(3, 6, 12, 0.9), rgba(3, 6, 12, 0.72) 62%, rgba(3, 6, 12, 0) 92%);
   }
   .hero::before {
-    background: linear-gradient(to top, rgba(3, 6, 12, 0.96) 6%, rgba(3, 6, 12, 0.7) 40%, rgba(3, 6, 12, 0) 68%);
+    background: linear-gradient(to top, #03060c 0%, rgba(3, 6, 12, 0.76) 42%, rgba(3, 6, 12, 0) 78%);
   }
 }
 

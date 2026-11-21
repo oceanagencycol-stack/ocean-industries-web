@@ -44,7 +44,7 @@ const SIZES = {
       if (/\.(webm|mp4)(\?|$)/.test(u) && /ERR_ABORTED/.test(why)) return
       if (!/google|wompi|cal\.com|er-api/.test(u)) problems.push(`[${name}] requestfailed: ${u} ${why}`)
     })
-    const q = withWorld ? '?qa=1' : '?qa=1&noworld'
+    const q = withWorld ? '?qa=1&world' : '?qa=1&noworld'
     await p.goto(url + q, { waitUntil: 'load' })
     await p.waitForTimeout(withWorld ? 6000 : 1800)
     const sx = await p.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)

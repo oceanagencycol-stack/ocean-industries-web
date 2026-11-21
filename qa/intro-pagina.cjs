@@ -1,9 +1,11 @@
-// La intro dentro de la página v3: primera visita real (sin ?qa), capturas en el tiempo, la portada entra al abrirse el
+// La intro de marca pedida por el visitante: capturas en el tiempo, la portada entra al abrirse el
 // negro y el logotipo queda en la barra. node qa/intro-pagina.cjs <url> <carpeta>
 const { chromium } = require('playwright')
 const fs = require('fs')
 ;(async () => {
   const [, , url, out] = process.argv
+  const page = new URL(url)
+  page.searchParams.set('intro', '1')
   fs.mkdirSync(out, { recursive: true })
   const b = await chromium.launch()
   const bad = []
@@ -13,7 +15,7 @@ const fs = require('fs')
     p.on('pageerror', (e) => bad.push(`[${name}] pageerror ${e.message}`))
     p.on('console', (m) => m.type() === 'error' && bad.push(`[${name}] consola ${m.text().slice(0, 200)}`))
     const t0 = Date.now()
-    await p.goto(url, { waitUntil: 'commit' })
+    await p.goto(page.href, { waitUntil: 'commit' })
     for (const ms of [300, 1200, 2400, 3400, 4300, 5600, 7000]) {
       const wait = ms - (Date.now() - t0)
       if (wait > 0) await p.waitForTimeout(wait)

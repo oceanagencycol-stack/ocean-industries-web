@@ -81,20 +81,22 @@ const TRAMOS = ['espacio', 'satelite', 'mar', 'agua', 'maquina', 'emerge', 'cumb
     await p.waitForTimeout(500)
     ok((await st(p)).started === false && rec.audio.length === 0, 'una tecla (Espacio, Enter, flecha, Tab+Enter) no enciende el sonido')
     // idioma (ratón y teclado): no enciende
-    await p.click('.nav [data-lang="en"]')
-    await p.focus('.nav [data-lang="es"]')
+    await p.locator('.nav__menu').click()
+    await p.click('#menu [data-lang="en"]')
+    await p.focus('#menu [data-lang="es"]')
     await p.keyboard.press('Enter')
     await p.waitForTimeout(400)
     ok((await st(p)).started === false && rec.audio.length === 0, 'tocar el idioma no enciende el sonido')
 
     // el botón de sonido en los tres idiomas
     for (const [l, word] of [['es', 'Sonido'], ['en', 'Sound'], ['pt', 'Som']]) {
-      await p.click(`.nav [data-lang="${l}"]`)
+      await p.click(`#menu [data-lang="${l}"]`)
       await p.waitForTimeout(150)
       const name = await p.$eval('[data-sound-toggle] .vh', (e) => e.textContent.trim())
       ok(name === word, `el botón de sonido dice «${word}» en ${l.toUpperCase()}`)
     }
-    await p.click('.nav [data-lang="es"]')
+    await p.click('#menu [data-lang="es"]')
+    await p.keyboard.press('Escape')
 
     // las teclas de antes (Espacio, flechas) pueden haber bajado la página: se vuelve a la portada antes del clic
     await p.evaluate(() => { window.__ocean?.to ? window.__ocean.to(0) : window.scrollTo(0, 0) })
@@ -103,9 +105,9 @@ const TRAMOS = ['espacio', 'satelite', 'mar', 'agua', 'maquina', 'emerge', 'cumb
     await p.mouse.click(700, 450)
     ok(await waitFor(p, (s) => s.started && s.ctx === 'running'), 'un clic en la página enciende el sonido (AudioContext en marcha)')
     ok((await p.getAttribute('[data-sound-toggle]', 'aria-pressed')) === 'true', 'el botón queda activo (aria-pressed)')
-    await p.waitForTimeout(1500)
+    const orbital = await waitFor(p, (x) => x.ambient === 'amb-espacio' && x.tramo === 'espacio')
     let s = await st(p)
-    ok(s.ambient === 'amb-espacio' && s.tramo === 'espacio', 'en la portada suena el ambiente del espacio')
+    ok(orbital, `en la portada suena el ambiente del espacio (${s.tramo}, ${s.ambient})`)
     ok(rec.audio.every((f) => /^(amb-espacio|amb-oceano|sfx-satelite)\./.test(f)), 'solo se descargó el ambiente actual, el siguiente y el efecto próximo: ' + [...new Set(rec.audio)].join(', '))
     ok((await p.$eval('[data-sound-toggle]', (e) => e.classList.contains('is-playing'))), 'las ondas del botón se animan mientras suena')
     ok(s.filterHz > 10000, 'en el espacio el paso bajo está abierto (' + Math.round(s.filterHz) + ' Hz)')
@@ -153,7 +155,9 @@ const TRAMOS = ['espacio', 'satelite', 'mar', 'agua', 'maquina', 'emerge', 'cumb
     await p.click('.chat__close')
     ok(await waitFor(p, (x) => !x.suppressed && x.duckGain > 0.95, 4000), 'cerrar el chat devuelve el sonido')
     // un reel con sonido
-    await p.evaluate(() => document.querySelector('.reel').scrollIntoView())
+    await p.evaluate(() => { location.hash = 'work' })
+    await p.locator('#work').waitFor({ state: 'visible' })
+    await p.locator('.reel').first().scrollIntoViewIfNeeded()
     await p.waitForTimeout(500)
     await p.click('.reel .reel__sound')
     ok(await waitFor(p, (x) => x.suppressed && x.duckGain < 0.05, 3000), 'un reel con sonido silencia el sonido de la página')

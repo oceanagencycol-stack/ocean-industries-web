@@ -40,4 +40,5 @@ const { chromium } = require('playwright')
   }
   await b.close()
   console.log(bad.length ? bad.join('\n') : 'nada se sale de la pantalla')
+  if (bad.length) process.exitCode = 1
 })().catch((e) => { console.error(e); process.exit(1) })

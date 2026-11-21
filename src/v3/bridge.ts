@@ -19,7 +19,7 @@ export interface WorldHandle {
   dispose(): void
 }
 export interface WorldModule {
-  mountWorld(opts: { canvas: HTMLCanvasElement; sections: NodeListOf<HTMLElement> }): WorldHandle | null | undefined | Promise<WorldHandle | null | undefined>
+  mountWorld(opts: { canvas: HTMLCanvasElement; sections: NodeListOf<HTMLElement>; story?: boolean }): WorldHandle | null | undefined | Promise<WorldHandle | null | undefined>
 }
 
 type IntroResult = { done?: Promise<unknown>; skip?: () => void } | Promise<unknown> | null | undefined | void

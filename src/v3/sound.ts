@@ -272,6 +272,13 @@ export function createEngine(ctx: AudioContext, opts: { on: boolean }): Engine {
     prefetch()
   }
   function pick(): void {
+    const filmChapter = document.documentElement.dataset.filmSound as TramoName | undefined
+    if (filmChapter && ORDER.includes(filmChapter)) {
+      window.clearTimeout(timer)
+      candidate = filmChapter
+      if (tramo !== filmChapter) commit(filmChapter)
+      return
+    }
     let best: TramoName | null = null
     let max = 0
     area.forEach((h, el) => {
@@ -288,6 +295,7 @@ export function createEngine(ctx: AudioContext, opts: { on: boolean }): Engine {
       if (candidate && candidate !== tramo) commit(candidate)
     }, DWELL)
   }
+  window.addEventListener('ocean:film-sound', pick)
   const thresholds = Array.from({ length: 51 }, (_, i) => i / 50)
   const io = new IntersectionObserver(
     (entries) => {

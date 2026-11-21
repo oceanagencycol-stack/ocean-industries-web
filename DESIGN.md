@@ -19,9 +19,10 @@ la web, la venta).
 | emerge | `#trabajo` | M5a | 04 · Lo que queda en pie: webs y tiendas, los tres casos, los reels |
 | cumbre | `#hablemos` | M6a → nieve | 05 · La cumbre: WhatsApp, agenda (Cal.com) y pagos (Wompi) sobre la nieve; pie |
 
-Cada tramo: una cabecera de pantalla completa sobre su placa (con sombras que dejan leer, nunca cambian la foto) y un
-cuerpo donde la luz baja a la noche y se lee el contenido. La placa queda fija mientras dura su tramo y la siguiente
-entra fundida encima (máscara de 34 vh). Con el mundo (WebGL2) montado, las placas se van y el mundo hace la toma.
+La cámara vive detrás del recorrido completo. Su posición, la luz y el fotograma son función del desplazamiento.
+Se cruza la atmósfera con bruma, se atraviesa la superficie con refracción y se sale hacia la cumbre entre nubes.
+Los titulares y los ejemplos cambian de lado en una retícula de doce columnas. El encuadre se mantiene cerca del
+ejemplo durante la lectura para que sus estados avancen al ritmo del desplazamiento.
 
 ## Color: monocromo tipo Tesla
 | Token | Hex | Uso |
@@ -33,6 +34,7 @@ entra fundida encima (máscara de 34 vh). Con el mundo (WebGL2) montado, las pla
 | `--mist` | `#B2C0CC` | texto secundario sobre la noche; la línea de la IA |
 | `--snow` | `#E0E7ED` | texto principal; la persona; el fondo de la cumbre y el pie |
 | `--white` | `#FFFFFF` | solo la acción principal y el resultado que se enciende |
+| `--signal` | `#A5FFD0` | acciones, resultados y progreso de lectura |
 
 Contraste (WCAG): snow/space 16,3 · mist/space 10,9 · haze/space 5,05 · haze/abyss 4,64 · mist/slate 5,8 · abyss/snow
 14,9 · slate/snow 8,6 · abyss/white 18,7. Fallan y no se usan para texto: haze/slate 2,7 · haze/snow 3,2.
@@ -56,11 +58,12 @@ sobre abisal (desde 32 px).
 - **Una sola gramática de entrada**: las líneas de un titular suben desde su máscara mientras la interletra pasa de
   0,04 em a la final (1,3 s, `cubic-bezier(.16,1,.3,1)`, 110 ms entre líneas); lo secundario llega 120 ms después con un
   barrido de luz de izquierda a derecha; las cifras cuentan. Nada aparece con un fundido genérico.
-- **La intro** (paquete propio, ≈ 4,5 s, una vez cada 7 días): la estrella, el símbolo, el logotipo letra por letra, y
+- **La intro de marca** (paquete propio, ≈ 4,5 s, a petición): la estrella, el símbolo, el logotipo letra por letra, y
   el logotipo vuela a la barra. La portada entra cuando el negro se abre.
 - **Botones**: reflejo que los cruza al pasar el puntero (solo con hover); se hunden 1 px al presionar.
 - Nada late solo: la luz de «en línea» es fija. Las escenas corren en vista, tres vueltas, con pausa (WCAG 2.2.2).
-- Movimiento reducido: sin intro, sin mundo, todo visible desde el primer cuadro.
+- Pausa de movimiento en la barra y el pie con preferencia compartida. Con movimiento reducido se muestran las placas
+  y el contenido está visible desde el primer cuadro.
 
 ## Grano
 Grano fino de película sobre toda la página (`public/v3/grano.png`, `soft-light` al 0,06): la textura de la casa, la

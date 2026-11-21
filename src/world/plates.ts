@@ -72,6 +72,7 @@ uniform vec4 uRectA; uniform vec4 uCamA; uniform vec4 uPanA;
 uniform vec4 uRectB; uniform vec4 uCamB; uniform vec4 uPanB;
 uniform float uK; uniform float uTime; uniform vec2 uRes;
 uniform vec3 uStarA; uniform float uAspA; uniform float uSeed; uniform float uGrain;
+uniform vec2 uFrames;
 out vec4 frag;
 
 float hash12(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
@@ -88,32 +89,27 @@ vec2 plateUV(vec2 s, vec4 rect, vec4 cam, vec4 pan){
   uv += pan.xy * (1.0 + cam.w * (d - 0.5));
   return clamp(uv, vec2(0.0005), vec2(0.9995));
 }
-vec3 A(vec2 s){ return texture(uA, plateUV(s, uRectA, uCamA, uPanA)).rgb; }
-vec3 B(vec2 s){ return texture(uB, plateUV(s, uRectB, uCamB, uPanB)).rgb; }
+vec2 atlasUV(vec2 uv, float frame){
+  return (vec2(mod(frame, 4.0), floor(frame / 4.0)) + clamp(uv, 0.002, 0.998)) / vec2(4.0, 2.0);
+}
+vec3 exposure(sampler2D image, vec2 uv, float frame){
+  if (frame < 0.0) return texture(image, uv).rgb;
+  float first = floor(frame);
+  vec3 a = texture(image, atlasUV(uv, first)).rgb;
+  vec3 b = texture(image, atlasUV(uv, min(first + 1.0, 7.0))).rgb;
+  return mix(a, b, fract(frame));
+}
+vec3 A(vec2 s){ return exposure(uA, plateUV(s, uRectA, uCamA, uPanA), uFrames.x); }
+vec3 B(vec2 s){ return exposure(uB, plateUV(s, uRectB, uCamB, uPanB), uFrames.y); }
 float luma(vec3 c){ return dot(c, vec3(0.2126, 0.7152, 0.0722)); }
 
 /** la línea del agua (y hacia abajo), con su ola */
 float waterLine(vec2 s, float k){
   // la ola se mide en alturas de pantalla (en un teléfono angosto no se vuelve un serrucho)
   float x = s.x * uRes.x / uRes.y;
-  float y = mix(1.12, -0.12, k);
-  return y + 0.012 * sin(x * 9.5 + uTime * 2.1) + 0.005 * sin(x * 24.0 - uTime * 3.7);
+  float y = mix(1.25, -0.25, k);
+  return y + 0.042 * sin(x * 3.9 + uTime * 0.9) + 0.013 * sin(x * 14.0 - uTime * 2.7);
 }
-/** cáusticas de agua (la red de luz que dibuja la superficie en el fondo), iterativas y sin rejilla */
-float caustic(vec2 uv, float t){
-  vec2 p = mod(uv * 6.2831853, 6.2831853) - 250.0;
-  vec2 i = p;
-  float c = 1.0;
-  for (int n = 0; n < 4; n++){
-    float tt = t * (1.0 - 3.5 / float(n + 1));
-    i = p + vec2(cos(tt - i.x) + sin(tt + i.y), sin(tt - i.y) + cos(tt + i.x));
-    c += 1.0 / length(vec2(p.x / (sin(i.x + tt) / 0.005), p.y / (cos(i.y + tt) / 0.005)));
-  }
-  c /= 4.0;
-  c = 1.17 - pow(c, 1.4);
-  return pow(abs(c), 8.0);
-}
-
 void main(){
   vec2 s = vec2(gl_FragCoord.x / uRes.x, 1.0 - gl_FragCoord.y / uRes.y);
   float k = uK;
@@ -140,57 +136,33 @@ void main(){
   }
 #elif TYPE == 1
   {
-    // atmósfera: un barrido luminoso en diagonal; detrás de él, la placa nueva; desenfoque radial breve
-    vec2 dir = normalize(vec2(1.0, 0.55));
-    float x = dot(s - 0.5, dir) / 1.2 + 0.5;
-    float c = mix(-0.25, 1.25, k);
-    float blur = bump(k, 0.0, 1.0) * 0.07;
-    vec3 a = vec3(0.0), bb = vec3(0.0);
-    for (int i = 0; i < 4; i++){
-      vec2 si = 0.5 + (s - 0.5) * (1.0 - blur * float(i) / 3.0);
-      a += A(si); bb += B(si);
-    }
-    a *= 0.25; bb *= 0.25;
-    col = mix(bb, a, smoothstep(c - 0.12, c + 0.12, x));
-    float band = exp(-pow((x - c) / 0.09, 2.0));
-    col += vec3(0.9, 0.95, 1.0) * band * 1.4 + vec3(0.6, 0.7, 0.8) * bump(k, 0.15, 0.85) * 0.12;
+    // La cámara se inclina hacia el agua a través de bruma que comparte el horizonte.
+    float cloud = vnoise(s * vec2(6.0, 3.0) + vec2(k * 2.1, -k * 3.0));
+    float veil = bump(k, 0.0, 1.0);
+    vec2 center = vec2(0.58, 0.68);
+    vec2 a = center + (s - center) * (1.0 - 0.38 * k);
+    vec2 b = vec2(s.x, s.y + 0.18 * (1.0 - k) * (1.0 - s.y));
+    col = mix(A(a), B(b), smoothstep(0.20, 0.82, k + (cloud - 0.5) * veil * 0.38));
+    col += vec3(0.075, 0.105, 0.15) * veil * cloud;
   }
 #elif TYPE == 2 || TYPE == 4
   {
-    // superficie (entrar) y emerge (salir): la línea del agua sube; debajo, la placa nueva
-    float wl = waterLine(s, k);
-    float dy = s.y - wl;
-    vec3 col0;
-    if (dy > 0.0) {
-      vec2 si = s;
+    // Al cruzar el agua, la lente refracta ambas vistas en una zona ondulada.
 #if TYPE == 2
-      {
-        // bajo el agua: ondas que se calman, cáusticas
-        float calm = 1.0 - 0.7 * k;
-        si += vec2(sin(s.y * 38.0 + uTime * 2.3), cos(s.x * 31.0 + uTime * 1.7)) * 0.006 * calm;
-        col0 = B(si);
-        col0 += vec3(0.7, 0.8, 0.9) * caustic(s * vec2(uRes.x / uRes.y, 1.0) * 1.6, uTime * 0.6) * 0.32 * calm * exp(-dy * 5.0);
-        col0 *= 1.0 - 0.25 * exp(-dy * 12.0);
-      }
+    float dy = s.y - waterLine(s, k);
 #else
-      {
-        // fuera del agua: lo que acaba de salir escurre (gotas que bajan bajo la línea)
-        float h = vnoise(vec2(s.x * 90.0, 3.7));
-        float drop = smoothstep(0.75, 0.95, h);
-        float run = exp(-dy / (0.04 + 0.16 * h)) * drop * (1.0 - smoothstep(0.75, 1.0, k));
-        si.y -= run * 0.006;
-        col0 = B(si) * (1.0 + 0.18 * run);
-      }
+    float dy = waterLine(s, 1.0 - k) - s.y;
 #endif
-    } else {
-#if TYPE == 4
-      col0 = A(s + vec2(sin(s.y * 30.0 + uTime * 1.5), cos(s.x * 24.0 + uTime)) * 0.004) * 0.85;
-#else
-      col0 = A(s);
-#endif
-    }
-    float men = exp(-pow(dy / 0.0028, 2.0));
-    col = col0 + vec3(0.85, 0.92, 1.0) * men * 0.45;
+    float veil = bump(k, 0.0, 1.0);
+    float ripple = vnoise(s * vec2(19.0, 13.0) + uTime * 0.33) - 0.5;
+    float blend = smoothstep(-0.16, 0.16, dy + ripple * 0.10 * veil);
+    float glass = exp(-abs(dy) * 13.0) * veil;
+    vec2 bend = vec2(sin(s.y * 28.0 + uTime), cos(s.x * 19.0 - uTime * 1.2)) * glass * 0.045;
+    vec3 a = A(s + bend);
+    vec3 b = B(s - bend * 0.62);
+    col = mix(a, b, blend);
+    col = mix(col, vec3(0.010, 0.038, 0.064), glass * 0.44);
+    col += vec3(0.09, 0.23, 0.34) * glass * max(0.0, ripple);
   }
 #elif TYPE == 3
   {
@@ -366,7 +338,7 @@ function bakeStarSDF(n = 128): Uint8Array {
 /*  Cuándo no hay mundo                                                */
 /* ------------------------------------------------------------------ */
 /** La razón para quedarse en la versión quieta, o null. `?q=` (QA) la ignora salvo que falte WebGL2. */
-export function stillReason(): string | null {
+export function stillReason(story = false): string | null {
   const q = new URLSearchParams(location.search).get('q')
   const probe = document.createElement('canvas').getContext('webgl2')
   if (!probe) return 'sin WebGL2'
@@ -377,7 +349,7 @@ export function stillReason(): string | null {
   if (q) return null
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return 'movimiento reducido'
   if ((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData) return 'ahorro de datos'
-  if (/swiftshader|llvmpipe|software|basic render/i.test(gpu)) return 'WebGL por software'
+  if (!story && /swiftshader|llvmpipe|software|basic render/i.test(gpu)) return 'WebGL por software'
   return null
 }
 
@@ -396,6 +368,8 @@ export interface MountOptions {
   /** QA: posar la toma (`?qa=seek=`) o guardar cada cuadro (`?qa=trace`); por defecto se leen de la URL */
   seek?: number | null
   trace?: boolean
+  /** Montaje editorial: fotogramas y ambiente responden a la misma posición de cámara. */
+  story?: boolean
 }
 
 export interface WorldHandle {
@@ -414,7 +388,9 @@ interface TraceSample {
   y: number
 }
 
-type Tex = { tex: WebGLTexture; full: boolean; loading: boolean; aspect: number }
+type Tex = { tex: WebGLTexture; full: boolean; loading: boolean; aspect: number; atlas?: boolean }
+
+const STORY_CROP = [840, 800, 820, 858, 790, 1060, 790]
 
 export class World implements WorldHandle {
   readonly live = true
@@ -437,6 +413,8 @@ export class World implements WorldHandle {
   private variant = ''
   private avif = true
   private base: string
+  private software: boolean
+  private progress: HTMLElement | null
   private dpr = 1
   private width = 1
   private height = 1
@@ -477,20 +455,27 @@ export class World implements WorldHandle {
     this.canvas = opts.canvas
     this.gl = gl
     this.base = opts.base ?? '/v3/world/'
+    const debug = gl.getExtension('WEBGL_debug_renderer_info')
+    this.software = !!debug && /swiftshader|llvmpipe|software|basic render/i.test(String(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL)))
+    this.progress = opts.story ? document.querySelector('.sequence__progress') : null
+    if (opts.story) {
+      this.spring.omega = 17
+      this.spring.vmax = 2.6
+    }
     this.seekValue = opts.seek === undefined ? seekParam() : opts.seek
     // la toma: el tope de cada tramo (salvo el primero) llega cuando su placa ya entró (p = k − 0,3)
     const sections = Array.from(opts.sections)
     sections.forEach((el, k) => {
       if (el.dataset.shot === undefined) el.dataset.shot = String(k === 0 ? 0 : (k - 0.3) / SEGS)
     })
-    this.track = new ScrollTrack(sections)
+    this.track = new ScrollTrack(sections, opts.story)
     if (this.seekValue !== null) this.spring.reset(this.seekValue)
 
     for (let t = -1; t < 6; t++) this.quads.push(compile(gl, QUAD_VS, quadFS(t)))
     this.pts = compile(gl, PTS_VS, PTS_FS)
     for (const q of this.quads) {
       const U: Record<string, WebGLUniformLocation | null> = {}
-      for (const n of ['uA', 'uB', 'uStar', 'uRectA', 'uCamA', 'uPanA', 'uRectB', 'uCamB', 'uPanB', 'uK', 'uTime', 'uRes', 'uStarA', 'uAspA', 'uSeed', 'uGrain']) U[n] = gl.getUniformLocation(q, n)
+      for (const n of ['uA', 'uB', 'uStar', 'uRectA', 'uCamA', 'uPanA', 'uRectB', 'uCamB', 'uPanB', 'uK', 'uTime', 'uRes', 'uStarA', 'uAspA', 'uSeed', 'uGrain', 'uFrames']) U[n] = gl.getUniformLocation(q, n)
       this.Us.push(U)
     }
     for (const n of ['uKind', 'uTime', 'uI', 'uDrift', 'uDpr', 'uRes', 'uColor']) this.PU[n] = gl.getUniformLocation(this.pts, n)
@@ -506,7 +491,7 @@ export class World implements WorldHandle {
 
     // las partículas: un solo buffer, determinista
     const mobile = matchMedia('(pointer: coarse)').matches
-    this.nPts = mobile ? 900 : 1600
+    this.nPts = this.software ? 450 : mobile ? 900 : 1600
     const r = rng(20261118)
     const pd = new Float32Array(this.nPts * 4)
     for (let i = 0; i < pd.length; i++) pd[i] = r()
@@ -538,7 +523,9 @@ export class World implements WorldHandle {
   private onLost = (e: Event): void => {
     e.preventDefault()
     this.stop()
-    document.documentElement.classList.add('world-still')
+    const root = document.documentElement
+    root.classList.add('world-still')
+    root.classList.remove('has-world')
   }
 
   private texParams(mips: boolean): void {
@@ -552,7 +539,7 @@ export class World implements WorldHandle {
   /* ---------------- placas ---------------- */
   /** Las miniaturas de 32 px de todas las placas: la cámara nunca espera. */
   async init(): Promise<void> {
-    this.on(window, 'pointermove', ((e: PointerEvent) => {
+    if (!this.opts.story) this.on(window, 'pointermove', ((e: PointerEvent) => {
       if (e.pointerType !== 'mouse' || this.seekValue !== null) return
       this.pointerTarget[0] = (e.clientX / innerWidth) * 2 - 1
       this.pointerTarget[1] = (e.clientY / innerHeight) * 2 - 1
@@ -585,6 +572,7 @@ export class World implements WorldHandle {
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.SRGB8_ALPHA8, gl.RGBA, gl.UNSIGNED_BYTE, bmp)
         this.texParams(false)
         t.full = false
+        t.atlas = false
         t.aspect = this.portrait ? 9 / 16 : th.w / th.h
         bmp.close()
       }),
@@ -597,9 +585,22 @@ export class World implements WorldHandle {
     if (!t || t.full || t.loading) return
     t.loading = true
     const variant = this.variant
-    const name = `${PLATES[i].id}-${variant}`
     let bmp: ImageBitmap | null = null
-    for (const ext of this.avif ? ['avif', 'webp'] : ['webp']) {
+    let atlas = false
+    if (this.opts.story) {
+      try {
+        const suffix = this.portrait ? '-v' : ''
+        const res = await fetch(`/v3/secuencia/${PLATES[i].id}${suffix}.webp`)
+        if (res.ok) {
+          bmp = await createImageBitmap(await res.blob())
+          atlas = true
+        }
+      } catch {
+        // Una toma sin fotogramas conserva la placa continua del mismo mundo.
+      }
+    }
+    const name = `${PLATES[i].id}-${variant}`
+    for (const ext of bmp ? [] : this.avif ? ['avif', 'webp'] : ['webp']) {
       try {
         const res = await fetch(`${this.base}${name}.${ext}`)
         if (!res.ok) throw new Error(String(res.status))
@@ -617,8 +618,10 @@ export class World implements WorldHandle {
     const gl = this.gl
     gl.bindTexture(gl.TEXTURE_2D, t.tex)
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.SRGB8_ALPHA8, gl.RGBA, gl.UNSIGNED_BYTE, bmp)
-    gl.generateMipmap(gl.TEXTURE_2D)
-    this.texParams(true)
+    if (!atlas) gl.generateMipmap(gl.TEXTURE_2D)
+    this.texParams(!atlas)
+    t.atlas = atlas
+    t.aspect = atlas ? bmp.width / 4 / (bmp.height / 2) : bmp.width / bmp.height
     t.full = true
     bmp.close()
     this.wake()
@@ -627,7 +630,7 @@ export class World implements WorldHandle {
   /** La actual y la siguiente primero; las demás cuando el hilo está libre. */
   private loadAround(p: number): void {
     const i = Math.min(N - 1, Math.max(0, Math.round(p)))
-    const order = [i, i + 1, i - 1, i + 2].filter((j) => j >= 0 && j < N)
+    const order = (this.opts.story ? [i, i + 1, i - 1] : [i, i + 1, i - 1, i + 2]).filter((j) => j >= 0 && j < N)
     for (const j of order) void this.loadFull(j)
   }
   private loadRest = (): void => {
@@ -643,8 +646,9 @@ export class World implements WorldHandle {
     const forced = Number(new URLSearchParams(location.search).get('dpr'))
     this.dpr = forced > 0 ? forced : Math.min(devicePixelRatio || 1, 2)
     // el quad es barato, pero en un teléfono de DPR 3 no hace falta más de ~2,2 MP
-    const cap = Math.sqrt(2.6e6 / Math.max(1, w * h))
-    if (!(forced > 0)) this.dpr = Math.max(1, Math.min(this.dpr, cap))
+    const limit = this.software && this.opts.story ? 0.93e6 : 2.6e6
+    const cap = Math.sqrt(limit / Math.max(1, w * h))
+    if (!(forced > 0)) this.dpr = Math.max(0.7, Math.min(this.dpr, cap))
     this.width = w
     this.height = h
     const bw = Math.round(w * this.dpr)
@@ -677,7 +681,10 @@ export class World implements WorldHandle {
     // foco en la imagen que se usa (el recorte vertical corre el foco)
     let fx = P.focal[0]
     const fy = P.focal[1]
-    if (this.portrait) fx = clamp01((fx - th.vleft) / th.vwidth)
+    if (this.portrait) {
+      const atlas = this.texs[j]?.atlas
+      fx = atlas ? clamp01((fx - STORY_CROP[j] / 1920) / 0.375) : clamp01((fx - th.vleft) / th.vwidth)
+    }
     // recorte que cubre la pantalla, con el foco en su mismo lugar relativo
     let w = 1
     let h = 1
@@ -716,7 +723,8 @@ export class World implements WorldHandle {
     const p = s * SEGS
     const i = Math.min(SEGS - 1, Math.floor(p))
     const t = p - i
-    const k = smoothstep(0.5 - W, 0.5 + W, t)
+    const span = this.opts.story ? 0.31 : W
+    const k = smoothstep(0.5 - span, 0.5 + span, t)
     const type = CROSS[PLATES[i].into ?? ''] ?? 0
     this.loadAround(p)
 
@@ -737,6 +745,10 @@ export class World implements WorldHandle {
     gl.uniform2f(U.uRes, this.canvas.width, this.canvas.height)
     gl.uniform1f(U.uSeed, this.seed)
     gl.uniform1f(U.uGrain, 0.04)
+    const frameA = this.texs[a].atlas ? clamp01((p - a + 0.66) / 1.44) * 7 : -1
+    const frameB = this.texs[i + 1].atlas ? clamp01((p - i - 1 + 0.66) / 1.44) * 7 : -1
+    gl.uniform2f(U.uFrames, frameA, frameB)
+    if (this.progress) this.progress.style.transform = `scaleX(${s})`
     gl.activeTexture(gl.TEXTURE0)
     gl.bindTexture(gl.TEXTURE_2D, this.texs[a].tex)
     gl.uniform1i(U.uA, 0)
@@ -802,7 +814,13 @@ export class World implements WorldHandle {
   /* ---------------- el bucle ---------------- */
   start(): void {
     this.wake()
-    idle(this.loadRest)
+    if (!this.opts.story) idle(this.loadRest)
+  }
+
+  async prime(): Promise<void> {
+    this.spring.reset(this.track.shotAt(scrollY))
+    const index = Math.round(this.spring.s * SEGS)
+    await this.loadFull(index)
   }
 
   stop(): void {
@@ -836,6 +854,7 @@ export class World implements WorldHandle {
       this.measure()
     }
     const target = this.seekValue ?? this.track.shotAt(scrollY)
+    if (this.opts.story && (target - this.spring.s) * this.spring.v < 0) this.spring.v = 0
     const moving = this.seekValue === null && this.spring.step(target, dt)
     const kp = 1 - Math.exp(-dt * 3)
     this.pointer[0] += (this.pointerTarget[0] - this.pointer[0]) * kp
@@ -844,7 +863,7 @@ export class World implements WorldHandle {
     if (moving || pointerMoving || this.opts.lenis?.isScrolling) this.lastActive = now
     const idleMs = now - this.lastActive
     this.acc += dt
-    if (idleMs > 4000 && this.renders > 0) {
+    if (idleMs > (this.opts.story ? 130 : 4000) && this.renders > 0) {
       this.sleeping = true
       return
     }
@@ -853,9 +872,9 @@ export class World implements WorldHandle {
     const step = this.acc
     this.acc = 0
     if (this.seekValue === null) {
-      this.time += step
+      this.time = this.opts.story ? 12 + 14 * this.spring.s : this.time + step
       this.frame++
-      this.seed = (this.frame * 0.6180339) % 1
+      this.seed = this.opts.story ? (this.spring.s * 101.37) % 1 : (this.frame * 0.6180339) % 1
     }
     this.draw()
     // posada (seek/setProgress): nada cambia hasta el próximo pedido; el bucle duerme ya
@@ -967,7 +986,7 @@ function idle(fn: () => void): void {
  * `<picture>`.
  */
 export async function mountWorld(opts: MountOptions): Promise<WorldHandle | null> {
-  const reason = stillReason()
+  const reason = stillReason(opts.story)
   const root = document.documentElement
   const still = (why: string): null => {
     root.classList.add('world-still')
@@ -985,9 +1004,18 @@ export async function mountWorld(opts: MountOptions): Promise<WorldHandle | null
     console.error(e)
     return still('shader')
   }
-  await w.init()
-  if (w['seekValue'] !== null) await w.seek(w['seekValue'] as number)
-  else w.start()
+  try {
+    await w.init()
+    if (w['seekValue'] !== null) await w.seek(w['seekValue'] as number)
+    else {
+      if (opts.story) await w.prime()
+      w.start()
+    }
+  } catch {
+    w.dispose()
+    return still('medios')
+  }
+  root.classList.remove('world-still')
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
   root.classList.add('world-on')
   return w

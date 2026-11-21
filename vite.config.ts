@@ -43,26 +43,15 @@ function brandInline(file: string, cls: string): string {
     .replace(/\n\s*/g, '')
 }
 
-/**
- * Las placas de respaldo de cada tramo (tools/medios_pagina.py → public/v3/pagina/): vertical en pantallas altas,
- * 16:9 en las demás, AVIF con WebP de respaldo. La de la portada va sin `lazy` y con prioridad; las demás, perezosas.
- * Cuando el mundo (src/world/) monta, la página las esconde (html.has-world).
- */
+/** Fallback frames and the first paint use the same grade and crop as the movie. */
+const shotNames = ['m1a', 'm1sb', 'm2b', 'm3b', 'm4v2a', 'm5a', 'm6a']
 function plate(name: string, first: boolean): string {
-  const b = `/v3/pagina/${name}`
-  const wide = (ext: string) => `${b}-960.${ext} 960w, ${b}-1600.${ext} 1600w, ${b}-2400.${ext} 2400w`
-  const sizes = '(min-aspect-ratio: 16/9) 100vw, 179vh'
-  const tall = '(max-aspect-ratio: 4/5)'
-  const load = first ? 'fetchpriority="high"' : 'loading="lazy"'
-  return (
-    `<div class="plate plate--${name}" aria-hidden="true"><picture>` +
-    `<source media="${tall}" type="image/avif" srcset="${b}-v.avif">` +
-    `<source media="${tall}" type="image/webp" srcset="${b}-v.webp">` +
-    `<source type="image/avif" srcset="${wide('avif')}" sizes="${sizes}">` +
-    `<source type="image/webp" srcset="${wide('webp')}" sizes="${sizes}">` +
-    `<img src="${b}-1600.webp" alt="" width="1600" height="893" decoding="async" ${load}>` +
-    `</picture></div>`
-  )
+  const base = '/v3/film/cuadro-' + shotNames.indexOf(name)
+  const priority = first ? 'fetchpriority="high"' : 'loading="lazy"'
+  return `<div class="plate plate--${name}" aria-hidden="true"><div class="plate__frame"><picture>` +
+    `<source media="(max-aspect-ratio: 4/5)" srcset="${base}-v.webp">` +
+    `<img src="${base}.webp" alt="" width="1440" height="810" decoding="async" ${priority}>` +
+    '</picture></div></div>'
 }
 
 /**
