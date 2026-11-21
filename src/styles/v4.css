@@ -1132,3 +1132,16 @@ html.no-motion .seal__mark__half { transform: none; }
 /* sin WebGL el sello va sobre la noche quieta: la marca en nieve */
 html.no-stage .beat--seal .beat__in { color: var(--snow); }
 html.no-stage .beat--seal .seal__line { color: var(--mist); }
+
+/* texto solo para lectores de pantalla (la frase entera de los titulares partidos en letras) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

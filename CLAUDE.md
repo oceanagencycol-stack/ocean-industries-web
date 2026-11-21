@@ -36,6 +36,8 @@ La v2 quedó en `dpl_DhkVanu9RLzNPmZ2ynUvrGbP2tkA` (`main` 2f12397) para volver 
   cambia el contenido y se vuelve a generar. Usan `src/lite.ts` (con GA4) y los estilos `.sp-*` de `lite.css`.
 - **Home**: bloque `#servicios` y `#preguntas` (FAQ visible, con `FAQPage` en el JSON-LD) en el epílogo, trilingües.
 - Prueba de las páginas: título ≤ 60, descripción ≤ 165, un H1, JSON-LD válido, sin desborde de 320 a 1440 px.
+- Lighthouse móvil 20-nov (preview, SwiftShader): páginas de servicios 100/100/100/100; home accesibilidad, buenas
+  prácticas y SEO 100 (el rendimiento de la home sin GPU no es representativo: la película va por WebGL).
 
 ## Antes de tocar nada
 1. Lee `DESIGN.md` (el sistema v3), `docs/v3/CONCEPTO.md`, `docs/v3/ARQUITECTURA.md`, `docs/plan-v3.md` («Decisiones
@@ -110,6 +112,9 @@ privacidad) · `api/` (agente, firma de Wompi, reels) · `public/v3/` (placas, g
 - `node qa/flows.cjs http://localhost:4175/`: idioma, WhatsApp, la E, barra clara, chat simulado, escenas, Valeria,
   reels, Cal.com, pagos sin pagar, menú del teléfono, intro (velo y salida), movimiento reducido, sin JS, 404 y
   privacidad. Termina en «todo en verde».
+- `node qa/paginas-seo.cjs http://localhost:4175/`: servicios, `/en` y los bloques de la home (un H1, título y
+  descripción, JSON-LD, desborde de 320 a 1440 px, consola, preguntas que abren, enlaces internos vivos). Termina en
+  «páginas sin problemas». (`qa/flows.cjs` es de la v3 y busca las placas: no aplica a la v5 hasta reescribirlo.)
 - `node qa/overflow.cjs http://localhost:4175/`: nada se sale de 320 a 1440 px en ES/EN/PT («nada se sale de la pantalla»).
 - `node qa/intro-pagina.cjs http://localhost:4175/ <carpeta>`: intro a petición, capturas en el tiempo.
 - `node qa/intro-v3.cjs` (del paquete de la intro).

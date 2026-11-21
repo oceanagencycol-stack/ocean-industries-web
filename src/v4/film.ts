@@ -105,8 +105,12 @@ const READ = '.w, .kicker > span, .deck, .actions > *, .where, .lt, .figs > div,
 function split(root: ParentNode) {
   root.querySelectorAll<HTMLElement>('[data-split]').forEach((el) => {
     const text = el.textContent ?? ''
-    el.setAttribute('aria-label', text)
     el.textContent = ''
+    // el lector de pantalla lee la frase entera de un texto oculto (un aria-label en un span no vale: Lighthouse,
+    // aria-prohibited-attr); las letras sueltas van ocultas para él
+    const sr = document.createElement('span')
+    sr.className = 'sr-only'
+    sr.textContent = text
     let seed = 7
     for (const word of text.split(/(\s+)/)) {
       if (!word) continue
@@ -127,6 +131,7 @@ function split(root: ParentNode) {
       }
       el.append(w)
     }
+    el.append(sr)
   })
 }
 

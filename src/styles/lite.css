@@ -581,4 +581,6 @@
 .sp-foot__legal a {
   color: var(--mist);
   margin-left: 10px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
