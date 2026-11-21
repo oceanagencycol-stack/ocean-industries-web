@@ -34,6 +34,9 @@ La v2 quedó en `dpl_DhkVanu9RLzNPmZ2ynUvrGbP2tkA` (`main` 2f12397) para volver 
   `tools/paginas-seo/contenido.mjs` con `node tools/paginas-seo/build.mjs`, que también escribe `public/sitemap.xml`,
   `public/robots.txt` (bots de IA permitidos), `public/llms.txt` y `public/llms-full.txt`. No se editan a mano: se
   cambia el contenido y se vuelve a generar. Usan `src/lite.ts` (con GA4) y los estilos `.sp-*` de `lite.css`.
+- **Indexación** (21-nov): Search Console con la propiedad de dominio `sc-domain:oceanindustries.com.co`
+  (juan@oceanindustries.com.co, verificada por el TXT de Workspace), sitemap enviado e indexación pedida para las 8
+  páginas. IndexNow: llave pública `public/<32 hex>.txt`; tras cada publicación, `node tools/indexnow.mjs`.
 - **Home**: bloque `#servicios` y `#preguntas` (FAQ visible, con `FAQPage` en el JSON-LD) en el epílogo, trilingües.
 - Prueba de las páginas: título ≤ 60, descripción ≤ 165, un H1, JSON-LD válido, sin desborde de 320 a 1440 px.
 - Lighthouse móvil 20-nov (preview, SwiftShader): páginas de servicios 100/100/100/100; home accesibilidad, buenas
