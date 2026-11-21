@@ -13,8 +13,9 @@ paleta oscura premium; la web termina en el fondo del mar; sin velero; personas 
   3 `UyFB3Aw8SjvVeIgem4ZA`, 4 `NysRnNfvjAFMuidzIVtf`, 5 `j4C5id7raucdwE5qsPFC`, 6 `0mTlT68Xqy5y60l9IB4E`,
   7 `0OIT03cDa5s5x3fEax9j`, 8 `I4eIngQXkLFGLbiCkk1m`.
 - **3 tomas de video** de 8 s en 1080p, ancladas a dos placas (veo-3.1-fast, sin audio): 7→8 `YDUR3G2F1G2ltSFDThxD`
-  (del abismo al logo), 5→6 y 6→7 (nodos `QfX2WTygQwgkbOPU9kB2` y `VKANn7MmgflZyAbhajRO`). Juntas son el descenso
-  completo bajo el agua (~24 s).
+  (del abismo al logo), 5→6 `q203ouGmrDbKkAOMlHg4` (continua, buena) y 6→7 `7GQQEIZxDGUleQNo1XUb` (parece tener un
+  salto entre los 3 y los 5 s, de los rayos al abismo frontal). Juntas son el descenso completo bajo el agua (~24 s); el
+  último cuadro de cada una empata con el primero de la siguiente.
 
 **En el repo**, rama `v6-nave`:
 - `src/v6/roca.ts` + `src/styles/v6-roca.css`: **la marca oficial grabada en la roca**. El haz barre con el scroll, el
@@ -40,7 +41,7 @@ si pasan de 50 MB). De ahí salen los derivados de la web (sección 4).
 | Qué | Cómo | Créditos |
 | --- | --- | --- |
 | Tomas 1→2, 2→3, 3→4, 4→5 | veo-3.1-fast, 8 s, 1080p, sin audio, inicio y fin en las placas elegidas | 4 × 4.848 = 19.392 |
-| Rehacer 7→8 sin corte | la toma actual salta a los ~4 s del primer plano al plano general; pedir «one continuous shot, no cuts» y, si persiste, partirla en 7→7b y 7b→8 con una placa intermedia (la nave de perfil ante la roca) | 4.848–11.523 |
+| Rehacer 6→7 y 7→8 sin corte | la toma actual salta a los ~4 s del primer plano al plano general; pedir «one continuous shot, no cuts» y, si persiste, partirla en 7→7b y 7b→8 con una placa intermedia (la nave de perfil ante la roca) | 4.848–11.523 |
 | Versión final en calidad completa | las 8 tomas aprobadas en `veo-3.1-generate-001` (no fast) a 1080p o 4K | 8 × ~19.392 (4K: medir antes con `estimate_only`) |
 | Máster vertical 9:16 | las 8 placas en 9:16 (gemini-3-pro-image con la nave de referencia) y las 8 tomas en 9:16 | 8 × 1.827 + 8 × 4.848 = 53.400 |
 | Escalado del video | `topaz-video-upscale-v2` de 1080p a 4K solo si el original en calidad completa no alcanza (probar una toma) | medir |
