@@ -70,3 +70,42 @@ No cambia: la marca de `marca/v3/`, las cifras aprobadas (48 h, 24/7, 11 s, los 
 - Marca: sale de `marca/v3/`; la IA no dibuja la marca dentro de la imagen.
 - Gasto: cada generación en `docs/elevenlabs.tsv` con su costo real; solo se repite una toma rechazada.
 - Producción: la v6 vive en su rama con vista previa; se publica con visto bueno de Juan Manuel; la v5 queda para «Promote».
+
+---
+
+## Nuevo concepto · La nave (21-nov-2026, pedido de Juan Diego)
+> «El personaje principal es una nave espacial y submarina futurista que va del espacio hasta el fondo del mar, y en
+> el fondo, en las rocas, aparece el logo y el símbolo de OCEAN. Ultra premium, inmersiva y única.»
+
+La película deja de ser una serie de paisajes y pasa a ser **un solo viaje con protagonista**. La nave es el hilo
+que une las tomas. También es la metáfora de OCEAN: una sola máquina que cruza medios (espacio → cielo → mar →
+abismo) como el software, la IA y el marketing en un mismo sistema.
+
+**Recorrido propuesto (8 momentos):**
+1. Órbita: la nave en reposo sobre la Tierra de noche.
+2. Ignición y caída: entra en la atmósfera envuelta en plasma.
+3. Cielo: atraviesa nubes sobre el océano al amanecer.
+4. Transformación: pliega alas y se vuelve submarino justo antes del agua.
+5. Impacto: entra al mar (la línea de agua corta la pantalla).
+6. Luz: desciende entre rayos de sol y cardúmenes.
+7. Abismo: solo sus tres líneas de luz en la oscuridad.
+8. Fondo: sus faros barren las rocas y **descubren el símbolo y el logotipo de OCEAN** en la roca.
+
+**La marca en la roca:** por la regla de marca, la IA no dibuja el logo. La toma 8 se genera con una cara de roca
+lisa que la luz de la nave recorre, y la web pone encima el símbolo y el logotipo reales de `marca/v3/`, grabados y
+encendidos con el shader, sincronizados con el barrido de luz. Así el logo queda perfecto en cualquier pantalla y en
+los tres idiomas. Se puede probar aparte, sin compromiso, la versión «tallada por la IA» con el logo de referencia.
+
+**La firma de la nave:** tres líneas de luz horizontales en el casco, como los tres horizontes de la E de OCEAN.
+
+### Facetas y créditos (precios medidos el 21-nov)
+| Faceta | Qué | Modelo | Créditos |
+| --- | --- | --- | --- |
+| 1 · La nave | 2 direcciones × 4 conceptos; después, la hoja de personaje de la elegida (perfil, frente, 3/4, modo submarino) | flux-3-image (291 c/u) | ≈ 3.500 |
+| 2 · Placas | los 8 momentos con la nave de referencia, 2–4 opciones cada uno, 16:9 2K | flux-3-image con referencia | ≈ 6.000–9.500 |
+| 3 · Piloto en video | 2–3 tomas clave (5→6 y 7→8: el descenso y el logo) ancladas a dos placas | veo-3.1-fast (7.272 por toma) o kling-3-pro (6.787) | ≈ 14.500–22.000 |
+| 4 · Montaje del piloto | las tomas en el escenario WebGL de la v5, con el logo en la roca por shader, en la rama `v6-nave` | — | 0 |
+| 5 · Película completa | las tomas que falten + vertical 9:16 + sonido | cuando haya más créditos | ≈ 100.000+ |
+
+Saldo al empezar (21-nov 14:20): **60.611 créditos** (renueva el 2-dic). Las facetas 1 a 4 caben con margen.
+Comparación de video (estimado por toma): seedance-v2.5 16.804 · veo-3.1 19.392 · veo-3.1-fast 7.272.
