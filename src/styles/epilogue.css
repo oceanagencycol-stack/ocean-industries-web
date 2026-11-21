@@ -35,8 +35,8 @@
   height: auto;
   box-shadow: 0 12px 30px rgb(3 6 12 / .3);
 }
-.epi .case:nth-child(2) .case__media { background: var(--slate); }
-.epi .case:nth-child(3) .case__media { background: var(--space); }
+.epi .case:nth-child(3n+2) .case__media { background: var(--slate); }
+.epi .case:nth-child(3n) .case__media { background: var(--space); }
 .epi .case__name { font: 570 clamp(30px, 3.3vw, 56px)/1 var(--display); letter-spacing: -.05em; margin: 0; }
 .epi .case__place { margin-top: 12px; }
 .epi .case__rows { margin: 24px 0 10px; gap: 0; }
@@ -55,10 +55,11 @@
 }
 .epi .case__rows dd { font-size: clamp(14px, 1vw, 16px); }
 .epi .case__link { border-color: var(--ink-line); width: 100%; padding-bottom: 0; }
+.epi .case__link + .case__link { margin-top: 0; }
 @media (min-width: 801px) {
-  .epi .case:nth-child(2) { grid-template-columns: minmax(0, 1fr) minmax(0, 1.48fr); }
-  .epi .case:nth-child(2) .case__media { grid-area: 1 / 2; }
-  .epi .case:nth-child(2) .case__copy { grid-area: 1 / 1; }
+  .epi .case:nth-child(even) { grid-template-columns: minmax(0, 1fr) minmax(0, 1.48fr); }
+  .epi .case:nth-child(even) .case__media { grid-area: 1 / 2; }
+  .epi .case:nth-child(even) .case__copy { grid-area: 1 / 1; }
 }
 
 /* Una sala y su cartelera. Cada título llama a su propia película. */
