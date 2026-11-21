@@ -43,6 +43,10 @@ export function setLang(l: Lang, root: ParentNode = document): void {
     const v = el.getAttribute(`data-${l}-aria`)
     if (v !== null) el.setAttribute('aria-label', v)
   })
+  root.querySelectorAll<HTMLImageElement>('[data-es-alt]').forEach((el) => {
+    const v = el.getAttribute(`data-${l}-alt`)
+    if (v !== null) el.alt = v
+  })
   root.querySelectorAll<HTMLInputElement>('[data-es-ph]').forEach((el) => {
     const v = el.getAttribute(`data-${l}-ph`)
     if (v !== null) el.placeholder = v

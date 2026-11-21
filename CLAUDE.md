@@ -29,7 +29,7 @@ La v2 quedó en `dpl_DhkVanu9RLzNPmZ2ynUvrGbP2tkA` (`main` 2f12397) para volver 
 ### SEO e IA SEO (rama `v5-seo`, 20-nov-2026)
 - **Posicionamiento**: OCEAN es primero una **empresa de software e ingeniería con IA** (software a la medida, agentes de
   IA, automatización); webs, contenido y pauta completan el sistema. Así en el título, la portada, la barra, los datos
-  estructurados y `llms.txt`. Qora no se menciona en la web de OCEAN (decisión pendiente de Juan).
+  estructurados y `llms.txt`. Qora aparece como caso y «firma de IA aliada de OCEAN en Estados Unidos» (pedido de Juan Diego, 20-nov; la web de Qora ya nombra a Ocean Industries como estudio hermano).
 - **Páginas segmentadas**: `/servicios`, `/servicios/<servicio>` (5) y `/en` (nearshore para EE. UU.). Salen de
   `tools/paginas-seo/contenido.mjs` con `node tools/paginas-seo/build.mjs`, que también escribe `public/sitemap.xml`,
   `public/robots.txt` (bots de IA permitidos), `public/llms.txt` y `public/llms-full.txt`. No se editan a mano: se
@@ -94,7 +94,9 @@ La v2 quedó en `dpl_DhkVanu9RLzNPmZ2ynUvrGbP2tkA` (`main` 2f12397) para volver 
 - **Agenda**: Cal.com en claro; en el teléfono (≤ 760 px) se abre en su página; en el computador va incrustado.
 - **Barra**: enlaces desde 1081 px; el menú desde 1080 px hacia abajo. «Habla con OCEAN» solo en el computador.
 - **Sonido v3** (`src/v3/SONIDO.md`): cero audio hasta el primer clic o toque (nunca una tecla, formulario, idioma o «Saltar intro») o el botón de la barra; motor `sound.ts` por import dinámico, ambientes por tramo con paso bajo bajo el agua, efectos en los cruces; se calla con el chat o un reel con sonido; ahorro de datos = apagado. Audio en `public/v3/audio/` (`node tools/audio.mjs`); `node qa/sonido.cjs`.
-- Honestidad: nada de cifras, clientes, logos ni testimonios que no estén aprobados (48 h, 24/7, 11 s y los tres casos).
+- Honestidad: nada de cifras, clientes, logos ni testimonios que no estén aprobados (48 h, 24/7, 11 s y los siete casos:
+  Súper Machi, Humberto Garcés, Qora, Sancho, Outstanding, Naidikó, Álvaro Arroyo). Súper Machi y Sancho van sin enlace
+  mientras su web diga «vista previa privada»; las capturas de los casos van en `public/v3/casos/` (1440×756, WebP).
   Los paisajes son ilustraciones con IA y el pie lo dice.
 - Sin secretos en el repo. Commits con identidad `oceanagencycol-stack <oceanagencycol@gmail.com>`.
 

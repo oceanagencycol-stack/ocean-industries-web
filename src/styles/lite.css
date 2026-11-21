@@ -584,3 +584,9 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+.sp-case__link {
+  color: var(--snow);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

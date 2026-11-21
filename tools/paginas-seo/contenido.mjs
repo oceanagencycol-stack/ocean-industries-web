@@ -56,6 +56,36 @@ export const PROCESO = [
 ]
 
 export const CASOS = {
+  supermachi: {
+    nombre: 'El Mesón de Súper Machi',
+    lugar: 'Miami, Florida (EE. UU.)',
+    texto:
+      'Restaurante español y cubano con show en vivo casi cada viernes y sábado. Web nueva en español e inglés: la cocina en video, los platos con su precio, la cartelera con una página por show, el menú digital con buscador y reservas por WhatsApp. Estado: menú digital en vivo; la web, en su dominio y en revisión final con el restaurante.',
+    en: 'A Spanish and Cuban restaurant with a live show almost every Friday and Saturday. A new site in Spanish and English: the kitchen on video, dishes with prices, a show calendar with a page per night, a searchable digital menu and WhatsApp bookings. Status: digital menu live; the site is on its domain, in final review with the restaurant.',
+  },
+  humberto: {
+    nombre: 'Humberto Garcés',
+    lugar: 'Washington, D. C. (EE. UU.)',
+    url: 'https://www.humbertogarces.com/',
+    texto:
+      'Empresario y constructor con 25 años en Washington, D. C. Sitio personal bilingüe hecho como un documental: apertura con su firma y sonido, la entrevista en video por capítulos, su historia en una línea de tiempo y agenda directa. Publicado en humbertogarces.com.',
+    en: 'An entrepreneur and builder with 25 years in Washington, D.C. A bilingual personal site made like a documentary: an opening with his signature and sound, the video interview by chapter, his story on a timeline and direct booking. Live at humbertogarces.com.',
+  },
+  qora: {
+    nombre: 'Qora Technologies and Engineering',
+    lugar: 'Washington, D. C. (EE. UU.)',
+    url: 'https://www.qoratechnologies.com/',
+    texto:
+      'Firma de IA aliada de OCEAN en Estados Unidos, para empresas, gobiernos y campañas. Web corporativa en inglés con un cristal 3D interactivo, sonido, un asistente para conversar, sus productos y la agenda de diagnósticos. Publicada en qoratechnologies.com.',
+    en: 'OCEAN’s partner AI firm in the United States, for companies, governments and campaigns. An English corporate site with an interactive 3D crystal, sound, a conversational assistant, its products and diagnostic booking. Live at qoratechnologies.com.',
+  },
+  sancho: {
+    nombre: 'Sancho Restaurant',
+    lugar: 'Miami, Florida (EE. UU.)',
+    texto:
+      'La casa del cochinillo en la Calle Ocho, con una promoción distinta cada día. Web nueva en español e inglés: un sol que muestra la promoción de hoy sobre el plato a pantalla completa, la semana en fotos, pedidos en línea y reservas por WhatsApp. Estado: en su dominio, en revisión final con el restaurante.',
+    en: 'The home of roast suckling pig on Calle Ocho, with a different offer every day. A new site in Spanish and English: a sun that shows today’s offer over a full-screen dish, the week in photos, online ordering and WhatsApp bookings. Status: on its domain, in final review with the restaurant.',
+  },
   outstanding: {
     nombre: 'Outstanding Garage Doors',
     lugar: 'Miami, Florida (EE. UU.)',
@@ -157,7 +187,7 @@ export const SERVICIOS = [
       'Español, inglés y portugués en la misma línea.',
       'Conectado a tu calendario, tu CRM y tus pagos.',
     ],
-    casos: ['outstanding'],
+    casos: ['outstanding', 'qora'],
     faq: [
       ['¿Un agente de IA reemplaza a mi equipo?', 'No. Atiende lo repetitivo y lo urgente a cualquier hora, y pasa a una persona lo que necesita criterio humano, con la conversación completa.'],
       ['¿Funciona con mi número de WhatsApp actual?', 'Sí, lo montamos sobre tu número. Tus clientes siguen escribiendo al mismo lugar.'],
@@ -238,7 +268,7 @@ export const SERVICIOS = [
       'Accesibilidad: contraste medido, foco visible y movimiento reducido respetado.',
       'Cabeceras de seguridad estrictas y pagos por pasarela.',
     ],
-    casos: ['naidiko', 'arroyo'],
+    casos: ['supermachi', 'humberto', 'qora', 'sancho', 'naidiko', 'arroyo'],
     faq: [
       ['¿Cuánto tarda una web?', 'El prototipo navegable está en 48 horas. La web completa depende del número de páginas y de si lleva tienda o integraciones.'],
       ['¿Incluye SEO?', 'Sí: SEO técnico desde el primer día (velocidad, estructura, datos estructurados, sitemap) y contenido pensado para que también te citen los asistentes de IA.'],
@@ -315,7 +345,7 @@ export const EN = {
     ['What is OCEAN?', ORG.summary],
     ['Why build with a team in Colombia?', 'You get an engineering team that works in your time zone, speaks English and Spanish and builds with the same tools a US team would use.'],
     ['How fast can we start?', 'Book a free 45-minute call. Within 24 to 48 hours you see a working prototype or an AI agent answering with your business information.'],
-    ['Do you work with US companies?', 'Yes. Our clients include Outstanding Garage Doors in South Florida, whose phone line and WhatsApp are connected to AI agents.'],
+    ['Do you work with US companies?', 'Yes. In Miami we built the websites of El Mesón de Súper Machi and Sancho Restaurant and the AI agents of Outstanding Garage Doors; in Washington, D.C., the sites of Humberto Garcés and Qora Technologies.'],
     ['How do I reach you?', 'WhatsApp +57 313 872 1665 or book a call on Cal.com.'],
   ],
 }

@@ -145,7 +145,7 @@ const crumbsLd = (items) => ({
 const caseHtml = (c, lang = 'es') => `          <article class="sp-case">
             <h3>${esc(c.nombre)}</h3>
             <p class="sp-case__place">${esc(c.lugar)}</p>
-            <p>${esc(lang === 'en' ? c.en : c.texto)}</p>
+            <p>${esc(lang === 'en' ? c.en : c.texto)}</p>${c.url ? `\n            <p><a class="sp-case__link" href="${c.url}" target="_blank" rel="noopener">${esc(c.url.replace(/^https:\/\/(www\.)?/, '').replace(/\/$/, ''))}</a></p>` : ''}
           </article>`
 
 const processHtml = (steps, id, title) => `      <section class="sp-sec" id="${id}" aria-labelledby="${id}-t">
@@ -401,6 +401,10 @@ ${processHtml(PROCESS_EN, 'how', 'How we work')}
       <section class="sp-sec" id="work" aria-labelledby="work-t">
         <h2 id="work-t">In production</h2>
         <div class="sp-cases">
+${caseHtml({ ...CASOS.supermachi, lugar: 'Miami, Florida' }, 'en')}
+${caseHtml({ ...CASOS.humberto, lugar: 'Washington, D.C.' }, 'en')}
+${caseHtml({ ...CASOS.qora, lugar: 'Washington, D.C.' }, 'en')}
+${caseHtml({ ...CASOS.sancho, lugar: 'Miami, Florida' }, 'en')}
 ${caseHtml({ ...CASOS.outstanding, lugar: 'Miami, Florida' }, 'en')}
 ${caseHtml(CASOS.naidiko, 'en')}
 ${caseHtml(CASOS.arroyo, 'en')}
