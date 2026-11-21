@@ -750,6 +750,9 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   wake()
 
   if (new URLSearchParams(location.search).has('qa')) {
+    // ?qa=1&medir=1: recorre la película sola y muestra en pantalla la mayor espera de imagen de cada barrido; sirve
+    // para medir en un teléfono o computador real sin herramientas de desarrollo (con &avance=play, el modo de avance)
+    if (new URLSearchParams(location.search).has('medir')) void medirEnPantalla()
     ;(window as Window & { __film?: unknown }).__film = {
       get t() {
         return tS
@@ -769,6 +772,9 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
       get reelTop() {
         return reelTop
       },
+      get frame() {
+        return stage ? stage.frame : -1
+      },
       get video() {
         return { rs: video.readyState, ct: video.currentTime, src: video.currentSrc, seeking: video.seeking }
       },
@@ -776,3 +782,58 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     }
   }
 }
+
+/** El medidor en pantalla (`?qa=1&medir=1`): barridos lentos y rápidos en los dos sentidos. */
+async function medirEnPantalla(): Promise<void> {
+  type F = { intro: number; reelTop: number; sps: number; frame: number }
+  const w = window as Window & { __film?: F }
+  const box = document.createElement('pre')
+  box.style.cssText =
+    'position:fixed;left:8px;top:8px;z-index:99999;margin:0;padding:10px 12px;max-width:calc(100vw - 16px);white-space:pre-wrap;' +
+    'font:12px/1.5 ui-monospace,monospace;color:#fff;background:rgba(3,6,12,.86);border:1px solid #6e8193;pointer-events:none'
+  box.textContent = 'Midiendo la película…'
+  document.body.append(box)
+  const wait = (ms: number) => new Promise(r => setTimeout(r, ms))
+  const t0 = performance.now()
+  while (!(w.__film && w.__film.intro === 1 && !document.querySelector('.pre')) && performance.now() - t0 < 30000) await wait(100)
+  const f = w.__film
+  if (!f) {
+    box.textContent = 'No se pudo medir: la película no arrancó.'
+    return
+  }
+  const lines = [
+    `${innerWidth}×${innerHeight} · avance ${/avance=play/.test(location.search) ? 'reproducción' : 'búsqueda'}`,
+  ]
+  for (const [from, to, sec] of [[12, 16, 5], [16, 12, 5], [12, 50, 4], [50, 12, 4]]) {
+    scrollTo({ top: f.reelTop + from * f.sps, behavior: 'instant' })
+    await wait(900)
+    let last = f.frame
+    let changed = performance.now()
+    let longest = 0
+    let changes = 0
+    let draws = 0
+    const start = performance.now()
+    await new Promise<void>(done => {
+      const move = (now: number) => {
+        const p = Math.min(1, Math.max(0, (now - start) / (sec * 1000)))
+        scrollTo({ top: f.reelTop + (from + (to - from) * p) * f.sps, behavior: 'instant' })
+        draws++
+        if (f.frame !== last) {
+          changes++
+          longest = Math.max(longest, now - changed)
+          changed = now
+          last = f.frame
+        }
+        if (p < 1) requestAnimationFrame(move)
+        else done()
+      }
+      requestAnimationFrame(move)
+    })
+    longest = Math.max(longest, performance.now() - changed)
+    lines.push(`${String(from).padStart(2)}→${String(to).padEnd(2)} ${sec} s · ${changes}/${draws} imágenes nuevas · espera máx ${Math.round(longest)} ms`)
+    box.textContent = lines.join('\n')
+  }
+  lines.push('Listo. Toma una captura de esta caja.')
+  box.textContent = lines.join('\n')
+}
+

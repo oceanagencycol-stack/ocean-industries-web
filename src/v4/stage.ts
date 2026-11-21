@@ -220,6 +220,7 @@ export interface Stage {
   readonly video: HTMLVideoElement
   readonly software: boolean
   readonly ready: boolean
+  readonly frame: number
   destroy(): void
 }
 
@@ -383,7 +384,42 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
   video.addEventListener('seeked', onSeeked)
   video.addEventListener('loadeddata', publish)
 
+  // ---- avance por reproducción (experimental, `?avance=play`) ----
+  // Hacia adelante y en tramos cortos, reproducir entrega los cuadros seguidos sin reiniciar el decodificador en cada
+  // búsqueda; hacia atrás o en saltos largos se sigue buscando. Se compara con `qa/secuencia-v5.cjs ?avance=play`.
+  const playMode = /[?&]avance=play\b/.test(location.search) && 'requestVideoFrameCallback' in HTMLVideoElement.prototype
+  let playing = false
+  const rate = (ahead: number) => Math.max(0.5, Math.min(4, ahead * 4))
+  function onPresented(_now: number, meta: VideoFrameCallbackMetadata) {
+    if (!playing) return
+    requested = Math.round(meta.mediaTime * 24)
+    upload(video, video.videoWidth, video.videoHeight)
+    uploaded = requested
+    video.requestVideoFrameCallback(onPresented)
+  }
+  function steer(): boolean {
+    const ahead = Math.min(video.duration - 0.05, want) - video.currentTime
+    if (playing) {
+      if (ahead > 1 / 48 && ahead <= 1.2) {
+        video.playbackRate = rate(ahead)
+        return true
+      }
+      video.pause()
+      playing = false
+      return ahead <= 1 / 48 && ahead > -1 / 24
+    }
+    if (seeking || video.readyState < 2 || ahead <= 1 / 24 || ahead > 1.2) return false
+    video.playbackRate = rate(ahead)
+    playing = true
+    video.requestVideoFrameCallback(onPresented)
+    video.play().catch(() => {
+      playing = false
+    })
+    return true
+  }
+
   function seek() {
+    if (playMode && Number.isFinite(video.duration) && steer()) return
     if (!Number.isFinite(video.duration) || video.readyState < 1 || seeking) return
     const last = Math.ceil(video.duration * 24) - 1
     const position = Math.min(want * 24, last)
@@ -520,6 +556,10 @@ export function createStage(canvas: HTMLCanvasElement, video: HTMLVideoElement, 
     video,
     get ready() {
       return uploaded >= 0
+    },
+    /** el último cuadro subido a la textura (para medir la cadencia en un equipo real) */
+    get frame() {
+      return uploaded
     },
     destroy() {
       video.removeEventListener('seeked', onSeeked)

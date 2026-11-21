@@ -167,3 +167,25 @@ franja de luz. Logotipo robusto ajustado a la foto del 20-nov (`marca/v3/README.
 espera entre cuadros enviados al compositor, base `7fb660e` → cierre: escritorio 84/86/90/91 ms → 102/91/144/98 ms;
 teléfono 82/86/84/159 ms → 78/69/82/76 ms (12→16, 16→12, 12→50, 50→12 s). Error del reloj: 0 en todas. El escritorio
 por software paga el costo de las luces de lectura; en una GPU es despreciable, pero no se midió aquí.
+
+### v5.1 · Medidor en pantalla y avance por reproducción (21-nov-2026)
+
+- **Medidor en pantalla.** Con `?qa=1&medir=1`, la página termina la apertura, recorre sola la película (12→16 s y
+  16→12 s en 5 s; 12→50 s y 50→12 s en 4 s) y muestra en una caja la mayor espera de imagen y cuántas imágenes nuevas
+  hubo por cuadro de pantalla. Sirve en un teléfono o computador real sin herramientas de desarrollo: basta con tomar
+  una captura de la caja. GA4 no mide con `?qa`.
+- **Avance por reproducción (experimental, `&avance=play`).** Hacia adelante y en tramos de hasta 1,2 s, el escenario
+  reproduce el video a la velocidad del scroll (0,5–4×) y sube cada cuadro presentado (`requestVideoFrameCallback`) en
+  vez de encadenar búsquedas; hacia atrás y en saltos largos sigue buscando. Sin el parámetro, nada cambia.
+- **Medido aquí (Chromium con SwiftShader, 1440 × 900, 21-nov):**
+
+| Barrido | Búsqueda (actual) | Reproducción |
+| --- | ---: | ---: |
+| 12→16 en 5 s | 100 ms · 96 imágenes | 83 ms · 91 imágenes |
+| 16→12 en 5 s | 105 ms · 95 imágenes | 133 ms · 92 imágenes |
+| 12→50 en 4 s | 100 ms · 70 imágenes | 100 ms · 101 imágenes |
+| 50→12 en 4 s | 133 ms · 72 imágenes | 83 ms · 70 imágenes |
+
+- **Pendiente y decisivo:** medir en el M1 y en un teléfono físico con
+  `https://www.oceanindustries.com.co/?qa=1&medir=1` y `…&avance=play`. En el M1 (20-nov) la búsqueda hacia adelante
+  esperaba 250–350 ms. Si la reproducción baja esa cifra en el equipo real, pasa a ser el modo por defecto.

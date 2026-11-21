@@ -93,6 +93,8 @@ async function measure(page, from, to, seconds) {
 async function main() {
   const url = new URL(process.argv[2] || 'http://localhost:4175/')
   url.searchParams.set('qa', '1')
+  // node qa/secuencia-v5.cjs <url> play → mide el avance por reproducción (?avance=play)
+  if (process.argv[3] === 'play') url.searchParams.set('avance', 'play')
   const browser = await chromium.launch()
   try {
     for (const [width, height] of [[1440, 900], [390, 844]]) {
