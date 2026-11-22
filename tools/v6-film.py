@@ -12,8 +12,9 @@ Siete tomas, como la v5, para reutilizar el motor (src/v4):
 
 Las placas se mueven con un acercamiento de cámara calculado con precisión de subpíxel desde el original HD (nada de
 zoompan, que salta de a un píxel) y se funden entre sí en 1,2 s. Las tomas encadenan por sus placas: se quitan los 2
-primeros cuadros de 6→7 y 7→8 (repiten la placa). Escribe public/v6/film-hd.mp4, film-sd.mp4, poster.webp,
-poster-v.webp y la lista de cortes para src/v6/film.json.
+primeros cuadros de 6→7 y 7→8 (repiten la placa). El grano de las tomas se limpia (hqdn3d): la web pone el suyo
+encima (DESIGN.md). Escribe public/v6/film-hd.mp4, film-sd.mp4, poster.webp,
+poster-v.webp y los cortes en src/v4/film.json.
 """
 import json
 import os
@@ -94,7 +95,7 @@ HOLD = 96  # 4 s quietos al final: la marca se graba en la roca
 SEG = [
     (240 + XF // 2, lambda n: kenburns(placa(1), n, 1.0, 0.8, (0.5, 0.5), (0.57, 0.47)), 0),      # órbita
     (216 + XF, lambda n: kenburns(placa(2), n, 0.94, 0.78, (0.48, 0.48), (0.53, 0.53)), XF),      # reentrada
-    (216 + XF, lambda n: kenburns(placa(3), n, 0.82, 0.96, (0.5, 0.56), (0.5, 0.5)), XF),         # nubes
+    (216 + XF, lambda n: kenburns(placa(3), n, 0.84, 0.94, (0.36, 0.55), (0.41, 0.5)), XF),       # nubes: la nave al tercio derecho
     (216 + XF, lambda n: kenburns(placa(4), n, 0.9, 0.78, (0.44, 0.56), (0.57, 0.55)), XF),       # rasante
     (60 + XF, lambda n: kenburns(placa(5), n, 0.9, 1.0, (0.5, 0.56), (0.5, 0.5)), XF),            # entrada (placa)
     (n56, lambda n: video(os.path.join(T, 'toma56.mp4')), 12),                                     # entrada → rayos
@@ -137,10 +138,10 @@ print('cuadros por toma:', [frames[i + 1] - frames[i] for i in range(7)], 'total
 
 common = ['-an', '-g', '8', '-keyint_min', '8', '-bf', '0', '-sc_threshold', '0', '-pix_fmt', 'yuv420p', '-tune', 'film',
           '-movflags', '+faststart']
-subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', master, '-vf', 'scale=1600:890:flags=lanczos', '-c:v', 'libx264',
-                '-preset', 'slow', '-crf', '22', *common, os.path.join(OUT, 'film-hd.mp4')], check=True)
-subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', master, '-vf', 'scale=1024:570:flags=lanczos', '-c:v', 'libx264',
-                '-preset', 'slow', '-crf', '25', *common, os.path.join(OUT, 'film-sd.mp4')], check=True)
+subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', master, '-vf', 'hqdn3d=1.5:1.5:6:6,scale=1600:890:flags=lanczos', '-c:v', 'libx264',
+                '-preset', 'slow', '-crf', '28', *common, os.path.join(OUT, 'film-hd.mp4')], check=True)
+subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', master, '-vf', 'hqdn3d=1.5:1.5:6:6,scale=1024:570:flags=lanczos', '-c:v', 'libx264',
+                '-preset', 'slow', '-crf', '30', *common, os.path.join(OUT, 'film-sd.mp4')], check=True)
 seq = [first, last]
 
 im = Image.fromarray(seq[0])
@@ -153,7 +154,7 @@ last = Image.fromarray(seq[1])
 last.save(os.path.join(OUT, 'fondo-1920.webp'), quality=82, method=6)
 last.resize((1280, 712), Image.LANCZOS).save(os.path.join(OUT, 'fondo-1280.webp'), quality=82, method=6)
 
-with open(os.path.join(ROOT, 'src', 'v6', 'film.json'), 'w') as fh:
+with open(os.path.join(ROOT, 'src', 'v4', 'film.json'), 'w') as fh:
     json.dump({'fps': FPS, 'frames': frames, 'src': {'hd': '/v6/film-hd.mp4', 'sd': '/v6/film-sd.mp4'},
                '_': 'frames: el primer cuadro de cada toma S0–S6 y el total (tools/v6-film.py)'}, fh, ensure_ascii=False)
     fh.write('\n')
