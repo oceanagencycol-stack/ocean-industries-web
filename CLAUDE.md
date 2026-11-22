@@ -1,15 +1,18 @@
-# CLAUDE.md — ocean-industries-web (v5)
+# CLAUDE.md — ocean-industries-web (v6 · La nave)
 
 Web oficial de OCEAN (nombre legal: Ocean Industries; oceanindustries.com.co). Comunicación con Juan: **español**.
 Contenido: **ES por defecto, EN y PT** (cada elemento lleva `data-es` / `data-en` / `data-pt`, y `data-*-aria` /
 `data-*-ph` para nombres accesibles y placeholders).
 
-**v5 (ramas `v5-secuencia` → `v5-cierre`) está en producción desde el 20-nov-2026** (`main` 27953b7, con visto bueno de Juan Manuel): una sola película que
-avanza con el scroll. `index.html` + `src/main.ts` → `src/v4/` (`stage.ts` el escenario WebGL2, `film.ts` la línea de
-tiempo, `script.ts` el guion técnico, `preload.ts` la apertura con la marca) y `src/styles/v4.css` + `epilogue.css`
-sobre `v3.css`. Película en `public/v4/`, cortes en `src/v4/film.json`. Todo en `docs/v4/PELICULA.md`.
-La v2 quedó en `dpl_DhkVanu9RLzNPmZ2ynUvrGbP2tkA` (`main` 2f12397) para volver atrás con «Promote». `v3-cine` y
-`v4-pelicula` quedan como historia. **Siguiente: la v6** (película remasterizada), plan en `docs/plan-v6.md`.
+**v6 · La nave (rama `v6-nave`, 21-nov-2026, pedido y visto bueno de Juan Diego)**: la misma web de una sola película
+que avanza con el scroll (motor de la v5 en `src/v4/`), ahora con protagonista: una nave espacial y submarina que baja
+**del espacio al fondo del mar**. En la roca del fondo la luz de la nave graba la marca oficial (`.roca-capa`, proyectada
+por `film.ts` con `ROCA` de `script.ts`; estilos `v6-roca.css`). La web **termina en el fondo del mar** y el epílogo es
+oscuro (`.epi--fondo`, `v6.css`): ya no hay cumbre, nieve ni barra clara. Lema: «De lo más alto a lo más profundo».
+Película en `public/v6/` (`tools/v6-film.py` desde los originales de la rama `assets/v6-nave`), cortes en
+`src/v4/film.json`. Guion y elegidas en `docs/v6/GUION.md`; lo que falta (tomas 1→5 en video, vertical 9:16, sonido,
+cuadros sueltos en vez de MP4) en `docs/v6/FASE2.md`. Créditos y generaciones en `docs/elevenlabs.tsv`.
+La v5 (paisajes hasta la cumbre) queda en el despliegue anterior de Vercel para volver con «Promote».
 
 ### Reglas propias de la v5
 - **Legibilidad sobre la película**: el texto nunca lleva caja; el shader recoge la luz detrás de las cajas medidas
@@ -84,7 +87,8 @@ La v2 quedó en `dpl_DhkVanu9RLzNPmZ2ynUvrGbP2tkA` (`main` 2f12397) para volver 
   portada a sangre. Si toca, `html.intro-due` muestra el velo. `[data-intro-dock]` es el logotipo de la barra.
 - **La E son tres horizontes**: `.horizon` (las barras de la E de `logo.svg`) quieta al borde izquierdo en el computador;
   el tramo en el centro de la pantalla enciende su barra (`data-horizon` 1–3; la cumbre, 4 = las tres).
-- **La cumbre y el pie van sobre la nieve** (`[data-light]`): la barra se vuelve clara encima (`html.nav-light`).
+- **v6: todo es oscuro.** El epílogo va sobre el fondo del mar (`.epi--fondo`); `[data-light]`/`html.nav-light` quedan en
+  el sistema pero la home ya no los usa. Al terminar la película la telemetría se apaga (`html.film-past`).
 - **Pausar el movimiento** (WCAG 2.2.2): controles en la barra y el pie con el mundo real; suelta el mundo, deja las placas y se
   recuerda (`ocean-motion-paused`).
 - **CSP**: el script de arranque va por hash en `vercel.json`; si cambia, el build falla y da el hash nuevo. Wompi

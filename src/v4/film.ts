@@ -15,7 +15,9 @@
 import { lang, onLang } from '../ui/i18n'
 import { SCRIPT } from '../ui/live'
 import { createStage, SCRIMS, type Look, type Stage, type StageFrame } from './stage'
-import { ALT, CALLOUTS as CALLOUT_DEFS, FOCUS, MEDIA, WATERLINE, flash, formatAlt, look, num, vec } from './script'
+import { ALT, CALLOUTS as CALLOUT_DEFS, FOCUS, MEDIA, ROCA, WATERLINE, flash, formatAlt, look, num, vec } from './script'
+import simboloUrl from '../../marca/v3/simbolo-simetrico.svg?url'
+import logoUrl from '../../marca/v3/logo-sin-r.svg?url'
 import { preload } from './preload'
 import timing from './film.json'
 
@@ -149,6 +151,12 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   const scrub = document.querySelector<HTMLElement>('.scrub')
   const ticks = [...document.querySelectorAll<HTMLAnchorElement>('.scrub a[data-ch]')]
   const berg = document.querySelector<HTMLElement>('.berg')
+  /** v6: la marca grabada en la roca del fondo (el grabado se proyecta sobre la cara lisa del último cuadro) */
+  const roca = document.querySelector<HTMLElement>('.roca-film')
+  const rocaGlifos = roca ? [...roca.querySelectorAll<HTMLElement>('.roca__glifo')] : []
+  let rocaVis = -1
+  roca?.querySelector<HTMLElement>('.roca__glifo--simbolo')?.style.setProperty('--glifo', `url("${simboloUrl}")`)
+  roca?.querySelector<HTMLElement>('.roca__glifo--logo')?.style.setProperty('--glifo', `url("${logoUrl}")`)
   const chatBox = document.querySelector<HTMLElement>('[data-chat]')
   if (!canvas || !video || !reel) return
 
@@ -519,6 +527,8 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   let clock = 0
   let started = false
   let pastFilm = false
+  /** v6: al terminar la película (fondo del mar) la telemetría se apaga mientras sube el epílogo */
+  let lastTail = -1
   const setv = (el: HTMLElement, k: string, v: number, p: number) => {
     if (Math.abs(v - p) > 0.002 || ((v === 0 || v === 1) && v !== p)) {
       el.style.setProperty(k, v.toFixed(4))
@@ -531,6 +541,12 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     scheduled = false
     if (failed || document.hidden) return
     const past = scrollY > reelTop + DUR * sps + V
+    const tail = clamp((scrollY - reelTop - DUR * sps) / (V * 0.45))
+    if (Math.abs(tail - lastTail) > 0.001) {
+      html.style.setProperty('--hud-out', (1 - tail).toFixed(3))
+      html.classList.toggle('film-past', tail >= 1)
+      lastTail = tail
+    }
     if (past && pastFilm && intro === 1 && !dirty) return
     if (!past || intro < 1) wake()
     const elapsed = (now - prev) / 1000
@@ -730,6 +746,36 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     if (berg) {
       project(0.5, num(WATERLINE, u), pos)
       berg.style.setProperty('--wl', `${((pos[1] / V) * 100).toFixed(2)}%`)
+    }
+    if (roca) {
+      const p = opts.reduced ? (u >= ROCA.u0 ? 1 : 0) : clamp((u - ROCA.u0) / (ROCA.u1 - ROCA.u0))
+      const vis = p > 0 ? 1 : 0
+      if (vis !== rocaVis) {
+        roca.classList.toggle('is-on', vis === 1)
+        rocaVis = vis
+      }
+      if (vis) {
+        project(ROCA.x0, ROCA.y0, pos)
+        const x0 = pos[0], y0 = pos[1]
+        project(ROCA.x1, ROCA.y1, pos)
+        let w = pos[0] - x0, h = pos[1] - y0, x = x0, y = y0
+        // en el teléfono la cara es más ancha que la pantalla: el grabado se queda en un ancho seguro
+        const maxW = innerWidth * 0.78
+        if (w > maxW) { const k = maxW / w; x += (w - maxW) / 2; y += (h * (1 - k)) / 2; w = maxW; h *= k }
+        roca.style.cssText = `left:${x.toFixed(1)}px;top:${y.toFixed(1)}px;width:${w.toFixed(1)}px;height:${h.toFixed(1)}px`
+        const sm = (a: number, b: number) => { const t = clamp((p - a) / (b - a)); return t * t * (3 - 2 * t) }
+        roca.style.setProperty('--hondo', `${Math.max(1, Math.round(w / 260))}px`)
+        roca.style.setProperty('--grabado', sm(0, 0.3).toFixed(3))
+        roca.style.setProperty('--luz', (sm(0.1, 0.45) * (1 - sm(0.8, 1) * 0.4)).toFixed(3))
+        roca.style.setProperty('--on', sm(0.55, 0.9).toFixed(3))
+        // el haz barre la cara de izquierda a derecha y se asienta en el centro
+        const bx = 0.1 + sm(0, 0.6) * 0.9 - sm(0.5, 0.8) * 0.5
+        for (const g of rocaGlifos) {
+          const r = g.getBoundingClientRect()
+          g.style.setProperty('--lx', `${(((x + bx * w - r.left) / Math.max(1, r.width)) * 100).toFixed(1)}%`)
+          g.style.setProperty('--ly', `${(((y + h * 0.45 - r.top) / Math.max(1, r.height)) * 100).toFixed(1)}%`)
+        }
+      }
     }
 
     if (!opts.reduced) {

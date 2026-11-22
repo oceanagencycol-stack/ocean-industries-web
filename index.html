@@ -19,14 +19,14 @@
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <link rel="preload" as="image" href="/v4/poster-v.webp" media="(max-aspect-ratio: 4/5)" fetchpriority="high" />
-    <link rel="preload" as="image" href="/v4/poster.webp" media="(min-aspect-ratio: 801/1000)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/v6/poster-v.webp" media="(max-aspect-ratio: 4/5)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/v6/poster.webp" media="(min-aspect-ratio: 801/1000)" fetchpriority="high" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="OCEAN" />
     <meta property="og:url" content="__SITE_URL__/" />
     <meta property="og:title" content="OCEAN — Software e ingeniería con IA" />
-    <meta property="og:description" content="Software a la medida, agentes de IA para WhatsApp y voz, automatización y webs. De lo más profundo a lo más alto: prototipo en 48 horas." />
+    <meta property="og:description" content="Software a la medida, agentes de IA para WhatsApp y voz, automatización y webs. De lo más alto a lo más profundo: prototipo en 48 horas." />
     <meta property="og:image" content="__SITE_URL__/og.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -36,7 +36,7 @@
     <meta property="og:locale:alternate" content="pt_BR" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="OCEAN — Software e ingeniería con IA" />
-    <meta name="twitter:description" content="Software a la medida, agentes de IA para WhatsApp y voz, automatización y webs. De lo más profundo a lo más alto: prototipo en 48 horas." />
+    <meta name="twitter:description" content="Software a la medida, agentes de IA para WhatsApp y voz, automatización y webs. De lo más alto a lo más profundo: prototipo en 48 horas." />
     <meta name="twitter:image" content="__SITE_URL__/og.jpg" />
 
     <style>
@@ -75,7 +75,7 @@
             "legalName": "Ocean Industries",
             "url": "__SITE_URL__/",
             "logo": "__SITE_URL__/icon-512.png",
-            "slogan": "De lo más profundo a lo más alto",
+            "slogan": "De lo más alto a lo más profundo",
             "description": "Empresa de software e ingeniería con inteligencia artificial, con equipo en Cali y Bogotá (Colombia) y presencia en Miami.",
             "knowsAbout": [
               "Desarrollo de software a la medida",
@@ -302,8 +302,8 @@
 
     <div class="stage" aria-hidden="true">
       <picture class="stage__poster">
-        <source media="(max-aspect-ratio: 4/5)" srcset="/v4/poster-v.webp" />
-        <img src="/v4/poster.webp" alt="" width="1920" height="1068" fetchpriority="high" decoding="async" />
+        <source media="(max-aspect-ratio: 4/5)" srcset="/v6/poster-v.webp" />
+        <img src="/v6/poster.webp" alt="" width="1920" height="1068" fetchpriority="high" decoding="async" />
       </picture>
       <canvas class="stage__gl"></canvas>
       <video class="stage__src" muted playsinline preload="none" tabindex="-1" disablepictureinpicture></video>
@@ -344,11 +344,11 @@
     <nav class="menu" id="menu" hidden data-es-aria="Menú" data-en-aria="Menu" data-pt-aria="Menu" aria-label="Menú">
       <ul class="menu__links">
         <li><a href="#senal"><span class="menu__n">01</span><span data-es="La señal" data-en="The signal" data-pt="O sinal">La señal</span></a></li>
-        <li><a href="#superficie"><span class="menu__n">02</span><span data-es="La superficie" data-en="The surface" data-pt="A superfície">La superficie</span></a></li>
-        <li><a href="#agentes"><span class="menu__n">03</span><span data-es="Agentes de IA" data-en="AI agents" data-pt="Agentes de IA">Agentes de IA</span></a></li>
-        <li><a href="#maquina"><span class="menu__n">04</span><span data-es="La máquina" data-en="The machine" data-pt="A máquina">La máquina</span></a></li>
-        <li><a href="#trabajo"><span class="menu__n">05</span><span data-es="La punta" data-en="The tip" data-pt="A ponta">La punta</span></a></li>
-        <li><a href="#hablemos"><span class="menu__n">06</span><span data-es="La cumbre" data-en="The summit" data-pt="O cume">La cumbre</span></a></li>
+        <li><a href="#superficie"><span class="menu__n">02</span><span data-es="Arriba" data-en="Above" data-pt="Acima">Arriba</span></a></li>
+        <li><a href="#trabajo"><span class="menu__n">03</span><span data-es="La superficie" data-en="The surface" data-pt="A superfície">La superficie</span></a></li>
+        <li><a href="#agentes"><span class="menu__n">04</span><span data-es="Agentes de IA" data-en="AI agents" data-pt="Agentes de IA">Agentes de IA</span></a></li>
+        <li><a href="#maquina"><span class="menu__n">05</span><span data-es="La máquina" data-en="The machine" data-pt="A máquina">La máquina</span></a></li>
+        <li><a href="#hablemos"><span class="menu__n">06</span><span data-es="El fondo" data-en="The deep" data-pt="O fundo">El fondo</span></a></li>
       </ul>
       <p class="menu__more"><a href="/servicios" data-es="Servicios" data-en="Services" data-pt="Serviços">Servicios</a><a href="#book" data-es="Agenda una llamada" data-en="Book a call" data-pt="Agende uma chamada">Agenda una llamada</a><a href="#pay" data-es="Pagos" data-en="Payments" data-pt="Pagamentos">Pagos</a></p>
       <div class="menu__tools">
@@ -376,23 +376,26 @@
         <i class="scrub__fill" aria-hidden="true"></i>
         <a href="#inicio" data-ch="0" style="--at:0"><span data-es="Órbita" data-en="Orbit" data-pt="Órbita">Órbita</span></a>
         <a href="#senal" data-ch="1"><span data-es="La señal" data-en="The signal" data-pt="O sinal">La señal</span></a>
-        <a href="#superficie" data-ch="2"><span data-es="Superficie" data-en="Surface" data-pt="Superfície">Superficie</span></a>
-        <a href="#agentes" data-ch="3"><span data-es="Agentes" data-en="Agents" data-pt="Agentes">Agentes</span></a>
-        <a href="#maquina" data-ch="4"><span data-es="La máquina" data-en="The machine" data-pt="A máquina">La máquina</span></a>
-        <a href="#trabajo" data-ch="5"><span data-es="La punta" data-en="The tip" data-pt="A ponta">La punta</span></a>
-        <a href="#hablemos" data-ch="6"><span data-es="Cumbre" data-en="Summit" data-pt="Cume">Cumbre</span></a>
+        <a href="#superficie" data-ch="2"><span data-es="Arriba" data-en="Above" data-pt="Acima">Arriba</span></a>
+        <a href="#trabajo" data-ch="3"><span data-es="Superficie" data-en="Surface" data-pt="Superfície">Superficie</span></a>
+        <a href="#agentes" data-ch="4"><span data-es="Agentes" data-en="Agents" data-pt="Agentes">Agentes</span></a>
+        <a href="#maquina" data-ch="5"><span data-es="La máquina" data-en="The machine" data-pt="A máquina">La máquina</span></a>
+        <a href="#hablemos" data-ch="6"><span data-es="El fondo" data-en="The deep" data-pt="O fundo">El fondo</span></a>
       </span>
       <span class="scrub__hint" aria-hidden="true" data-es="Desliza" data-en="Scroll" data-pt="Role">Desliza</span>
     </nav>
 
+    <!-- v6 · La marca grabada en la roca del fondo: src/v4/film.ts la proyecta sobre la cara lisa del último cuadro -->
+    <div class="roca-capa" aria-hidden="true">
+      <div class="roca__grabado roca-film">
+        <span class="roca__glifo roca__glifo--simbolo"><i class="g-fondo"></i><i class="g-sombra"></i><i class="g-filo"></i><i class="g-luz"></i><i class="g-on"></i></span>
+        <span class="roca__glifo roca__glifo--logo"><i class="g-fondo"></i><i class="g-sombra"></i><i class="g-filo"></i><i class="g-luz"></i><i class="g-on"></i></span>
+      </div>
+    </div>
     <div class="callouts" aria-hidden="true">
       <div class="co" data-co="luces"><i class="co__dot"></i><span class="co__line"></span><span class="co__label" data-es="Cada luz: alguien escribiéndole a una marca" data-en="Every light: someone messaging a brand" data-pt="Cada luz: alguém escrevendo para uma marca">Cada luz: alguien escribiéndole a una marca</span></div>
-      <div class="co" data-co="sat-a"><i class="co__dot"></i><span class="co__line"></span><span class="co__label" data-es="Contenido UGC · Reels · TikTok" data-en="UGC content · Reels · TikTok" data-pt="Conteúdo UGC · Reels · TikTok">Contenido UGC · Reels · TikTok</span></div>
-      <div class="co" data-co="sat-b"><i class="co__dot"></i><span class="co__line"></span><span class="co__label" data-es="Pauta en Meta · conversaciones, no clics" data-en="Meta ads · conversations, not clicks" data-pt="Anúncios no Meta · conversas, não cliques">Pauta en Meta · conversaciones, no clics</span></div>
-      <div class="co" data-co="velero"><i class="co__dot"></i><span class="co__line"></span><span class="co__label" data-es="Tu marca" data-en="Your brand" data-pt="Sua marca">Tu marca</span></div>
       <div class="co" data-co="sub-a"><i class="co__dot"></i><span class="co__line"></span><span class="co__label" data-es="Ingeniería de software con IA" data-en="AI software engineering" data-pt="Engenharia de software com IA">Ingeniería de software con IA</span></div>
       <div class="co" data-co="sub-b"><i class="co__dot"></i><span class="co__line"></span><span class="co__label" data-es="Automatización · CRM, pagos, calendario" data-en="Automation · CRM, payments, calendar" data-pt="Automação · CRM, pagamentos, agenda">Automatización · CRM, pagos, calendario</span></div>
-      <div class="co" data-co="cima"><i class="co__dot"></i><span class="co__line"></span><span class="co__label" data-es="Tu marca, arriba" data-en="Your brand, on top" data-pt="Sua marca, no topo">Tu marca, arriba</span></div>
     </div>
 
     <main id="contenido" class="film">
@@ -405,12 +408,12 @@
           <div class="hero__top">
           <p class="kicker" data-k="0"><span class="kicker__n">OCEAN</span><span data-es="Software e ingeniería con IA" data-en="AI software &amp; engineering" data-pt="Software e engenharia com IA">Software e ingeniería con IA</span></p>
           <h1 class="hero__title" id="hero-title">
-            <span class="ln" data-split data-es="De lo más profundo" data-en="From the deepest" data-pt="Do mais profundo">De lo más profundo</span>
-            <span class="ln ln--em" data-split data-at="0.06" data-es="a lo más alto." data-en="to the highest." data-pt="ao mais alto.">a lo más alto.</span>
+            <span class="ln" data-split data-es="De lo más alto" data-en="From the highest" data-pt="Do mais alto">De lo más alto</span>
+            <span class="ln ln--em" data-split data-at="0.06" data-es="a lo más profundo." data-en="to the deepest." data-pt="ao mais profundo.">a lo más profundo.</span>
           </h1>
           </div>
           <div class="hero__foot">
-          <p class="deck" data-k="2" data-es="Software a la medida, agentes de IA, automatización y webs que venden. Construimos la ingeniería que no se ve para que tu marca llegue arriba." data-en="Custom software, AI agents, automation and websites that sell. We build the engineering no one sees so your brand reaches the top." data-pt="Software sob medida, agentes de IA, automação e sites que vendem. Construímos a engenharia que não se vê para sua marca chegar ao topo.">Software a la medida, agentes de IA, automatización y webs que venden. Construimos la ingeniería que no se ve para que tu marca llegue arriba.</p>
+          <p class="deck" data-k="2" data-es="Software a la medida, agentes de IA, automatización y webs que venden. Construimos la ingeniería que no se ve: la que sostiene tu marca." data-en="Custom software, AI agents, automation and websites that sell. We build the engineering no one sees: the kind that holds your brand up." data-pt="Software sob medida, agentes de IA, automação e sites que vendem. Construímos a engenharia que não se vê: a que sustenta sua marca.">Software a la medida, agentes de IA, automatización y webs que venden. Construimos la ingeniería que no se ve: la que sostiene tu marca.</p>
           <div class="actions" data-k="3">
             <a class="btn btn--primary" data-wa="general" href="https://wa.me/573138721665" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg><span data-es="Cuéntanos tu proyecto" data-en="Tell us your project" data-pt="Conte seu projeto">Cuéntanos tu proyecto</span></a>
             <a class="btn btn--line" href="#senal"><span data-es="Iniciar el descenso" data-en="Begin the descent" data-pt="Iniciar a descida">Iniciar el descenso</span><svg class="ico ico--down" aria-hidden="true"><use href="#i-arrow" /></svg></a>
@@ -428,7 +431,7 @@
         </section>
 
         <!-- 01 · LA SEÑAL -->
-        <section id="senal" class="beat beat--left" data-t="10:13.7" data-ch="1" data-tramo="satelite" data-shade="0.95,0.6,0,0" aria-labelledby="senal-title">
+        <section id="senal" class="beat beat--left" data-t="10.4:14.6" data-ch="1" data-tramo="satelite" data-shade="0.95,0.6,0,0" aria-labelledby="senal-title">
           <div class="beat__in">
           <p class="kicker" data-k="0"><span class="kicker__n">01</span><span data-es="La señal · Contenido y pauta" data-en="The signal · Content and ads" data-pt="O sinal · Conteúdo e mídia">La señal · Contenido y pauta</span></p>
           <h2 class="title" id="senal-title"><span class="ln" data-split data-es="Primero," data-en="First," data-pt="Primeiro,">Primero,</span> <span class="ln ln--em" data-split data-at="0.05" data-es="que te vean." data-en="be seen." data-pt="ser visto.">que te vean.</span></h2>
@@ -449,7 +452,7 @@
           </div>
         </section>
 
-        <section class="beat beat--mega" data-t="14:18.9" data-tramo="mar" data-scrim="0.7" data-shade="0,0.2,0.75,0" data-es-aria="El alcance no vende" data-en-aria="Reach doesn't sell" data-pt-aria="Alcance não vende" aria-label="El alcance no vende">
+        <section class="beat beat--mega" data-t="15:18.6" data-tramo="satelite" data-scrim="0.7" data-shade="0,0.2,0.75,0" data-es-aria="El alcance no vende" data-en-aria="Reach doesn't sell" data-pt-aria="Alcance não vende" aria-label="El alcance no vende">
           <div class="beat__in">
           <p class="mega mega--loud"><span class="ln" data-split data-es="El alcance no vende." data-en="Reach doesn't sell." data-pt="Alcance não vende.">El alcance no vende.</span></p>
           <p class="mega mega--loud"><span class="ln ln--em" data-split data-at="0.4" data-es="Vende la respuesta." data-en="The answer does." data-pt="A resposta vende.">Vende la respuesta.</span></p>
@@ -457,24 +460,48 @@
         </section>
 
         <!-- 02 · LA SUPERFICIE -->
-        <section id="superficie" class="beat beat--center" data-t="19.3:24" data-ch="2" data-tramo="mar" data-shade="0,0.25,0.8,0" aria-labelledby="sup-title">
+        <section id="superficie" class="beat beat--center" data-t="19.4:24.4" data-ch="2" data-tramo="mar" data-shade="0,0.25,0.8,0" aria-labelledby="sup-title">
           <div class="beat__in">
-          <p class="kicker" data-k="0"><span class="kicker__n">02</span><span data-es="La superficie" data-en="The surface" data-pt="A superfície">La superficie</span></p>
+          <p class="kicker" data-k="0"><span class="kicker__n">02</span><span data-es="Arriba" data-en="Above" data-pt="Acima">Arriba</span></p>
           <h2 class="title" id="sup-title"><span class="ln" data-split data-es="Arriba, todo" data-en="Up here, everything" data-pt="Aqui em cima, tudo">Arriba, todo</span> <span class="ln ln--em" data-split data-at="0.05" data-es="parece en calma." data-en="looks calm." data-pt="parece calmo.">parece en calma.</span></h2>
           <p class="deck" data-k="2" data-es="Una web bonita. Un Instagram al día. Pero lo que hace crecer una marca casi nunca se ve: pasa debajo." data-en="A nice website. An up-to-date Instagram. But what makes a brand grow is almost never seen: it happens underneath." data-pt="Um site bonito. Um Instagram em dia. Mas o que faz uma marca crescer quase nunca se vê: acontece embaixo.">Una web bonita. Un Instagram al día. Pero lo que hace crecer una marca casi nunca se ve: pasa debajo.</p>
           </div>
         </section>
 
-        <section class="beat beat--mega beat--plunge" data-t="24.4:26.6" data-tramo="agua" data-scrim="0.85" data-shade="0,0,0.4,0" data-es-aria="Bajo la superficie" data-en-aria="Below the surface" data-pt-aria="Abaixo da superfície" aria-label="Bajo la superficie">
+        <section class="beat beat--mega" data-t="24.8:27.9" data-tramo="mar" data-scrim="0.7" data-shade="0,0.2,0.7,0" data-es-aria="Solo la superficie" data-en-aria="Just the surface" data-pt-aria="Só a superfície" aria-label="Solo la superficie">
+          <div class="beat__in">
+          <p class="mega mega--loud"><span class="ln" data-split data-es="Lo que tus clientes ven" data-en="What your customers see" data-pt="O que seus clientes veem">Lo que tus clientes ven</span></p>
+          <p class="mega mega--loud"><span class="ln ln--em" data-split data-at="0.38" data-es="es solo la superficie." data-en="is just the surface." data-pt="é só a superfície.">es solo la superficie.</span></p>
+          </div>
+        </section>
+
+        <!-- 03 · LA SUPERFICIE -->
+        <section id="trabajo" class="beat beat--left" data-t="28.3:34.8" data-ch="3" data-tramo="mar" data-shade="0.7,0.55,0,0" aria-labelledby="trabajo-title">
+          <div class="beat__in">
+          
+            <p class="kicker" data-k="0"><span class="kicker__n">03</span><span data-es="La superficie · Webs y tiendas" data-en="The surface · Websites and stores" data-pt="A superfície · Sites e lojas">La superficie · Webs y tiendas</span></p>
+            <h2 class="title" id="trabajo-title"><span class="ln" data-split data-es="Que lo que se ve" data-en="Make what shows" data-pt="Que o que se vê">Que lo que se ve</span> <span class="ln ln--em" data-split data-at="0.05" data-es="esté a la altura." data-en="live up to it." data-pt="esteja à altura.">esté a la altura.</span></h2>
+            <div class="lts" data-k="2">
+              <article class="lt" id="web"><div class="svc__text">
+              <p class="svc__problem" data-es="Tu web tarda en cargar y no convierte en móvil." data-en="Your site is slow and doesn't convert on mobile." data-pt="Seu site é lento e não converte no celular.">Tu web tarda en cargar y no convierte en móvil.</p>
+              <h3 class="svc__name" data-es="Webs y tiendas en línea" data-en="Websites and online stores" data-pt="Sites e lojas online">Webs y tiendas en línea</h3>
+              <p class="svc__desc" data-es="Webs y tiendas que cargan al instante en el celular, con catálogo, pagos y SEO. Prototipo navegable en 48 horas: si te convence, lo lanzamos." data-en="Sites and stores that load instantly on a phone, with catalog, payments and SEO. A clickable prototype in 48 hours: if you like it, we launch it." data-pt="Sites e lojas que carregam na hora no celular, com catálogo, pagamentos e SEO. Protótipo navegável em 48 horas: se te convencer, lançamos.">Webs y tiendas que cargan al instante en el celular, con catálogo, pagos y SEO. Prototipo navegable en 48 horas: si te convence, lo lanzamos.</p>
+              <a class="svc__link" data-wa="web" href="https://wa.me/573138721665" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg><span data-es="Quiero una web que venda" data-en="I want a site that sells" data-pt="Quero um site que venda">Quiero una web que venda</span></a>
+            </div></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="beat beat--mega beat--plunge" data-t="37.4:39.9" data-tramo="agua" data-scrim="0.85" data-shade="0,0,0.4,0" data-es-aria="Bajo la superficie" data-en-aria="Below the surface" data-pt-aria="Abaixo da superfície" aria-label="Bajo la superficie">
           <div class="beat__in">
           <p class="mega mega--giant"><span class="ln" data-split data-es="Bajo la" data-en="Below the" data-pt="Abaixo da">Bajo la</span><span class="ln" data-split data-at="0.06" data-es="superficie" data-en="surface" data-pt="superfície">superficie</span></p>
           </div>
         </section>
 
-        <!-- 03 · AGENTES -->
-        <section id="agentes" class="beat beat--left" data-t="26.8:32.8" data-ch="3" data-tramo="agua" data-shade="0.95,0.55,0,0" aria-labelledby="agentes-title">
+        <!-- 04 · AGENTES -->
+        <section id="agentes" class="beat beat--left" data-t="40.3:46.9" data-ch="4" data-tramo="agua" data-shade="0.95,0.55,0,0" aria-labelledby="agentes-title">
           <div class="beat__in">
-          <p class="kicker" data-k="0"><span class="kicker__n">03</span><span data-es="Agentes de IA · WhatsApp y web" data-en="AI agents · WhatsApp and web" data-pt="Agentes de IA · WhatsApp e web">Agentes de IA · WhatsApp y web</span></p>
+          <p class="kicker" data-k="0"><span class="kicker__n">04</span><span data-es="Agentes de IA · WhatsApp y web" data-en="AI agents · WhatsApp and web" data-pt="Agentes de IA · WhatsApp e web">Agentes de IA · WhatsApp y web</span></p>
           <h2 class="title" id="agentes-title"><span class="ln" data-split data-es="Alguien responde." data-en="Someone answers." data-pt="Alguém responde.">Alguien responde.</span> <span class="ln ln--em" data-split data-at="0.05" data-es="También a las 2 a. m." data-en="At 2 a.m. too." data-pt="Às 2 da manhã também.">También a las 2 a. m.</span></h2>
           <p class="stat" data-k="2"><b data-count="11">11</b><span>s</span><em data-es="respuesta media, medida en la línea de WhatsApp de OCEAN" data-en="average reply, measured on OCEAN's own WhatsApp line" data-pt="resposta média, medida na linha de WhatsApp da OCEAN">respuesta media, medida en la línea de WhatsApp de OCEAN</em></p>
           <div class="lts" data-k="3">
@@ -500,7 +527,7 @@
           </div>
         </section>
 
-        <section class="beat beat--mega" data-t="33.1:36.6" data-tramo="maquina" data-scrim="0.7" data-shade="0,0,0.5,0" data-es-aria="Más profundo" data-en-aria="Deeper" data-pt-aria="Mais fundo" aria-label="Más profundo">
+        <section class="beat beat--mega" data-t="47.8:50.3" data-tramo="maquina" data-scrim="0.7" data-shade="0,0,0.5,0" data-es-aria="Más profundo" data-en-aria="Deeper" data-pt-aria="Mais fundo" aria-label="Más profundo">
           <div class="beat__in">
           <p class="mega mega--giant"><span class="ln" data-split data-es="Más profundo." data-en="Deeper." data-pt="Mais fundo.">Más profundo.</span></p>
           <p class="mega mega--quiet"><span class="ln" data-split data-at="0.35" data-es="Donde trabaja lo que nadie ve." data-en="Where the unseen does the work." data-pt="Onde trabalha o que ninguém vê.">Donde trabaja lo que nadie ve.</span></p>
@@ -508,10 +535,10 @@
         </section>
 
         <!-- 04 · LA MÁQUINA -->
-        <section id="maquina" class="beat beat--low" data-t="37:43.7" data-ch="4" data-tramo="maquina" data-shade="0.6,0.95,0,0" aria-labelledby="maquina-title">
+        <section id="maquina" class="beat beat--low" data-t="50.6:56.2" data-ch="5" data-tramo="maquina" data-shade="0.6,0.95,0,0" aria-labelledby="maquina-title">
           <div class="beat__in">
           <div class="low__l">
-            <p class="kicker" data-k="0"><span class="kicker__n">04</span><span data-es="La máquina · Ingeniería de software" data-en="The machine · Software engineering" data-pt="A máquina · Engenharia de software">La máquina · Ingeniería de software</span></p>
+            <p class="kicker" data-k="0"><span class="kicker__n">05</span><span data-es="La máquina · Ingeniería de software" data-en="The machine · Software engineering" data-pt="A máquina · Engenharia de software">La máquina · Ingeniería de software</span></p>
             <h2 class="title" id="maquina-title"><span class="ln" data-split data-es="Un sistema" data-en="One system" data-pt="Um sistema">Un sistema</span> <span class="ln ln--em" data-split data-at="0.05" data-es="que trabaja solo." data-en="that runs itself." data-pt="que trabalha sozinho.">que trabaja solo.</span></h2>
             <dl class="figs" data-k="2">
               <div><dt><b data-count="48">48</b> h</dt><dd data-es="tu prototipo funcionando" data-en="your prototype running" data-pt="seu protótipo funcionando">tu prototipo funcionando</dd></div>
@@ -536,46 +563,17 @@
           </div>
         </section>
 
-        <section class="beat beat--mega" data-t="44:47.9" data-tramo="emerge" data-scrim="0.7" data-shade="0,0.2,0.7,0" data-es-aria="Solo la punta" data-en-aria="Just the tip" data-pt-aria="Só a ponta" aria-label="Solo la punta">
+        <section class="beat beat--mega" data-t="56.6:59.5" data-tramo="maquina" data-scrim="0.7" data-shade="0,0.3,0.6,0" data-es-aria="En el fondo" data-en-aria="At the bottom" data-pt-aria="No fundo" aria-label="En el fondo">
           <div class="beat__in">
-          <p class="mega mega--loud"><span class="ln" data-split data-es="Lo que tus clientes ven" data-en="What your customers see" data-pt="O que seus clientes veem">Lo que tus clientes ven</span></p>
-          <p class="mega mega--loud"><span class="ln ln--em" data-split data-at="0.38" data-es="es solo la punta." data-en="is just the tip." data-pt="é só a ponta.">es solo la punta.</span></p>
+          <p class="mega mega--quiet"><span class="ln" data-split data-es="Y en el fondo de todo," data-en="And at the bottom of it all," data-pt="E no fundo de tudo,">Y en el fondo de todo,</span></p>
+          <p class="mega mega--giant"><span class="ln" data-split data-at="0.3" data-es="está OCEAN." data-en="there's OCEAN." data-pt="está a OCEAN.">está OCEAN.</span></p>
           </div>
         </section>
 
-        <!-- 05 · LA PUNTA -->
-        <section id="trabajo" class="beat beat--berg" data-t="48.1:53.1" data-ch="5" data-tramo="emerge" data-shade="0.7,0.55,0,0" aria-labelledby="trabajo-title">
+        <!-- 06 · EL FONDO -->
+        <section id="hablemos" class="beat beat--left" data-t="59.8:63.7" data-ch="6" data-tramo="maquina" data-shade="1,0.5,0,0" aria-labelledby="hablemos-title">
           <div class="beat__in">
-          <div class="berg" aria-hidden="true">
-            <p class="berg__top" data-k="0"><b data-es="Arriba" data-en="Above" data-pt="Acima">Arriba</b><span data-es="Lo que se ve: tu web, tu tienda, tu marca" data-en="What shows: your site, your store, your brand" data-pt="O que aparece: seu site, sua loja, sua marca">Lo que se ve: tu web, tu tienda, tu marca</span></p>
-            <p class="berg__low" data-k="1"><b data-es="Debajo" data-en="Below" data-pt="Abaixo">Debajo</b><span data-es="Lo que la sostiene: agentes, datos y automatización" data-en="What holds it up: agents, data and automation" data-pt="O que a sustenta: agentes, dados e automação">Lo que la sostiene: agentes, datos y automatización</span></p>
-          </div>
-          <div class="low__l">
-            <p class="kicker" data-k="2"><span class="kicker__n">05</span><span data-es="La punta · Webs y tiendas" data-en="The tip · Websites and stores" data-pt="A ponta · Sites e lojas">La punta · Webs y tiendas</span></p>
-            <h2 class="title" id="trabajo-title"><span class="ln" data-split data-es="Que la punta" data-en="Make the tip" data-pt="Que a ponta">Que la punta</span> <span class="ln ln--em" data-split data-at="0.05" data-es="esté a la altura." data-en="live up to it." data-pt="esteja à altura.">esté a la altura.</span></h2>
-            <div class="lts" data-k="3">
-              <article class="lt" id="web"><div class="svc__text">
-              <p class="svc__problem" data-es="Tu web tarda en cargar y no convierte en móvil." data-en="Your site is slow and doesn't convert on mobile." data-pt="Seu site é lento e não converte no celular.">Tu web tarda en cargar y no convierte en móvil.</p>
-              <h3 class="svc__name" data-es="Webs y tiendas en línea" data-en="Websites and online stores" data-pt="Sites e lojas online">Webs y tiendas en línea</h3>
-              <p class="svc__desc" data-es="Webs y tiendas que cargan al instante en el celular, con catálogo, pagos y SEO. Prototipo navegable en 48 horas: si te convence, lo lanzamos." data-en="Sites and stores that load instantly on a phone, with catalog, payments and SEO. A clickable prototype in 48 hours: if you like it, we launch it." data-pt="Sites e lojas que carregam na hora no celular, com catálogo, pagamentos e SEO. Protótipo navegável em 48 horas: se te convencer, lançamos.">Webs y tiendas que cargan al instante en el celular, con catálogo, pagos y SEO. Prototipo navegable en 48 horas: si te convence, lo lanzamos.</p>
-              <a class="svc__link" data-wa="web" href="https://wa.me/573138721665" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa" /></svg><span data-es="Quiero una web que venda" data-en="I want a site that sells" data-pt="Quero um site que venda">Quiero una web que venda</span></a>
-            </div></article>
-            </div>
-          </div>
-          </div>
-        </section>
-
-        <section class="beat beat--mega" data-t="53.5:57.9" data-tramo="cumbre" data-scrim="0.7" data-shade="0,0.3,0.6,0" data-es-aria="Todo sube" data-en-aria="Everything rises" data-pt-aria="Tudo sobe" aria-label="Todo sube">
-          <div class="beat__in">
-          <p class="mega mega--quiet"><span class="ln" data-split data-es="Y cuando lo de abajo funciona," data-en="And when what's below works," data-pt="E quando o que está embaixo funciona,">Y cuando lo de abajo funciona,</span></p>
-          <p class="mega mega--giant"><span class="ln" data-split data-at="0.3" data-es="todo sube." data-en="everything rises." data-pt="tudo sobe.">todo sube.</span></p>
-          </div>
-        </section>
-
-        <!-- 06 · LA CUMBRE -->
-        <section id="hablemos" class="beat beat--left" data-t="58.2:64.6" data-ch="6" data-tramo="cumbre" data-shade="1,0.5,0,0" aria-labelledby="hablemos-title">
-          <div class="beat__in">
-          <p class="kicker" data-k="0"><span class="kicker__n">06</span><span data-es="La cumbre · Construye con OCEAN" data-en="The summit · Build with OCEAN" data-pt="O cume · Construa com a OCEAN">La cumbre · Construye con OCEAN</span></p>
+          <p class="kicker" data-k="0"><span class="kicker__n">06</span><span data-es="El fondo · Construye con OCEAN" data-en="The deep · Build with OCEAN" data-pt="O fundo · Construa com a OCEAN">El fondo · Construye con OCEAN</span></p>
           <h2 class="title title--xl" id="hablemos-title"><span class="ln" data-split data-es="Ahora," data-en="Now," data-pt="Agora,">Ahora,</span> <span class="ln ln--em" data-split data-at="0.05" data-es="tu marca." data-en="your brand." data-pt="sua marca.">tu marca.</span></h2>
           <p class="deck" data-k="2" data-es="¿Dónde se detiene hoy tu cliente? Cuéntanos ese momento y construimos un primer prototipo en 24 a 48 horas." data-en="Where does your customer get stuck? Tell us about that moment and we’ll build a first prototype in 24 to 48 hours." data-pt="Onde seu cliente para hoje? Conte esse momento e construímos um primeiro protótipo em 24 a 48 horas.">¿Dónde se detiene hoy tu cliente? Cuéntanos ese momento y construimos un primer prototipo en 24 a 48 horas.</p>
           <div class="actions" data-k="3">
@@ -585,18 +583,18 @@
           </div>
         </section>
 
-        <!-- EL SELLO · en la luz blanca de la cumbre el isotipo se arma con el scroll: la marca, en lo más alto -->
-        <section class="beat beat--seal" data-t="65:67.05" data-fade="1.1" data-tramo="cumbre" data-scrim="0" data-shade="0,0,0,0" data-es-aria="OCEAN, en lo más alto" data-en-aria="OCEAN, at the very top" data-pt-aria="OCEAN, no mais alto" aria-label="OCEAN, en lo más alto">
+        <!-- EL SELLO · la luz de la nave graba la marca en la roca del fondo (.roca-capa); aquí queda la frase -->
+        <section class="beat beat--seal" data-t="64.6:67.05" data-fade="1.1" data-tramo="maquina" data-scrim="0.55" data-shade="0,0,0,0" data-es-aria="OCEAN, en lo más profundo" data-en-aria="OCEAN, in the deepest" data-pt-aria="OCEAN, no mais profundo" aria-label="OCEAN, en lo más profundo">
           <div class="beat__in">
           <!--SIMBOLO_PARTES:seal__mark-->
           <p class="seal__word" data-k="1.4"><!--LOGO_R:seal__logo--></p>
-          <p class="seal__line" data-k="2.2" data-es="De lo más profundo a lo más alto." data-en="From the deepest to the highest." data-pt="Do mais profundo ao mais alto.">De lo más profundo a lo más alto.</p>
+          <p class="seal__line" data-k="2.2" data-es="De lo más alto a lo más profundo." data-en="From the highest to the deepest." data-pt="Do mais alto ao mais profundo.">De lo más alto a lo más profundo.</p>
           </div>
         </section>
       </div>
 
-      <!-- El epílogo: la película termina en luz blanca y el contenido sigue sobre esa misma luz, sin corte. -->
-      <section class="epi" data-light data-fab-hide data-tramo="cumbre" aria-label="Trabajo, agenda y pagos" data-es-aria="Trabajo, agenda y pagos" data-en-aria="Work, booking and payments" data-pt-aria="Trabalho, agenda e pagamentos">
+      <!-- El epílogo: la película termina en el fondo del mar y el contenido sigue sobre esa misma oscuridad, sin corte. -->
+      <section class="epi epi--fondo" data-fab-hide data-tramo="maquina" aria-label="Trabajo, agenda y pagos" data-es-aria="Trabajo, agenda y pagos" data-en-aria="Work, booking and payments" data-pt-aria="Trabalho, agenda e pagamentos">
           <div class="work svcx" id="servicios">
             <header class="work__head">
               <h2 class="work__title" data-es="Software e ingeniería, de punta a punta" data-en="Software and engineering, end to end" data-pt="Software e engenharia, de ponta a ponta">Software e ingeniería, de punta a punta</h2>

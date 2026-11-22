@@ -1,0 +1,93 @@
+/* v6 · La nave (docs/v6/GUION.md): la película baja del espacio al fondo del mar y la web termina allí, oscura.
+   Paleta de DESIGN.md: --space, --abyss, --slate, --mist, --snow. */
+
+/* ---------- la marca grabada en la roca (la proyecta src/v4/film.ts sobre el último cuadro) ---------- */
+.roca-capa {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.roca-film {
+  position: absolute;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease, ease);
+}
+.roca-film.is-on { opacity: 1; }
+html.no-stage .roca-capa,
+html:not(.js) .roca-capa { display: none; }
+
+/* ---------- el sello: la marca ya está en la roca; queda la frase, abajo ---------- */
+html.js:not(.no-stage) .beat--seal .beat__in {
+  align-content: end;
+  color: var(--snow);
+  padding-bottom: clamp(72px, 13vh, 140px);
+}
+html.js:not(.no-stage) .beat--seal .seal__mark,
+html.js:not(.no-stage) .beat--seal .seal__word { display: none; }
+.beat--seal .seal__line { color: var(--mist); }
+
+/* ---------- el epílogo: sobre la oscuridad del fondo, sin corte ---------- */
+.epi--fondo {
+  --ink-line: rgba(224, 231, 237, 0.13);
+  --ink-line-2: rgba(224, 231, 237, 0.26);
+  color: var(--snow);
+  background: linear-gradient(to bottom, rgb(3 6 12 / 0) 0, rgb(3 6 12 / 0.84) clamp(140px, 20vw, 300px), var(--space) clamp(300px, 38vw, 560px));
+  padding-top: clamp(200px, 28vw, 400px);
+}
+html:not(.js) .epi--fondo,
+html.no-stage .epi--fondo {
+  background:
+    linear-gradient(to bottom, rgb(3 6 12 / 0.25) 0, rgb(3 6 12 / 0.85) 36vw, var(--space) 56vw),
+    url('/v6/fondo-1280.webp') center top / 100% auto no-repeat,
+    var(--space);
+  padding-top: clamp(220px, 36vw, 520px);
+}
+.epi--fondo .work__title,
+.epi--fondo .reels__title,
+.epi--fondo .case__name,
+.epi--fondo .case dd,
+.epi--fondo .case__link,
+.epi--fondo .reels__ig,
+.epi--fondo figcaption a,
+.epi--fondo .svcx__list a,
+.epi--fondo .svcx__more a,
+.epi--fondo .faqx__list h3,
+.epi--fondo .faqx__list summary,
+.epi--fondo .snow,
+.epi--fondo .snow__title {
+  color: var(--snow);
+}
+.epi--fondo .work__head p,
+.epi--fondo .reels__head p,
+.epi--fondo .case__place,
+.epi--fondo .case dt,
+.epi--fondo figcaption,
+.epi--fondo .svcx__n,
+.epi--fondo .svcx__d,
+.epi--fondo .faqx__list summary::after,
+.epi--fondo .faqx__list details p,
+.epi--fondo .snow__head > p:last-child,
+.epi--fondo .cases__more {
+  color: var(--mist);
+}
+.epi--fondo .snow::before { display: none; }
+.epi--fondo .case__media,
+.epi--fondo .case:nth-child(3n) .case__media {
+  background: var(--abyss);
+  box-shadow: inset 0 0 0 1px var(--ink-line);
+}
+.epi--fondo .case:nth-child(3n + 2) .case__media { background: var(--slate); }
+.epi--fondo .case__media img { box-shadow: 0 18px 40px rgb(0 0 0 / 0.45); }
+.epi--fondo :focus-visible { outline-color: var(--snow); }
+
+/* el pie lleva la misma roca de fondo */
+body .footer {
+  background: linear-gradient(95deg, var(--space) 12%, rgb(3 6 12 / 0.9) 51%, rgb(3 6 12 / 0.76)), url('/v6/fondo-1280.webp') center 38% / cover;
+}
+
+/* al terminar la película la telemetría (profundidad y capítulos) se apaga mientras sube el epílogo */
+.alti,
+.scrub { opacity: calc(var(--hud, 1) * var(--hud-out, 1)); }
+html.film-past .alti,
+html.film-past .scrub { visibility: hidden; }

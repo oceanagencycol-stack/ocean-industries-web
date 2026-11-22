@@ -351,64 +351,148 @@
   "apertura": "n2MzQm2aeS502qlaPnun",
   "derivados": "Montaje, etalonaje y señal luminosa en tools/film.py. Retemporización, encuadres de respaldo y ventanas de lectura en tools/film-delivery.py. La edición vertical sigue el mismo reloj."
  },
- "public/v4/film-hd.mp4": {
-  "origen": "IA (ElevenLabs, kling-3-pro, 1080p; apertura sobre placa gemini-3-pro-image ER4K2BktzZf6fjfSOc5A)",
-  "generation_ids": {
-   "s0": "CFRjMd4nn3YTkFWcn0v9",
-   "s1": "LIZv8UCNCDqhcKweg9Mt",
-   "s2": "0G9mBxyI25dfjdcIRYRE",
-   "s3": "BzdCCsWfHGjpFBSncThP",
-   "s4": "HQqY9mwWIuwuGXwCK7Xv",
-   "s5": "hcZMAePo5uCwN9n3ndHz",
-   "s6": "Jzmr9D6UhCRMPW2KrOlO"
+ "public/v6/film-hd.mp4": {
+  "origen": "IA (ElevenLabs: placas gemini-3-pro-image escaladas ×2 con topaz-image-upscale-v2; tomas veo-3.1-fast-generate-001 1080p con cuadro inicial y final)",
+  "placas": {
+   "1": "dC8osqY2bNQDe9xbco9t",
+   "2": "eR8lphFOguF2Sxh1lQ5N",
+   "3": "UyFB3Aw8SjvVeIgem4ZA",
+   "4": "NysRnNfvjAFMuidzIVtf",
+   "5": "j4C5id7raucdwE5qsPFC",
+   "6": "0mTlT68Xqy5y60l9IB4E",
+   "7": "0OIT03cDa5s5x3fEax9j",
+   "8": "I4eIngQXkLFGLbiCkk1m"
   },
-  "flujo": "kSe3q2p9wY9Nvko2DhaG",
-  "fecha": "2026-11-19",
-  "uso": "la película de la web v4 (tools/v4-film.sh); ilustración, no es un lugar ni una persona real"
+  "tomas": {
+   "5-6": "q203ouGmrDbKkAOMlHg4",
+   "6-7": "7GQQEIZxDGUleQNo1XUb",
+   "7-8": "YDUR3G2F1G2ltSFDThxD"
+  },
+  "nave_referencia": "HeaBKbxazJTla4RezMnH",
+  "flujo": "kwtfgVEScg4Co9buhGuN",
+  "fecha": "2026-11-21",
+  "originales": "rama assets/v6-nave (media/v6)",
+  "derivados": "tools/v6-film.py (acercamientos y fundidos de las placas, tomas encadenadas, 4 s quietos al final); limpieza de grano hqdn3d y codificación con un cuadro clave cada 8",
+  "uso": "la película de la web v6 · La nave; ilustración con IA: la nave, el piloto y los lugares no son reales"
  },
- "public/v4/film-sd.mp4": {
-  "origen": "IA (ElevenLabs, kling-3-pro, 1080p; apertura sobre placa gemini-3-pro-image ER4K2BktzZf6fjfSOc5A)",
-  "generation_ids": {
-   "s0": "CFRjMd4nn3YTkFWcn0v9",
-   "s1": "LIZv8UCNCDqhcKweg9Mt",
-   "s2": "0G9mBxyI25dfjdcIRYRE",
-   "s3": "BzdCCsWfHGjpFBSncThP",
-   "s4": "HQqY9mwWIuwuGXwCK7Xv",
-   "s5": "hcZMAePo5uCwN9n3ndHz",
-   "s6": "Jzmr9D6UhCRMPW2KrOlO"
+ "public/v6/film-sd.mp4": {
+  "origen": "IA (ElevenLabs: placas gemini-3-pro-image escaladas ×2 con topaz-image-upscale-v2; tomas veo-3.1-fast-generate-001 1080p con cuadro inicial y final)",
+  "placas": {
+   "1": "dC8osqY2bNQDe9xbco9t",
+   "2": "eR8lphFOguF2Sxh1lQ5N",
+   "3": "UyFB3Aw8SjvVeIgem4ZA",
+   "4": "NysRnNfvjAFMuidzIVtf",
+   "5": "j4C5id7raucdwE5qsPFC",
+   "6": "0mTlT68Xqy5y60l9IB4E",
+   "7": "0OIT03cDa5s5x3fEax9j",
+   "8": "I4eIngQXkLFGLbiCkk1m"
   },
-  "flujo": "kSe3q2p9wY9Nvko2DhaG",
-  "fecha": "2026-11-19",
-  "uso": "la película de la web v4 (tools/v4-film.sh); ilustración, no es un lugar ni una persona real"
+  "tomas": {
+   "5-6": "q203ouGmrDbKkAOMlHg4",
+   "6-7": "7GQQEIZxDGUleQNo1XUb",
+   "7-8": "YDUR3G2F1G2ltSFDThxD"
+  },
+  "nave_referencia": "HeaBKbxazJTla4RezMnH",
+  "flujo": "kwtfgVEScg4Co9buhGuN",
+  "fecha": "2026-11-21",
+  "originales": "rama assets/v6-nave (media/v6)",
+  "derivados": "tools/v6-film.py (acercamientos y fundidos de las placas, tomas encadenadas, 4 s quietos al final); limpieza de grano hqdn3d y codificación con un cuadro clave cada 8",
+  "uso": "la película de la web v6 · La nave; ilustración con IA: la nave, el piloto y los lugares no son reales"
  },
- "public/v4/poster.webp": {
-  "origen": "IA (ElevenLabs, kling-3-pro, 1080p; apertura sobre placa gemini-3-pro-image ER4K2BktzZf6fjfSOc5A)",
-  "generation_ids": {
-   "s0": "CFRjMd4nn3YTkFWcn0v9",
-   "s1": "LIZv8UCNCDqhcKweg9Mt",
-   "s2": "0G9mBxyI25dfjdcIRYRE",
-   "s3": "BzdCCsWfHGjpFBSncThP",
-   "s4": "HQqY9mwWIuwuGXwCK7Xv",
-   "s5": "hcZMAePo5uCwN9n3ndHz",
-   "s6": "Jzmr9D6UhCRMPW2KrOlO"
+ "public/v6/poster.webp": {
+  "origen": "IA (ElevenLabs: placas gemini-3-pro-image escaladas ×2 con topaz-image-upscale-v2; tomas veo-3.1-fast-generate-001 1080p con cuadro inicial y final)",
+  "placas": {
+   "1": "dC8osqY2bNQDe9xbco9t",
+   "2": "eR8lphFOguF2Sxh1lQ5N",
+   "3": "UyFB3Aw8SjvVeIgem4ZA",
+   "4": "NysRnNfvjAFMuidzIVtf",
+   "5": "j4C5id7raucdwE5qsPFC",
+   "6": "0mTlT68Xqy5y60l9IB4E",
+   "7": "0OIT03cDa5s5x3fEax9j",
+   "8": "I4eIngQXkLFGLbiCkk1m"
   },
-  "flujo": "kSe3q2p9wY9Nvko2DhaG",
-  "fecha": "2026-11-19",
-  "uso": "la película de la web v4 (tools/v4-film.sh); ilustración, no es un lugar ni una persona real"
+  "tomas": {
+   "5-6": "q203ouGmrDbKkAOMlHg4",
+   "6-7": "7GQQEIZxDGUleQNo1XUb",
+   "7-8": "YDUR3G2F1G2ltSFDThxD"
+  },
+  "nave_referencia": "HeaBKbxazJTla4RezMnH",
+  "flujo": "kwtfgVEScg4Co9buhGuN",
+  "fecha": "2026-11-21",
+  "originales": "rama assets/v6-nave (media/v6)",
+  "derivados": "tools/v6-film.py (acercamientos y fundidos de las placas, tomas encadenadas, 4 s quietos al final); limpieza de grano hqdn3d y codificación con un cuadro clave cada 8",
+  "uso": "la película de la web v6 · La nave; ilustración con IA: la nave, el piloto y los lugares no son reales"
  },
- "public/v4/poster-v.webp": {
-  "origen": "IA (ElevenLabs, kling-3-pro, 1080p; apertura sobre placa gemini-3-pro-image ER4K2BktzZf6fjfSOc5A)",
-  "generation_ids": {
-   "s0": "CFRjMd4nn3YTkFWcn0v9",
-   "s1": "LIZv8UCNCDqhcKweg9Mt",
-   "s2": "0G9mBxyI25dfjdcIRYRE",
-   "s3": "BzdCCsWfHGjpFBSncThP",
-   "s4": "HQqY9mwWIuwuGXwCK7Xv",
-   "s5": "hcZMAePo5uCwN9n3ndHz",
-   "s6": "Jzmr9D6UhCRMPW2KrOlO"
+ "public/v6/poster-v.webp": {
+  "origen": "IA (ElevenLabs: placas gemini-3-pro-image escaladas ×2 con topaz-image-upscale-v2; tomas veo-3.1-fast-generate-001 1080p con cuadro inicial y final)",
+  "placas": {
+   "1": "dC8osqY2bNQDe9xbco9t",
+   "2": "eR8lphFOguF2Sxh1lQ5N",
+   "3": "UyFB3Aw8SjvVeIgem4ZA",
+   "4": "NysRnNfvjAFMuidzIVtf",
+   "5": "j4C5id7raucdwE5qsPFC",
+   "6": "0mTlT68Xqy5y60l9IB4E",
+   "7": "0OIT03cDa5s5x3fEax9j",
+   "8": "I4eIngQXkLFGLbiCkk1m"
   },
-  "flujo": "kSe3q2p9wY9Nvko2DhaG",
-  "fecha": "2026-11-19",
-  "uso": "la película de la web v4 (tools/v4-film.sh); ilustración, no es un lugar ni una persona real"
+  "tomas": {
+   "5-6": "q203ouGmrDbKkAOMlHg4",
+   "6-7": "7GQQEIZxDGUleQNo1XUb",
+   "7-8": "YDUR3G2F1G2ltSFDThxD"
+  },
+  "nave_referencia": "HeaBKbxazJTla4RezMnH",
+  "flujo": "kwtfgVEScg4Co9buhGuN",
+  "fecha": "2026-11-21",
+  "originales": "rama assets/v6-nave (media/v6)",
+  "derivados": "tools/v6-film.py (acercamientos y fundidos de las placas, tomas encadenadas, 4 s quietos al final); limpieza de grano hqdn3d y codificación con un cuadro clave cada 8",
+  "uso": "la película de la web v6 · La nave; ilustración con IA: la nave, el piloto y los lugares no son reales"
+ },
+ "public/v6/fondo-1920.webp": {
+  "origen": "IA (ElevenLabs: placas gemini-3-pro-image escaladas ×2 con topaz-image-upscale-v2; tomas veo-3.1-fast-generate-001 1080p con cuadro inicial y final)",
+  "placas": {
+   "1": "dC8osqY2bNQDe9xbco9t",
+   "2": "eR8lphFOguF2Sxh1lQ5N",
+   "3": "UyFB3Aw8SjvVeIgem4ZA",
+   "4": "NysRnNfvjAFMuidzIVtf",
+   "5": "j4C5id7raucdwE5qsPFC",
+   "6": "0mTlT68Xqy5y60l9IB4E",
+   "7": "0OIT03cDa5s5x3fEax9j",
+   "8": "I4eIngQXkLFGLbiCkk1m"
+  },
+  "tomas": {
+   "5-6": "q203ouGmrDbKkAOMlHg4",
+   "6-7": "7GQQEIZxDGUleQNo1XUb",
+   "7-8": "YDUR3G2F1G2ltSFDThxD"
+  },
+  "nave_referencia": "HeaBKbxazJTla4RezMnH",
+  "flujo": "kwtfgVEScg4Co9buhGuN",
+  "fecha": "2026-11-21",
+  "originales": "rama assets/v6-nave (media/v6)",
+  "derivados": "tools/v6-film.py (acercamientos y fundidos de las placas, tomas encadenadas, 4 s quietos al final); limpieza de grano hqdn3d y codificación con un cuadro clave cada 8",
+  "uso": "la película de la web v6 · La nave; ilustración con IA: la nave, el piloto y los lugares no son reales"
+ },
+ "public/v6/fondo-1280.webp": {
+  "origen": "IA (ElevenLabs: placas gemini-3-pro-image escaladas ×2 con topaz-image-upscale-v2; tomas veo-3.1-fast-generate-001 1080p con cuadro inicial y final)",
+  "placas": {
+   "1": "dC8osqY2bNQDe9xbco9t",
+   "2": "eR8lphFOguF2Sxh1lQ5N",
+   "3": "UyFB3Aw8SjvVeIgem4ZA",
+   "4": "NysRnNfvjAFMuidzIVtf",
+   "5": "j4C5id7raucdwE5qsPFC",
+   "6": "0mTlT68Xqy5y60l9IB4E",
+   "7": "0OIT03cDa5s5x3fEax9j",
+   "8": "I4eIngQXkLFGLbiCkk1m"
+  },
+  "tomas": {
+   "5-6": "q203ouGmrDbKkAOMlHg4",
+   "6-7": "7GQQEIZxDGUleQNo1XUb",
+   "7-8": "YDUR3G2F1G2ltSFDThxD"
+  },
+  "nave_referencia": "HeaBKbxazJTla4RezMnH",
+  "flujo": "kwtfgVEScg4Co9buhGuN",
+  "fecha": "2026-11-21",
+  "originales": "rama assets/v6-nave (media/v6)",
+  "derivados": "tools/v6-film.py (acercamientos y fundidos de las placas, tomas encadenadas, 4 s quietos al final); limpieza de grano hqdn3d y codificación con un cuadro clave cada 8",
+  "uso": "la película de la web v6 · La nave; ilustración con IA: la nave, el piloto y los lugares no son reales"
  }
 }

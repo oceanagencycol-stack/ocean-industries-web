@@ -28,7 +28,13 @@ paleta oscura premium; la web termina en el fondo del mar; sin velero; personas 
 
 **Créditos**: 60.611 al empezar; ≈ 12.600 al cerrar la fase 1. El plan Pro se renueva el 2-dic con 612.639.
 
-## 2 · Lo primero: traer los archivos
+## 1b · Publicado el 21-nov (fase 1,5)
+Con lo que había se montó la v6 en la web: placas 1–5 con acercamientos de cámara (tools/v6-film.py) y las tres tomas
+de video bajo el agua; la marca se graba en la roca; el epílogo es oscuro. Los originales se trajeron con Chrome a la rama
+`assets/v6-nave` (media/v6; los MP4 en partes de 8 MB: `cat toma56.mp4.parte* > toma56.mp4`). La fase 2 cambia las
+placas 1–5 por tomas de video, añade el vertical, el sonido y los cuadros sueltos.
+
+## 2 · Lo primero: traer los archivos (hecho el 21-nov; para las tomas nuevas, el mismo camino)
 Desde la sesión no se pueden descargar (el proxy bloquea `elevenlabsusercontent.com` y el navegador no deja sacar
 binarios). Hay que bajarlos a mano desde el flujo y ponerlos en el chat o en Drive:
 1. Las 8 «HD · placa ×2» (PNG 2752 × 1536).

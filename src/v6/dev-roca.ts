@@ -15,9 +15,9 @@ const root = document.querySelector<HTMLElement>('[data-roca]')
 if (root) {
   mountRoca({
     root,
-    placa: { w: 1440, h: 756 },
-    foco: { x: 0.51, y: 0.4 },
-    // La cara lisa de la placa 8 (provisional, 1440 × 756).
-    cara: { x: 540, y: 100, w: 400, h: 440 },
+    placa: { w: 1920, h: 1068 },
+    foco: { x: 0.5, y: 0.42 },
+    // La cara lisa de la roca en el último cuadro de la película (la misma que ROCA en src/v4/script.ts).
+    cara: { x: 720, y: 139, w: 518, h: 523 },
   })
 }

@@ -130,10 +130,21 @@ const { chromium } = require('playwright')
   const reel = await p.$eval('#reelsGrid .reel__video', (v) => ({ ready: v.readyState, paused: v.paused, muted: v.muted }))
   ok(reel.ready >= 2 && !reel.paused && reel.muted, `el reel en vista corre en silencio (readyState ${reel.ready})`)
 
-  // la agenda (computador: Cal.com incrustado, en claro) y la barra clara sobre la nieve
+  // v6: la película termina en el fondo del mar; la marca se graba en la roca y el epílogo sigue oscuro
+  await p.evaluate(() => { const f = window.__film; scrollTo({ top: f.reelTop + 67 * f.sps, behavior: 'instant' }) })
+  await p.waitForTimeout(1100)
+  const roca = await p.evaluate(() => {
+    const r = document.querySelector('.roca-film')
+    const g = r && getComputedStyle(r.querySelector('.roca__glifo--logo .g-on')).maskImage
+    return { on: !!r && r.classList.contains('is-on'), w: r ? r.getBoundingClientRect().width : 0, mask: g || '' }
+  })
+  ok(roca.on && roca.w > 120 && roca.mask.includes('logo-sin-r'), `al final la marca oficial se graba en la roca (${Math.round(roca.w)} px)`)
+  // la agenda (computador: Cal.com incrustado, en claro); el epílogo va sobre el fondo oscuro
   await into(p, '#book', 'start')
   await p.waitForTimeout(900)
-  ok(((await p.getAttribute('html', 'class')) || '').split(/\s+/).includes('nav-light'), 'sobre la nieve la barra se vuelve clara')
+  const cls = ((await p.getAttribute('html', 'class')) || '').split(/\s+/)
+  ok(!cls.includes('nav-light') && cls.includes('film-past'), 'en el epílogo oscuro la barra sigue oscura y la telemetría se apaga')
+  ok(await p.evaluate(() => getComputedStyle(document.querySelector('.alti')).visibility === 'hidden'), 'la profundidad no tapa el epílogo')
   const cal = await p.$eval('#calFrame iframe', (f) => f.src).catch(() => '')
   ok(cal.includes('cal.com/ocean-industries-2e5al7/agenda-demo-gratuita') && cal.includes('theme=light'), 'Cal.com se incrusta en el computador, en claro')
 

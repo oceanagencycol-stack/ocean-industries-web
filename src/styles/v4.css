@@ -188,7 +188,7 @@ html.js .pre:not(.pre--still) .pre__glow { opacity: 0; }
 }
 html.js:not(.no-stage) .film-track {
   position: relative;
-  /* la película entera + una pantalla de luz blanca antes del epílogo */
+  /* la película entera + una pantalla quieta en el fondo (la marca grabada en la roca) antes del epílogo */
   height: calc(67.5 * var(--sps, 560px) + 70lvh);
 }
 html.js:not(.no-stage) .beat {
