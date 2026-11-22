@@ -87,6 +87,7 @@ La v5 (paisajes hasta la cumbre) queda en el despliegue anterior de Vercel para 
   portada a sangre. Si toca, `html.intro-due` muestra el velo. `[data-intro-dock]` es el logotipo de la barra.
 - **La E son tres horizontes**: `.horizon` (las barras de la E de `logo.svg`) quieta al borde izquierdo en el computador;
   el tramo en el centro de la pantalla enciende su barra (`data-horizon` 1–3; la cumbre, 4 = las tres).
+- **Capa premium v6** (`src/v6/premium.ts` + `src/styles/v6-premium.css`, 21-nov): botones magnéticos (propiedad CSS `translate`, ±6 px), luz que sigue al puntero (`--mx/--my`), texto que rueda (`.btn__lbl`, sobrevive al cambio de idioma), onda al presionar, reflejo lento en las tres acciones principales, foco de luz en filas, casos y preguntas (`--sx/--sy`), entradas del epílogo por `data-p` (title, sweep, row, case, rise; solo con `html.p-ready`), preguntas que abren con altura animada y anillo de cursor (solo puntero fino). Con movimiento reducido solo queda el envoltorio de las etiquetas.
 - **v6: todo es oscuro.** El epílogo va sobre el fondo del mar (`.epi--fondo`); `[data-light]`/`html.nav-light` quedan en
   el sistema pero la home ya no los usa. Al terminar la película la telemetría se apaga (`html.film-past`).
 - **Pausar el movimiento** (WCAG 2.2.2): controles en la barra y el pie con el mundo real; suelta el mundo, deja las placas y se

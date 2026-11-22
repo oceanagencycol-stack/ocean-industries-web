@@ -13,6 +13,7 @@ import './styles/v4.css'
 import './styles/epilogue.css'
 import './styles/v6-roca.css'
 import './styles/v6.css'
+import './styles/v6-premium.css'
 
 import { initLang } from './ui/i18n'
 import { initWhatsApp } from './ui/wa'
@@ -28,6 +29,7 @@ import { initChrome } from './v3/chrome'
 import { initSound } from './v3/sound-gate'
 import { initReveal } from './v3/reveal'
 import { initFilm } from './v4/film'
+import { initPremium } from './v6/premium'
 
 const html = document.documentElement
 const reduced = html.classList.contains('no-motion') || matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -48,4 +50,5 @@ initAnalytics()
 initBrand()
 initSound()
 initReveal()
+initPremium(reduced)
 initFilm({ reduced, lite })
