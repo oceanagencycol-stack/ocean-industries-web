@@ -16,11 +16,11 @@ type Win = Window & { __oceanU?: number }
 
 const DIR = '/v6/audio/'
 const LEVEL = { music: 0.62, amb: 0.7, sfx: 0.8 }
-const WATER = 4.08 // u en que la nave entra al agua
+const WATER = 3.42 // u en que la nave entra al agua
 /** efectos por cruce hacia adelante: [u, pieza, ganancia] */
 const CUES: [number, string, number][] = [
-  [1.02, 'sfx-reentrada', 1],
-  [2.15, 'sfx-trueno', 0.8],
+  [0.7, 'sfx-reentrada', 1],
+  [1.7, 'sfx-trueno', 0.8],
   [WATER, 'sfx-agua', 1],
   [5.6, 'sfx-sonar', 0.7],
   [6.25, 'sfx-sonar', 0.55],

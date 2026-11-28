@@ -1,1 +1,1 @@
-{"fps": 24, "frames": [0, 240, 456, 672, 888, 1142, 1332, 1618], "src": {"hd": "/v6/film-hd.mp4", "sd": "/v6/film-sd.mp4"}, "_": "frames: el primer cuadro de cada toma S0–S6 y el total (tools/v6-film.py)"}
+{"fps": 24, "frames": [0, 240, 431, 622, 813, 1004, 1195, 1480], "src": {"hd": "/v6/film-hd.mp4", "sd": "/v6/film-sd.mp4", "vhd": "/v6/film-v-hd.mp4", "vsd": "/v6/film-v-sd.mp4"}, "_": "frames: el primer cuadro de cada toma S0–S6 y el total (tools/v6-final-film.py)"}

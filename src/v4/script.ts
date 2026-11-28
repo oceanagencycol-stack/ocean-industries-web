@@ -2,11 +2,11 @@
  * El guion técnico de la película: todo en «unidades de toma» (u). La toma i va de u = i a u = i + 1; los cortes en
  * segundos los da film.json (sale de tools/v6-film.py). Así se puede volver a montar la película sin tocar el relato.
  *
- * v6 · La nave (docs/v6/GUION.md): del espacio al fondo del mar, paleta oscura premium.
- *   S0 órbita sobre la Tierra de noche            S4 entrada al agua → rayos con el cardumen
- *   S1 reentrada con plasma azul                  S5 rayos → abismo (la nave de frente, el piloto)
- *   S2 sobre las nubes de tormenta, con luna      S6 abismo → la roca del fondo; 4 s quietos: la marca se graba
- *   S3 rasante sobre el mar oscuro
+ * v6 final (28-nov, docs/v6/PLAN-FINAL.md): siete tomas de video reales de punta a punta (tools/v6-final-film.py).
+ *   S0 órbita (2 s quietos) → reentrada            S4 bajo el agua → rayos con el cardumen
+ *   S1 reentrada → planeo sobre las nubes          S5 rayos → abismo
+ *   S2 nubes → aterrizaje en el mar al atardecer   S6 abismo → la roca del fondo; 3,9 s quietos: la marca se graba
+ *   S3 se posa en el agua y se hunde (entra al agua en u ≈ 3,42)
  */
 import type { Look } from './stage'
 
@@ -17,8 +17,8 @@ export const LOOKS: Key<Look>[] = [
   [0.0, { exposure: 1.0, contrast: 1.08, saturation: 0.95, tint: [1, 1, 1.02], vignette: 0.62, grain: 0.045, fade: 0 }],
   [1.0, { exposure: 0.98, contrast: 1.12, saturation: 0.85, tint: [0.96, 1, 1.05], vignette: 0.55, grain: 0.045, fade: 0 }],
   [2.0, { exposure: 1.0, contrast: 1.1, saturation: 0.8, tint: [0.95, 1, 1.05], vignette: 0.5, grain: 0.04, fade: 0 }],
-  [3.0, { exposure: 0.98, contrast: 1.12, saturation: 0.82, tint: [0.95, 1, 1.06], vignette: 0.55, grain: 0.045, fade: 0 }],
-  [4.0, { exposure: 1.0, contrast: 1.12, saturation: 0.85, tint: [0.93, 1, 1.07], vignette: 0.55, grain: 0.045, fade: 0 }],
+  [3.0, { exposure: 0.98, contrast: 1.1, saturation: 0.9, tint: [0.98, 1, 1.03], vignette: 0.55, grain: 0.045, fade: 0 }],
+  [3.45, { exposure: 1.0, contrast: 1.12, saturation: 0.85, tint: [0.93, 1, 1.07], vignette: 0.55, grain: 0.045, fade: 0 }],
   [4.6, { exposure: 1.02, contrast: 1.1, saturation: 0.88, tint: [0.93, 1, 1.06], vignette: 0.5, grain: 0.045, fade: 0 }],
   [5.45, { exposure: 0.9, contrast: 1.18, saturation: 0.85, tint: [0.92, 0.99, 1.08], vignette: 0.72, grain: 0.055, fade: 0 }],
   [6.4, { exposure: 0.96, contrast: 1.14, saturation: 0.88, tint: [0.94, 1, 1.06], vignette: 0.62, grain: 0.05, fade: 0 }],
@@ -30,15 +30,15 @@ export const MEDIA: Key<[number, number, number, number]>[] = [
   [0.0, [1, 0, 0, 0]],
   [0.95, [1, 0, 0, 0]],
   [1.3, [0, 0.5, 0, 0]],
-  [3.9, [0, 0.35, 0, 0]],
-  [4.25, [0, 0, 1, 0]],
+  [3.35, [0, 0.35, 0, 0]],
+  [3.5, [0, 0, 1, 0]],
   [7.0, [0, 0, 1, 0]],
 ]
 
 /** destellos de cruce: [centro u, ancho u, intensidad] */
 export const FLASHES: [number, number, number][] = [
-  [1.32, 0.08, 0.16], // el plasma de la reentrada
-  [4.22, 0.05, 0.5], // el impacto en el agua
+  [0.92, 0.08, 0.12], // el plasma de la reentrada
+  [3.42, 0.04, 0.45], // el impacto en el agua
 ]
 
 /** el foco del encuadre (coordenadas del video, 0–1): lo que tiene que quedar en pantalla en el teléfono */
@@ -61,14 +61,16 @@ export const FOCUS: Key<[number, number]>[] = [
 /** altitud en metros (negativa: profundidad). No es un dato: es la lectura del instrumento de la película. */
 export const ALT: Key<number>[] = [
   [0.0, 420000],
-  [0.95, 400000],
-  [1.5, 80000],
+  [0.6, 400000],
+  [1.0, 120000],
+  [1.5, 30000],
   [2.0, 9000],
-  [2.95, 3000],
-  [3.4, 40],
-  [4.1, 8],
-  [4.24, 0],
-  [4.7, -120],
+  [2.6, 1500],
+  [3.0, 30],
+  [3.35, 2],
+  [3.42, 0],
+  [3.6, -12],
+  [4.0, -80],
   [5.0, -300],
   [5.6, -2400],
   [6.0, -3600],
@@ -92,18 +94,20 @@ export interface Callout {
 
 export const CALLOUTS: Callout[] = [
   { id: 'luces', from: 0.06, to: 0.44, path: [[0, [0.26, 0.8]], [0.45, [0.29, 0.78]]], ang: -36, len: 80 },
-  { id: 'sub-a', from: 5.52, to: 5.95, path: [[5.5, [0.3, 0.62]], [5.95, [0.28, 0.63]]], side: 'left', ang: 212, len: 80, wide: true },
-  { id: 'sub-b', from: 5.52, to: 5.95, path: [[5.5, [0.56, 0.63]], [5.95, [0.57, 0.64]]], ang: -24, len: 110 },
+  { id: 'sub-a', from: 5.65, to: 5.95, path: [[5.65, [0.37, 0.56]], [5.95, [0.34, 0.6]]], side: 'left', ang: 212, len: 80, wide: true },
+  { id: 'sub-b', from: 5.65, to: 5.95, path: [[5.65, [0.68, 0.5]], [5.95, [0.73, 0.48]]], ang: -24, len: 110 },
 ]
 
 /** la línea de agua (y del video): la entrada al mar */
 export const WATERLINE: Key<number>[] = [
-  [4.0, 0.34],
-  [4.24, 0.34],
+  [3.47, 0.43],
+  [3.63, 0.26],
+  [3.75, 0.33],
+  [4.0, 0.47],
 ]
 
 /** la cara lisa de la roca del fondo en el último cuadro (coordenadas del video) y cuándo se graba la marca */
-export const ROCA = { u0: 6.64, u1: 6.97, x0: 0.375, y0: 0.13, x1: 0.645, y1: 0.62 }
+export const ROCA = { u0: 6.64, u1: 6.97, x0: 0.435, y0: 0.2, x1: 0.7, y1: 0.465 }
 
 // ---------- interpolación (sin asignar memoria en el loop) ----------
 const ease = (x: number) => x * x * (3 - 2 * x)

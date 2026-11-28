@@ -24,3 +24,7 @@ fecha	qué	modelo	parámetros	n	créditos	nota
 2026-11-28	v6 final · Tomas 1→2 a 6→7 en calidad completa (Veo 3.1, sin audio), movimiento natural	veo-3.1-generate-001	8 s, 1080p, 16:9, inicio y fin anclados en las placas FINAL	6	58176	9.696 c/u
 2026-11-28	v6 final · Toma 7→8 en calidad completa	veo-3.1-generate-001	8 s 1080p, nodo uDwLKiLejdmS62WIdc3d	1	9696	
 2026-11-28	v6 final · 8 placas verticales 9:16 (misma nave y composición)	gemini-3-pro-image	9:16 2K, nodos VERT 1–8	8	19488	2.436 c/u
+2026-11-28	v6 final · Repetición de tomas 1→2 (rayos falsos) y 3→4 (a la nave le salió cuello de cisne)	veo-3.1-generate-001	8 s 1080p; prompts solo con mecánica del movimiento, sin animales	2	19392	Lección: Veo toma los símiles de animales al pie de la letra
+2026-11-28	v6 final · Repetición de 5→6, 6→7 y 7→8 (la nave se volvía manta raya)	veo-3.1-generate-001	8 s 1080p; «rigid machine, flat straight wings that never bend»	3	29088	
+2026-11-28	v6 final · Temas B (Juan Diego rechazó los 3 primeros): B1 perreo oscuro con fuerza, B2 reggaetón hipnótico nocturno, B3 trap latino cinematográfico; 2 tomas c/u	eleven_music_v2_5	75 s instrumental	6	6750	
+2026-11-28	v6 final · 7 tomas verticales 9:16 en calidad completa (prompts sin animales, nave rígida)	veo-3.1-generate-001	8 s 1080p 9:16, nodos VTOMA 1→2…7→8	7	67872	
