@@ -1,4 +1,4 @@
-const LIMB = { cx: 1997.85 / 1920, cy: 3006.54 / 1068, r: 2686.4, w: 1920, h: 1068 }
+const LIMB = { cx: 1585.65 / 1920, cy: 6634.12 / 1068, r: 6058.18, w: 1920, h: 1068 } // borde de la Tierra en el primer cuadro (v6 final)
 // Comienzo y duración en ms. Las tres barras de la E se leen como un solo gesto.
 const PEN: Record<string, readonly [number, number]> = {
   O: [0, 630], C: [310, 565],

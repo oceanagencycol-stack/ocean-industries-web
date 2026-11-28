@@ -12,6 +12,12 @@ oscuro (`.epi--fondo`, `v6.css`): ya no hay cumbre, nieve ni barra clara. Lema: 
 Película en `public/v6/` (`tools/v6-film.py` desde los originales de la rama `assets/v6-nave`), cortes en
 `src/v4/film.json`. Guion y elegidas en `docs/v6/GUION.md`; lo que falta (tomas 1→5 en video, vertical 9:16, sonido,
 cuadros sueltos en vez de MP4) en `docs/v6/FASE2.md`. Créditos y generaciones en `docs/elevenlabs.tsv`.
+**v6 final (28-nov-2026, publicada con autorización de Juan Diego)**: nave ala blanca minimalista (A1), siete tomas
+Veo reales (órbita → reentrada → atardecer → amerizaje → abismo → losa), máster 16:9 (`film-hd/sd.mp4`) y máster
+vertical 9:16 propio para el teléfono (`film-v-hd/sd.mp4`, `html.film-vert`: foco al centro, sin etiquetas,
+`ROCA_V`/`WATERLINE_V`). Se arma con `tools/v6-final-film.py <carpeta> [--vertical]` desde `media/v6final/` de
+`assets/v6-nave`; `tools/v6-final-retime.py` mueve los `data-t`. Sonido v6 en `src/v6/sound.ts` (tema original, no
+copia de ninguna canción; ambiente del abismo y efectos por cruce). Plan en `docs/v6/PLAN-FINAL.md`.
 La v5 (paisajes hasta la cumbre) queda en el despliegue anterior de Vercel para volver con «Promote».
 
 ### Reglas propias de la v5

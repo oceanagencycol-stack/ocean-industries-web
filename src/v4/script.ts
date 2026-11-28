@@ -106,6 +106,15 @@ export const WATERLINE: Key<number>[] = [
   [4.0, 0.47],
 ]
 
+/** la línea de agua en el máster vertical (9:16) */
+export const WATERLINE_V: Key<number>[] = [
+  [3.47, 0.345],
+  [4.0, 0.345],
+]
+
+/** la losa de la roca en el último cuadro del máster vertical (9:16) */
+export const ROCA_V = { u0: 6.64, u1: 6.97, x0: 0.18, y0: 0.335, x1: 0.87, y1: 0.51 }
+
 /** la cara lisa de la roca del fondo en el último cuadro (coordenadas del video) y cuándo se graba la marca */
 export const ROCA = { u0: 6.64, u1: 6.97, x0: 0.435, y0: 0.2, x1: 0.7, y1: 0.465 }
 

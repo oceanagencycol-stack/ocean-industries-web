@@ -15,7 +15,7 @@
 import { lang, onLang } from '../ui/i18n'
 import { SCRIPT } from '../ui/live'
 import { createStage, SCRIMS, type Look, type Stage, type StageFrame } from './stage'
-import { ALT, CALLOUTS as CALLOUT_DEFS, FOCUS, MEDIA, ROCA, WATERLINE, flash, formatAlt, look, num, vec } from './script'
+import { ALT, CALLOUTS as CALLOUT_DEFS, FOCUS, MEDIA, ROCA as ROCA_H, ROCA_V, WATERLINE as WATERLINE_H, WATERLINE_V, flash, formatAlt, look, num, vec } from './script'
 import simboloUrl from '../../marca/v3/simbolo-simetrico.svg?url'
 import logoUrl from '../../marca/v3/logo-sin-r.svg?url'
 import { preload } from './preload'
@@ -248,6 +248,11 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
 
   // ---- el escenario ----
   let sd = opts.lite || W < 900
+  // el teléfono en vertical usa el máster 9:16 (sus propias tomas): foco al centro, sin etiquetas, su roca y su línea de agua
+  const vert = W / V < 0.75 && !!timing.src.vhd
+  const ROCA = vert ? ROCA_V : ROCA_H
+  const WATERLINE = vert ? WATERLINE_V : WATERLINE_H
+  if (vert) html.classList.add('film-vert')
   try {
     stage = createStage(canvas, video, poster, sd)
   } catch {
@@ -269,7 +274,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
 
   /** del video a la pantalla con el encuadre actual (el mismo cálculo del shader) */
   function project(vx: number, vy: number, out: [number, number]): [number, number] {
-    const vidA = video!.videoWidth ? video!.videoWidth / video!.videoHeight : sd ? 1024 / 570 : 1600 / 890
+    const vidA = video!.videoWidth ? video!.videoWidth / video!.videoHeight : vert ? 9 / 16 : 1920 / 1068
     const sa = W / V
     let sx = 1, sy = 1
     if (sa > vidA) sy = vidA / sa
@@ -284,6 +289,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   }
   function focusAt(u: number) {
     vec(FOCUS, u, fpos)
+    if (vert) fpos[0] = fpos[1] = 0.5
     const portrait = W / V < 1
     frame.focus[0] = portrait ? fpos[0] : 0.5 + (fpos[0] - 0.5) * 0.35
     frame.focus[1] = portrait ? fpos[1] : 0.5 + (fpos[1] - 0.5) * 0.35
@@ -297,7 +303,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
   })
 
   // ---- el preloader: la película entera en memoria y el borde de la Tierra dibujado ----
-  const src = sd ? timing.src.sd : timing.src.hd
+  const src = vert ? (sd ? timing.src.vsd : timing.src.vhd) : sd ? timing.src.sd : timing.src.hd
   let quick = false
   try {
     quick = sessionStorage.getItem('ocean-v4-film') === '1'
@@ -369,7 +375,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     )
   }
 
-  const CALLOUTS = CALLOUT_DEFS.map((c) => ({ ...c, el: document.querySelector<HTMLElement>(`.co[data-co="${c.id}"]`), side: 0 }))
+  const CALLOUTS = (vert ? [] : CALLOUT_DEFS).map((c) => ({ ...c, el: document.querySelector<HTMLElement>(`.co[data-co="${c.id}"]`), side: 0 }))
   function geometry(el: HTMLElement, ang: number, len: number) {
     const rad = (ang * Math.PI) / 180
     const ex = Math.cos(rad) * len
