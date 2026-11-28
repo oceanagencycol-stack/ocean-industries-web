@@ -76,6 +76,17 @@ Lo nuevo:
 - Grano encima de los cuadros, no dentro.
 - La capa premium (botones, entradas, cursor) se conserva.
 
+## Ajuste de Juan (28-nov 07:02): todo en una sola sesión con los US$49
+- **Presupuesto cerrado ≈ 300.000 créditos** (lo que dan los US$49). Recorte: todo en `veo-3.1-fast` 1080p,
+  escalado Topaz ×2 solo en las tomas que lo necesiten (≈ 485 c/u), y la fase 3 (calidad completa) solo si sobra.
+  Cuenta: nave 15K + placas 29K + 7 tomas con reintentos 68K + vertical 49K + sonido 15K + Topaz 8K ≈ 184K; reserva ≈ 115K.
+- **Una sola pregunta por punto de elección**, con las opciones a la vista en el chat; si Juan no responde en ~15 min,
+  elijo yo la más fiel a la referencia y lo digo, para no detener la sesión.
+- **Orden para no esperar**: generaciones en paralelo (nave → placas y tema a la vez → tomas 16:9 y 9:16 a la vez);
+  mientras se generan, se monta el código (cuadros en vez de MP4, sonido sincronizado, vertical).
+- **Todo queda en GitHub al cerrar cada fase**, así que si la sesión se corta se retoma sin perder nada.
+- **Cierre de la sesión**: vista previa verificada en Chrome real → visto bueno de Juan → producción → IndexNow → brain.
+
 ## Calendario propuesto
 1. **Día 1**: fase 0 (6 naves) → Juan elige.
 2. **Días 2–3**: fase 1 (placas) → Juan elige. Fase 5 en paralelo (3 temas) → Juan elige.
