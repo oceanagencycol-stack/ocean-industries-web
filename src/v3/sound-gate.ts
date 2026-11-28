@@ -11,7 +11,7 @@
  *  - ?qa: expone `window.__oceanSound` para leer el estado.
  */
 import { store } from '../core/storage'
-import type { Engine } from './sound'
+import type { Engine } from '../v6/sound'
 
 const PREF = 'ocean-v3-sound'
 const REPLAY = 'ocean-v3-replay-sound'
@@ -87,7 +87,7 @@ function start(fromButton: boolean, early = false): void {
     }
   }
   paint()
-  import('./sound')
+  import('../v6/sound')
     .then((m) => {
       engine = m.createEngine(c, { on: true })
       starting = false

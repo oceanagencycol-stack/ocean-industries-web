@@ -566,6 +566,7 @@ export function initFilm(opts: { reduced: boolean; lite: boolean }): void {
     frame.vel += (speed - frame.vel) * (1 - Math.exp(-elapsed * 8))
 
     const u = toU(tS)
+    ;(window as Window & { __oceanU?: number }).__oceanU = past ? -1 : u
     frame.t = tS
     look(u, L)
     L.exposure *= 0.05 + 0.95 * introE

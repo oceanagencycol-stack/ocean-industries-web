@@ -15,3 +15,12 @@ fecha	qué	modelo	parámetros	n	créditos	nota
 2026-11-21	v6 · Toma piloto 7→8 (abismo → fondo con roca lisa)	veo-3.1-fast-generate-001	8 s, 1080p, 16:9, sin audio, inicio y fin anclados; nodo LHK79Xsir3YQctIOK4Du	1	4848	estimado 4.848
 2026-11-21	v6 · Escalado ×2 de las 8 placas elegidas (2752 × 1536)	topaz-image-upscale-v2	High Fidelity V3, caras realzadas; nodos «HD · placa 1…8 ×2»	8	3878	485 por imagen
 2026-11-21	v6 · Tomas 5→6 (entrada al agua → rayos) y 6→7 (rayos → abismo)	veo-3.1-fast-generate-001	8 s, 1080p, sin audio, inicio y fin anclados; nodos QfX2WTygQwgkbOPU9kB2 y VKANn7MmgflZyAbhajRO	2	9696	con 7→8 completan el descenso bajo el agua
+2026-11-28	v6 final · Fase 0: 8 diseños de la nave minimalista (A: ala volante fiel a la referencia; B: cuerpo único más mínimo)	gemini-3-pro-image	16:9; flujo 43ja18oMCRDhF8USGRWX, nodos CMFTVrYnrLcyv2HQwF7R y spxfDfKYIYIbL8utzXzP	8	9744	1.218 por imagen; saldo al empezar 708.380
+2026-11-28	v6 final · Tema musical: 3 versiones de 90 s, reggaetón oscuro instrumental bajo el agua (original, sin referencias a obras existentes)	eleven_music_v2_5	90 s, instrumental; nodo QDA1QfoFDGZycj836I8d	3	4050	1.350 c/u
+2026-11-28	v6 final · Fase 1: 8 placas con la nave A1 (elegida por Juan Diego), 2 opciones cada una	gemini-3-pro-image	16:9, 2K, referencia nodo 0FSRIEUoaI7D7yc0HxGc	16	29232	1.827 c/u
+2026-11-28	v6 final · 6 efectos de sonido (reentrada, trueno, entrada al agua, sonar, grabado, ambiente abismo en lazo), 2 tomas c/u	eleven_text_to_sound_v3	nodos SFX ·	12	274	
+2026-11-28	v6 final · Placas «REAL»: las 8 escenas como fotografía real (movimiento natural: pelícano, cisne al aterrizar, manta raya), la 4 pasa a aterrizaje al atardecer; 2 opciones c/u	gemini-3-pro-image	16:9 2K, referencias nave A1 + composición elegida	16	38976	2.436 c/u (dos referencias)
+2026-11-28	v6 final · Placa 8 rehecha (losa lisa; la anterior traía una cara tallada)	gemini-3-pro-image	16:9 2K, nodo cRC17JS3K5HnTOSyDdlL	3	5481	
+2026-11-28	v6 final · Tomas 1→2 a 6→7 en calidad completa (Veo 3.1, sin audio), movimiento natural	veo-3.1-generate-001	8 s, 1080p, 16:9, inicio y fin anclados en las placas FINAL	6	58176	9.696 c/u
+2026-11-28	v6 final · Toma 7→8 en calidad completa	veo-3.1-generate-001	8 s 1080p, nodo uDwLKiLejdmS62WIdc3d	1	9696	
+2026-11-28	v6 final · 8 placas verticales 9:16 (misma nave y composición)	gemini-3-pro-image	9:16 2K, nodos VERT 1–8	8	19488	2.436 c/u
